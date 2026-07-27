@@ -134,3 +134,12 @@ gates:
     command: ["bin/gac/omo-state-write-guard.py"]
   - id: "brief-protect"
     command: ["bin/mof/generate-brief.py", "--protect"]
+  # P0-A (integrated-governance §P0): 三把锁接线到 SGF 真实生效源.
+  # sgf-policy 覆盖 DEFAULT_POLICY (load_sgf_policy or DEFAULT), 故必须接此处才生效.
+  # layer-call 按 new-violation blocking: --baseline 存量 11 grace, 新违规 exit 1.
+  - id: "mof-capabilities-drift-check"
+    command: ["bin/mof/check-mof-capabilities-drift.py"]
+  - id: "doc-claims-check"
+    command: ["bin/mof/check-doc-claims.py"]
+  - id: "layer-call-direction-check"
+    command: ["bin/ssot/check-layer-call-direction.py", "--baseline", ".omo/_truth/registry/layer-call-baseline.txt"]
