@@ -143,3 +143,18 @@ gates:
     command: ["bin/mof/check-doc-claims.py"]
   - id: "layer-call-direction-check"
     command: ["bin/ssot/check-layer-call-direction.py", "--baseline", ".omo/_truth/registry/layer-call-baseline.txt"]
+  # P85 G1+G2: redline executability wiring. These gates are what
+  # the redline registry at .omo/_truth/registry/redlines.yaml
+  # points to, so adding/removing rows there is safe.
+  - id: "check-severity-registry"
+    command: ["bin/gac/check-severity-registry.py"]
+  - id: "check-work-landed"
+    command: ["bin/gac/check-work-landed.py"]
+  - id: "check-governance-ratio"
+    command: ["bin/gac/check-governance-ratio.py"]
+  - id: "check-redline-coverage"
+    command: ["bin/gac/check-redline-coverage.py"]
+  # P85 G2.2: workorder schema is warn-only by default; promote to
+  # --strict in CI after the grace period (G2 follow-up).
+  - id: "check-workorder-schema"
+    command: ["bin/gac/check-workorder-schema.py"]
