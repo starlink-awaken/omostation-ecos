@@ -1,0 +1,18 @@
+id: ENG-MINIMAX-CLOUD
+type: ComputeEngine
+node_ref: NODE-CLOUD
+engine_type: cloud_api
+network_zone: internet
+base_url: "https://api.minimaxi.com/v1"
+supported_protocols: ["openai"]
+cost_multiplier: 1.0
+status: active
+description: "MiniMax 云端推理 (MiniMax-M2/M2.1) · API key 从 cc-switch 同步"
+
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m1/
+
+state_history:
+  - state: active
+    timestamp: '2026-08-09T00:00:00Z'
+    reason: created_from_cc-switch_direct_api_integration

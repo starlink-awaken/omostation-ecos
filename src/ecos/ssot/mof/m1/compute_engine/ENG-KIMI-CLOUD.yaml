@@ -1,0 +1,19 @@
+id: ENG-KIMI-CLOUD
+type: ComputeEngine
+node_ref: NODE-CLOUD
+engine_type: cloud_api
+network_zone: internet
+base_url: "https://api.moonshot.cn/v1"
+supported_protocols: ["openai"]
+description: "Kimi (Moonshot AI) 云端推理 (kimi-k2) · API key 从 cc-switch 同步 · 注意: cc-switch key 为 Anthropic 兼容格式 (api.kimi.com/coding), 需 OpenAI 格式 key"
+cost_multiplier: 1.0
+status: active
+description: "Kimi (Moonshot AI) 云端推理 (kimi-k2) · API key 从 cc-switch 同步"
+
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m1/
+
+state_history:
+  - state: active
+    timestamp: '2026-08-09T00:00:00Z'
+    reason: created_from_cc-switch_direct_api_integration

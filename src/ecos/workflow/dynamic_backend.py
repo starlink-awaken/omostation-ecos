@@ -198,7 +198,7 @@ class DynamicPlanner:
             from openai import OpenAI  # type: ignore[reportMissingImports]
 
             return OpenAI(
-                api_key=os.environ.get("OPENAI_API_KEY", "sk-placeholder"),
+                api_key=os.environ.get("OPENAI_API_KEY", "local"),
                 base_url=os.environ.get(
                     "OPENAI_BASE_URL",
                     os.environ.get("LLM_BASE_URL", "http://localhost:1234/v1"),

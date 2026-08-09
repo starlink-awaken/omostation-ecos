@@ -1,0 +1,25 @@
+type: ModelDefinition
+status: active
+engine_ref: ENG-ZHIPU-CLOUD
+governance:
+  owner: cc-switch
+  steward: aetherforge-credentials
+models:
+- model_id: glm-4.7-flash
+  display_name: GLM-4.7 Flash
+  cost_per_1k_input: 0.0
+  cost_per_1k_output: 0.0
+  context_window: 131072
+  capabilities: [chat]
+- model_id: glm-4.6
+  display_name: GLM-4.6
+  cost_per_1k_input: 0.002
+  cost_per_1k_output: 0.008
+  context_window: 131072
+  capabilities: [chat]
+- model_id: glm-4.7
+  display_name: GLM-4.7
+  cost_per_1k_input: 0.002
+  cost_per_1k_output: 0.008
+  context_window: 131072
+  capabilities: [chat]

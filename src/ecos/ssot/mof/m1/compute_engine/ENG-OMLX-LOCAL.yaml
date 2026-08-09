@@ -3,11 +3,11 @@ type: ComputeEngine
 node_ref: NODE-LOCAL-MAC
 engine_type: local_inference
 network_zone: local
-base_url: "http://100.96.126.35:4000/v1"
+base_url: "http://127.0.0.1:9000"
 supported_protocols: ["openai"]
 cost_multiplier: 0.0001
 status: active
-description: "omlx 统一网关(LiteLLM) · 三机集群统一入口 · 27 别名(coder/reasoner/vision/mythos/embed/general 智能路由…)+ 通配透传(macmini/*, y7000p/*, lms/* LM Link 全池)· 仅 tailnet 可达 · 模型清单见 MODEL-BREW-OMLX-LOCAL(omlxc ssot-sync 生成)"
+description: "omlx 本地推理引擎 · 直连端口路由(127.0.0.1:8081-8194) · AetherForge Gateway 通过 _generate_via_omlx_router 直连模型端口 · :9000 为 omlx 内置路径路由器 · LiteLLM :4000 已弃用(venv损坏) · 命名以 omlx models.json 为 SSOT"
 
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
@@ -22,3 +22,6 @@ state_history:
   - state: active
     timestamp: '2026-07-05T00:00:00Z'
     reason: converge_all_nodes_wildcard_passthrough_and_mythos_fast
+  - state: active
+    timestamp: '2026-08-09T00:00:00Z'
+    reason: deprecate_litellm_4000_switch_to_direct_port_routing_and_9000_router
