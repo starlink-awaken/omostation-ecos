@@ -16,6 +16,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+import yaml
 
 from ecos.ssot.mof.compiler import (
     ARTIFACT_CLASSES,
@@ -43,13 +44,48 @@ def test_loads_w1_contracts(compiler: MofCompiler) -> None:
     assert set(W1_TYPES) <= names
 
 
-def test_loads_all_59_schemas(compiler: MofCompiler) -> None:
+def _canonical_m2_names(m2_dir: Path) -> set[str]:
+    """Discover the canonical M2 type names in ``m2_dir``.
+
+    A document is canonical when its YAML carries a top-level ``m2_type`` and
+    ``version`` envelope — the same criterion the compiler's loader uses.
+    Files without the envelope (READMEs, notes) are not part of the model
+    truth and are skipped.
+    """
+    names: set[str] = set()
+    for path in sorted(m2_dir.glob("*.yaml")):
+        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            continue
+        m2_type = raw.get("m2_type")
+        version = raw.get("version")
+        if m2_type and version:
+            names.add(str(m2_type))
+    return names
+
+
+def test_loads_exactly_canonical_m2_schemas(compiler: MofCompiler) -> None:
+    """Compiler coverage equals the M2 SSOT: every canonical doc, nothing more.
+
+    The expected set is discovered dynamically from the M2 directory instead
+    of hardcoding a count, so adding or removing a schema document (e.g.
+    CompletionManifest, WorkPacket) extends coverage without editing this
+    test. Exact set equality is fail-closed: an unloaded canonical doc, a
+    phantom schema, or a duplicated ``m2_type`` all fail.
+    """
+    canonical = _canonical_m2_names(compiler.m2_dir)
+    assert canonical, "no canonical M2 documents discovered"
     schemas = compiler.load()
-    assert len(schemas) == 59
-    assert len({s.name for s in schemas}) == 59
+    loaded = {s.name for s in schemas}
+    assert loaded == canonical, (
+        "compiler.load() names diverge from the canonical M2 docs\n"
+        f"  unloaded docs: {sorted(canonical - loaded)}\n"
+        f"  phantom schemas: {sorted(loaded - canonical)}"
+    )
+    assert len(schemas) == len(loaded), "duplicate m2_type among loaded schemas"
 
 
-def test_all_59_in_json_schema_defs(compiler: MofCompiler) -> None:
+def test_all_schemas_in_json_schema_defs(compiler: MofCompiler) -> None:
     doc = json.loads(compiler.compile()["json-schema"])
     names = {s.name for s in compiler.load()}
     assert names <= set(doc["$defs"].keys())
