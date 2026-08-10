@@ -34,6 +34,7 @@ except ImportError:  # defensive fallback
 # ── 常量 ──
 PLATFORMS = ("opencode", "kilocode", "claude-code", "codebuddy", "crush")
 VALID_STATUSES = ("candidate", "blocked", "failed", "archived")
+VALID_VERDICTS = ("accept", "revise", "reject")
 HASH_PREFIX = "sha256:"
 SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 
@@ -106,6 +107,108 @@ class CompletionManifest:
             raise ValueError("assignment_id is required")
         if not self.agent_id:
             raise ValueError("agent_id is required")
+
+
+@dataclass
+class VerificationReceipt:
+    """SR-05 verification receipt — proves an independent verifier measured the
+    work-packet surface and adjudicated a verdict.
+
+    Invariants enforced in __post_init__ (so they hold even on direct
+    construction):
+      - candidate_packet_hash / measured_packet_hash match sha256:<64>
+      - read_only and direct_measurement are both True
+      - executor and verifier model_family differ (unless allow_same_model)
+      - verdict is accept / revise / reject (never done)
+    """
+
+    packet_id: str
+    candidate_packet_hash: str
+    measured_packet_hash: str
+    executor_model_family: str
+    verifier_model_family: str
+    verdict: str
+    read_only: bool = True
+    direct_measurement: bool = True
+    allow_same_model: bool = False
+    checks: list[CompletionCheck] = field(default_factory=list)
+    notes: str = ""
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    receipt_hash: str = ""
+
+    def __post_init__(self) -> None:
+        if not SHA256_RE.fullmatch(self.candidate_packet_hash):
+            raise ValueError(
+                "candidate_packet_hash must match sha256:<64 lowercase hex>"
+            )
+        if not SHA256_RE.fullmatch(self.measured_packet_hash):
+            raise ValueError(
+                "measured_packet_hash must match sha256:<64 lowercase hex>"
+            )
+        if not self.read_only:
+            raise ValueError("read_only must be True for verification receipts")
+        if not self.direct_measurement:
+            raise ValueError(
+                "direct_measurement must be True for verification receipts"
+            )
+        if self.verdict not in VALID_VERDICTS:
+            raise ValueError(
+                f"Invalid verdict '{self.verdict}'. "
+                f"Valid verdicts: {VALID_VERDICTS} (never 'done')"
+            )
+        if (
+            self.executor_model_family == self.verifier_model_family
+            and not self.allow_same_model
+        ):
+            raise ValueError(
+                f"executor and verifier share model_family "
+                f"'{self.executor_model_family}'; "
+                "set allow_same_model=True to override"
+            )
+        if not self.executor_model_family or not self.verifier_model_family:
+            raise ValueError("executor_model_family and verifier_model_family are required")
+        if not self.checks:
+            raise ValueError("verification receipt requires at least one command check")
+        for check in self.checks:
+            if not isinstance(check.command, list) or not all(
+                isinstance(argument, str) for argument in check.command
+            ):
+                raise ValueError("check.command must be a list of strings")
+            if not SHA256_RE.fullmatch(check.stdout_hash):
+                raise ValueError("check.stdout_hash must match sha256:<64 lowercase hex>")
+        self.receipt_hash = self._compute_receipt_hash()
+
+    def _compute_receipt_hash(self) -> str:
+        """Deterministic hash over canonical receipt fields.
+
+        Excludes non-deterministic metadata (created_at, notes) and the
+        receipt_hash itself so two structurally identical receipts always
+        produce the same digest.
+        """
+        canonical = json.dumps(
+            {
+                "packet_id": self.packet_id,
+                "candidate_packet_hash": self.candidate_packet_hash,
+                "measured_packet_hash": self.measured_packet_hash,
+                "executor_model_family": self.executor_model_family,
+                "verifier_model_family": self.verifier_model_family,
+                "verdict": self.verdict,
+                "read_only": self.read_only,
+                "direct_measurement": self.direct_measurement,
+                "allow_same_model": self.allow_same_model,
+                "checks": [
+                    {
+                        "command": c.command,
+                        "returncode": c.returncode,
+                        "stdout_hash": c.stdout_hash,
+                    }
+                    for c in self.checks
+                ],
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        return compute_packet_hash(canonical)
 
 
 # ── 核心函数 ──
@@ -201,6 +304,85 @@ def build_completion_manifest(
         changed_paths=changed_paths or [],
         recommended_next=recommended_next,
         surface_delta=surface_delta or {"files": 0, "loc": 0},
+    )
+
+
+def build_verification_receipt(
+    packet: dict[str, Any],
+    candidate_packet_hash: str,
+    measured_packet_hash: str,
+    executor_model_family: str,
+    verifier_model_family: str,
+    verdict: str,
+    read_only: bool = True,
+    direct_measurement: bool = True,
+    allow_same_model: bool = False,
+    checks: list[dict[str, Any]] | None = None,
+    notes: str = "",
+) -> VerificationReceipt:
+    """构建 SR-05 VerificationReceipt.
+
+    Validates all receipt invariants up front (hashes, verdict, model-family
+    separation, read-only / direct-measurement constraints) and parses raw
+    check dicts into CompletionCheck objects with stdout_hash validation.
+    """
+    if "packet_id" not in packet:
+        raise ValueError("packet instance must include packet_id")
+    if not SHA256_RE.fullmatch(candidate_packet_hash):
+        raise ValueError("candidate_packet_hash must match sha256:<64 lowercase hex>")
+    if not SHA256_RE.fullmatch(measured_packet_hash):
+        raise ValueError("measured_packet_hash must match sha256:<64 lowercase hex>")
+    if not read_only:
+        raise ValueError("read_only must be True for verification receipts")
+    if not direct_measurement:
+        raise ValueError("direct_measurement must be True for verification receipts")
+    if verdict not in VALID_VERDICTS:
+        raise ValueError(
+            f"Invalid verdict '{verdict}'. Valid verdicts: {VALID_VERDICTS} (never 'done')"
+        )
+    if not executor_model_family or not verifier_model_family:
+        raise ValueError("executor_model_family and verifier_model_family are required")
+    if executor_model_family == verifier_model_family and not allow_same_model:
+        raise ValueError(
+            f"executor and verifier share model_family '{executor_model_family}'; "
+            "set allow_same_model=True to override"
+        )
+
+    parsed_checks: list[CompletionCheck] = []
+    if checks:
+        for c in checks:
+            stdout_hash_val = c.get("stdout_hash", "")
+            if not SHA256_RE.fullmatch(stdout_hash_val):
+                raise ValueError(
+                    "check stdout_hash must match sha256:<64 lowercase hex"
+                )
+            command = c.get("command")
+            if not isinstance(command, list) or not all(
+                isinstance(argument, str) for argument in command
+            ):
+                raise ValueError("check.command must be a list of strings")
+            parsed_checks.append(
+                CompletionCheck(
+                    command=command,
+                    returncode=int(c["returncode"]),
+                    stdout_hash=stdout_hash_val,
+                )
+            )
+    if not parsed_checks:
+        raise ValueError("verification receipt requires at least one command check")
+
+    return VerificationReceipt(
+        packet_id=packet["packet_id"],
+        candidate_packet_hash=candidate_packet_hash,
+        measured_packet_hash=measured_packet_hash,
+        executor_model_family=executor_model_family,
+        verifier_model_family=verifier_model_family,
+        verdict=verdict,
+        read_only=read_only,
+        direct_measurement=direct_measurement,
+        allow_same_model=allow_same_model,
+        checks=parsed_checks,
+        notes=notes,
     )
 
 

@@ -152,6 +152,63 @@ CompletionManifest:
           content_ref:
             type: string
             description: 证据内容引用 (路径 / URI / hash)
+    verification_receipt:
+      type: map
+      description: >-
+        Gate G5 独立验证回执；由只读、direct-measurement 的不同 model family
+        verifier 生成，不能将 verdict 写成 done。
+      required:
+        - packet_id
+        - candidate_packet_hash
+        - measured_packet_hash
+        - executor_model_family
+        - verifier_model_family
+        - verdict
+        - read_only
+        - direct_measurement
+        - checks
+        - receipt_hash
+      properties:
+        packet_id:
+          type: string
+          pattern: '^WP-'
+        candidate_packet_hash:
+          type: string
+          pattern: '^sha256:[a-f0-9]{64}$'
+        measured_packet_hash:
+          type: string
+          pattern: '^sha256:[a-f0-9]{64}$'
+        executor_model_family:
+          type: string
+        verifier_model_family:
+          type: string
+        verdict:
+          type: enum
+          values: [accept, revise, reject]
+        read_only:
+          type: bool
+        direct_measurement:
+          type: bool
+        allow_same_model:
+          type: bool
+        checks:
+          type: list
+          items:
+            type: map
+            required: [command, returncode, stdout_hash]
+            properties:
+              command:
+                type: list
+                items:
+                  type: string
+              returncode:
+                type: int
+              stdout_hash:
+                type: string
+                pattern: '^sha256:[a-f0-9]{64}$'
+        receipt_hash:
+          type: string
+          pattern: '^sha256:[a-f0-9]{64}$'
     submitted_at:
       type: string
       format: date-time
