@@ -14,4 +14,4 @@ def test_omlxc_component_tracks_the_released_hotfix() -> None:
 
     assert payload["id"] == "COMP-WS-omlxc"
     assert payload["project"] == "omlxc"
-    assert payload["version"] == "3.0.1"
+    assert payload["version"] == "3.0.2"
