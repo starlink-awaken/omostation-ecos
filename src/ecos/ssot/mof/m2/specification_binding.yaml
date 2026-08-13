@@ -1,0 +1,23 @@
+# M2: SpecificationBinding
+# Immutable value object used by WorkPacket v2; it does not own specification state.
+
+m2_type: SpecificationBinding
+version: 1.0.0
+created: '2026-08-13T10:00:00'
+SpecificationBinding:
+  m3_parent: GovernanceElement.Specification
+  description: WorkPacket 对已采纳 Specification 字节及其权威决策的不可变绑定。
+  requiredProperties:
+    spec_ref:
+      type: string
+      description: Specification 的 repo:// 规范引用
+    spec_version:
+      type: string
+      description: Specification 语义版本
+    content_digest:
+      type: string
+      pattern: '^sha256:[a-f0-9]{64}$'
+      description: Specification 内容摘要
+    decision_ref:
+      type: string
+      description: 显式采纳同一规范引用、版本与摘要的权威决策引用

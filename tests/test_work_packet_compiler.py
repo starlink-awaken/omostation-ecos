@@ -4,14 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
-
 import pytest
 
 from ecos.ssot.tools.work_packet_compiler import (
     PLATFORMS,
     VALID_STATUSES,
-    VALID_VERDICTS,
     CompletionManifest,
     VerificationReceipt,
     build_completion_manifest,
@@ -67,6 +64,34 @@ FIXED_PACKET = {
 
 
 class TestCanonicalize:
+    def test_v1_fixed_hash_is_unchanged(self):
+        assert compute_packet_hash(canonicalize(FIXED_PACKET)) == (
+            "sha256:231af94b0af594220fee941215c3d76b6f104f63e1eb6ebedf56fb75875cfc18"
+        )
+
+    def test_v2_binding_is_invariant(self):
+        packet = dict(FIXED_PACKET, schema_version="work-packet/v2", spec_binding={
+            "spec_ref": "registry://spec/demo",
+            "spec_version": "1.0.0",
+            "content_digest": "sha256:" + "a" * 64,
+            "decision_ref": "ADR-0001",
+        })
+        assert "spec_binding" in canonicalize(packet)
+
+    @pytest.mark.parametrize("binding", [None, {}, {"spec_ref": "x"}, {
+        "spec_ref": "x", "spec_version": "1.0.0", "content_digest": "bad", "decision_ref": "d"
+    }])
+    def test_v2_rejects_missing_or_invalid_binding(self, binding):
+        packet = dict(FIXED_PACKET, schema_version="work-packet/v2")
+        if binding is not None:
+            packet["spec_binding"] = binding
+        with pytest.raises(ValueError, match="spec_binding"):
+            canonicalize(packet)
+
+    def test_v1_rejects_binding(self):
+        packet = dict(FIXED_PACKET, spec_binding={})
+        with pytest.raises(ValueError, match="work-packet/v1"):
+            canonicalize(packet)
     def test_deterministic(self):
         a = canonicalize(FIXED_PACKET)
         b = canonicalize(FIXED_PACKET)

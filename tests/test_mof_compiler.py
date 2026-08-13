@@ -345,6 +345,79 @@ def test_pydantic_models_import_and_instantiate(compiler: MofCompiler) -> None:
         assert envelope.event_id == "evt_12345678"
 
 
+def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
+    compiler: MofCompiler,
+) -> None:
+    artifacts = compiler.compile()
+    doc = json.loads(artifacts["json-schema"])
+    work_packet = doc["$defs"]["WorkPacket"]
+    assert work_packet["properties"]["spec_binding"] == {
+        "$ref": "#/$defs/SpecificationBinding"
+    }
+    assert work_packet["allOf"] == [
+        {
+            "if": {
+                "properties": {"schema_version": {"const": "work-packet/v2"}},
+                "required": ["schema_version"],
+            },
+            "then": {"required": ["spec_binding"]},
+        }
+    ]
+    binding = doc["$defs"]["SpecificationBinding"]
+    assert set(binding["required"]) == {
+        "spec_ref",
+        "spec_version",
+        "content_digest",
+        "decision_ref",
+    }
+    assert binding["properties"]["content_digest"]["pattern"] == (
+        "^sha256:[a-f0-9]{64}$"
+    )
+
+    with tempfile.TemporaryDirectory() as td:
+        mod_path = Path(td) / "mof_control_models.py"
+        mod_path.write_text(artifacts["pydantic"], encoding="utf-8")
+        spec = importlib.util.spec_from_file_location("mof_control_models_v2", mod_path)
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["mof_control_models_v2"] = module
+        spec.loader.exec_module(module)
+        with pytest.raises(ValueError, match="spec_binding"):
+            module.WorkPacket.model_validate(
+                {
+                    "packet_id": "WP-V2-MISSING",
+                    "schema_version": "work-packet/v2",
+                    "blueprint_ref": "blueprint://test",
+                    "wave": "W1",
+                    "bet_id": "BET-TEST",
+                    "strategic_outcome": "test",
+                    "objective": "test",
+                    "why_now": "test",
+                    "status": "active",
+                    "authority": {},
+                    "scope": {},
+                    "dependencies": {},
+                    "acceptance": {},
+                    "budgets": {},
+                    "rollback": {},
+                    "circuit_breaker": {},
+                    "assignment": {},
+                }
+            )
+
+    zod = artifacts["zod"]
+    assert "export const SpecificationBinding = z.object({" in zod
+    assert "export const WorkPacket = z.object({" in zod
+    assert ").superRefine((value, ctx) => {" in zod
+    assert 'value.schema_version === "work-packet/v2"' in zod
+    assert 'path: ["spec_binding"]' in zod
+    sqlite_ddl = artifacts["sqlite"]
+    assert (
+        'CHECK ("schema_version" <> \'work-packet/v2\' OR "spec_binding" IS NOT NULL)'
+        in sqlite_ddl
+    )
+
+
 def test_sqlite_ddl_executes(compiler: MofCompiler) -> None:
     conn = sqlite3.connect(":memory:")
     conn.executescript(compiler.compile()["sqlite"])

@@ -59,6 +59,7 @@ INVARIANT_FIELDS = (
     "rollback",
     "circuit_breaker",
     "assignment",
+    "spec_binding",
 )
 
 PLATFORM_HEADERS = {
@@ -222,6 +223,19 @@ def canonicalize(packet: dict[str, Any]) -> str:
     # WorkPacket body.  The schema declaration itself is never hashed.
     if "packet_id" not in packet and isinstance(packet.get("WorkPacket"), dict):
         packet = packet["WorkPacket"]
+    version = packet.get("schema_version")
+    binding = packet.get("spec_binding")
+    if version == "work-packet/v2":
+        if not isinstance(binding, dict) or set(binding) != {
+            "spec_ref", "spec_version", "content_digest", "decision_ref"
+        }:
+            raise ValueError("work-packet/v2 requires complete spec_binding")
+        if not all(isinstance(binding[key], str) and binding[key].strip() for key in binding):
+            raise ValueError("spec_binding fields must be non-empty strings")
+        if not SHA256_RE.fullmatch(binding["content_digest"]):
+            raise ValueError("spec_binding.content_digest must match sha256:<64 lowercase hex>")
+    elif version == "work-packet/v1" and binding is not None:
+        raise ValueError("work-packet/v1 does not accept spec_binding")
     invariant_fields = {
         key: packet[key]
         for key in INVARIANT_FIELDS

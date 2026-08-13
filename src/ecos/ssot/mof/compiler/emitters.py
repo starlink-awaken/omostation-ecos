@@ -182,6 +182,21 @@ def emit_json_schema(schemas: list["M2Schema"], m2_dir: Path) -> str:
             schema_doc["x-mof-state-machine"] = {
                 state: list(transitions) for state, transitions in s.state_machine
             }
+        if s.conditional_requirements:
+            schema_doc["allOf"] = [
+                {
+                    "if": {
+                        "properties": {
+                            requirement.property_name: {
+                                "const": requirement.equals
+                            }
+                        },
+                        "required": [requirement.property_name],
+                    },
+                    "then": {"required": list(requirement.required_names)},
+                }
+                for requirement in s.conditional_requirements
+            ]
         defs[s.name] = schema_doc
     doc = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -257,7 +272,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
         "from datetime import date, datetime",
         "from typing import Any, Literal",
         "",
-        "from pydantic import BaseModel, Field",
+        "from pydantic import BaseModel, Field, model_validator",
         "",
     ]
     for s in schemas:
@@ -277,6 +292,23 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                     if kwargs
                     else f"    {field_name}: {py_type} | None = None"
                 )
+        if s.conditional_requirements:
+            lines.extend(
+                [
+                    "",
+                    "    @model_validator(mode=\"after\")",
+                    "    def _enforce_conditional_requirements(self):",
+                ]
+            )
+            for requirement in s.conditional_requirements:
+                for required_name in requirement.required_names:
+                    lines.append(
+                        f"        if self.{_py_field_name(requirement.property_name)} == {json.dumps(requirement.equals)} and self.{_py_field_name(required_name)} is None:"
+                    )
+                    lines.append(
+                        f"            raise ValueError({json.dumps(required_name + ' is required when ' + requirement.property_name + ' equals ' + requirement.equals)})"
+                    )
+            lines.append("        return self")
         lines.append("")
     rebuilt = [s.name for s in schemas if s.referenced]
     if rebuilt:
@@ -358,7 +390,20 @@ def emit_zod(schemas: list["M2Schema"], m2_dir: Path) -> str:
                 expr += ".optional()"
             fields.append(f"  {p.name}: {expr},")
         body = "\n".join(fields)
-        lines.append(f"export const {s.name} = z.object({{\n{body}\n}});")
+        expression = f"z.object({{\n{body}\n}})"
+        if s.conditional_requirements:
+            checks: list[str] = []
+            for requirement in s.conditional_requirements:
+                for required_name in requirement.required_names:
+                    checks.extend(
+                        [
+                            f"  if (value.{requirement.property_name} === {json.dumps(requirement.equals)} && value.{required_name} === undefined) {{",
+                            f"    ctx.addIssue({{ code: z.ZodIssueCode.custom, path: [{json.dumps(required_name)}], message: {json.dumps(required_name + ' is required when ' + requirement.property_name + ' equals ' + requirement.equals)} }});",
+                            "  }",
+                        ]
+                    )
+            expression += ".superRefine((value, ctx) => {\n" + "\n".join(checks) + "\n})"
+        lines.append(f"export const {s.name} = {expression};")
         lines.append("")
     return "\n".join(lines) + "\n"
 
@@ -453,6 +498,13 @@ def emit_sqlite(schemas: list["M2Schema"], m2_dir: Path) -> str:
                 if p.required:
                     column += " NOT NULL"
                 decls.append(column)
+        for requirement in s.conditional_requirements:
+            for required_name in requirement.required_names:
+                decls.append(
+                    "    CHECK ("
+                    f"{_q(requirement.property_name)} <> {_sql_str(requirement.equals)} "
+                    f"OR {_q(required_name)} IS NOT NULL)"
+                )
         if own_identity:
             identity_decl = f"{_q(own_identity)} "
             for idx, entry in enumerate(decls):

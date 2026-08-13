@@ -58,6 +58,15 @@ def _all_declared_types(node: object) -> list[str]:
     return out
 
 
+def _canonical_model_types() -> set[str]:
+    names: set[str] = set()
+    for path in M2_DIR.glob("*.yaml"):
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and data.get("m2_type"):
+            names.add(str(data["m2_type"]))
+    return names
+
+
 def _rules(body: dict) -> list[dict]:
     rules = body.get("validationRules") or []
     assert rules, "schema must declare validationRules"
@@ -122,7 +131,7 @@ def test_m3_anchors() -> None:
 def test_only_validator_supported_types(name: str) -> None:
     body = _body(_load(name))
     types = set(_all_declared_types(body))
-    unsupported = types - SUPPORTED_TYPES
+    unsupported = types - SUPPORTED_TYPES - _canonical_model_types()
     assert not unsupported, f"{name} uses unsupported types: {sorted(unsupported)}"
 
 
