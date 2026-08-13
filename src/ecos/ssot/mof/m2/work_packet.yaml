@@ -38,8 +38,8 @@ WorkPacket:
       pattern: '^WP-'
     schema_version:
       type: string
-      description: 必须等于 work-packet/v1
-      pattern: '^work-packet/v1$'
+      description: work-packet/v1 (legacy) or work-packet/v2 (spec binding required)
+      pattern: '^work-packet/v[12]$'
     blueprint_ref:
       type: string
       description: 蓝图锚点引用 (blueprint://...)
@@ -210,6 +210,9 @@ WorkPacket:
           description: ISO-8601 datetime (dispatch 时须在未来)
 
   optionalProperties:
+    spec_binding:
+      type: SpecificationBinding
+      description: 绑定唯一 Specification；v2 必须完整声明
     description:
       type: string
       description: 详细描述
@@ -223,9 +226,9 @@ WorkPacket:
     - rule: packet_id is not None and packet_id != ''
       level: error
       message: packet_id 必须非空
-    - rule: schema_version == 'work-packet/v1'
+    - rule: schema_version in ['work-packet/v1', 'work-packet/v2']
       level: error
-      message: schema_version 必须为 work-packet/v1
+      message: schema_version 必须为 work-packet/v1 或 work-packet/v2
     - rule: packet_id.startswith('WP-')
       level: error
       message: packet_id 必须以 WP- 开头
@@ -268,6 +271,13 @@ WorkPacket:
     - rule: "not (authority is not None and scope is not None and authority.get('risk_level') in ['R1','R2','R3'] and len(scope.get('non_goals', [])) < 1)"
       level: error
       message: R1+ 的 non_goals 至少一项
+
+  conditionalRequirements:
+    - when:
+        property: schema_version
+        equals: work-packet/v2
+      required:
+        - spec_binding
 
   relationConstraints:
     can_be_source_of:

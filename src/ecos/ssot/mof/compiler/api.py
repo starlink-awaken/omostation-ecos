@@ -47,6 +47,7 @@ from ecos.ssot.mof.compiler.emitters import (
 __all__ = [
     "ARTIFACT_CLASSES",
     "M2Property",
+    "M2ConditionalRequirement",
     "M2Schema",
     "MofCompiler",
     "CompilerError",
@@ -105,6 +106,15 @@ class M2Property:
 
 
 @dataclass(frozen=True)
+class M2ConditionalRequirement:
+    """Require fields when one discriminator has an exact value."""
+
+    property_name: str
+    equals: str
+    required_names: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class M2Schema:
     """Parsed M2 contract — the intermediate representation of one type."""
 
@@ -117,6 +127,9 @@ class M2Schema:
         default_factory=tuple
     )
     validation_rules: tuple[dict, ...] = field(default_factory=tuple)
+    conditional_requirements: tuple[M2ConditionalRequirement, ...] = field(
+        default_factory=tuple
+    )
 
     @property
     def required_names(self) -> tuple[str, ...]:
@@ -294,6 +307,44 @@ def _parse_state_machine(sm_raw: dict) -> tuple[tuple[str, tuple[str, ...]], ...
     return tuple(state_machine)
 
 
+def _parse_conditional_requirements(
+    body: dict, properties: tuple[M2Property, ...], path: Path
+) -> tuple[M2ConditionalRequirement, ...]:
+    raw_requirements = body.get("conditionalRequirements") or []
+    if not isinstance(raw_requirements, list):
+        raise CompilerError(f"{path.name}: 'conditionalRequirements' must be a list")
+    property_names = {prop.name for prop in properties}
+    parsed: list[M2ConditionalRequirement] = []
+    for index, raw in enumerate(raw_requirements):
+        if not isinstance(raw, dict) or not isinstance(raw.get("when"), dict):
+            raise CompilerError(
+                f"{path.name}: conditional requirement {index} must contain 'when'"
+            )
+        when = raw["when"]
+        property_name = str(when.get("property") or "").strip()
+        equals = str(when.get("equals") or "").strip()
+        required = raw.get("required")
+        if (
+            not property_name
+            or not equals
+            or not isinstance(required, list)
+            or not required
+        ):
+            raise CompilerError(
+                f"{path.name}: conditional requirement {index} is incomplete"
+            )
+        required_names = tuple(str(name).strip() for name in required)
+        unknown = ({property_name} | set(required_names)) - property_names
+        if unknown or any(not name for name in required_names):
+            raise CompilerError(
+                f"{path.name}: conditional requirement {index} references unknown properties {sorted(unknown)}"
+            )
+        parsed.append(
+            M2ConditionalRequirement(property_name, equals, required_names)
+        )
+    return tuple(parsed)
+
+
 def load_m2_dir(m2_dir: Path) -> list[M2Schema]:
     """Load every M2 YAML file in ``m2_dir`` via a deterministic two-pass load.
 
@@ -328,15 +379,19 @@ def load_m2_dir(m2_dir: Path) -> list[M2Schema]:
     schemas: list[M2Schema] = []
     for path, raw, m2_type, version in raw_files:
         body = _resolve_body(raw, m2_type, path)
+        properties = _parse_properties(body, model_names, path)
         schemas.append(
             M2Schema(
                 name=m2_type,
                 version=version,
                 m3_parent=str(body.get("m3_parent", "")),
                 description=str(body.get("description", "")).strip(),
-                properties=_parse_properties(body, model_names, path),
+                properties=properties,
                 state_machine=_parse_state_machine(body.get("stateMachine") or {}),
                 validation_rules=tuple(body.get("validationRules") or []),
+                conditional_requirements=_parse_conditional_requirements(
+                    body, properties, path
+                ),
             )
         )
     return schemas

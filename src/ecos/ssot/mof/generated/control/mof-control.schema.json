@@ -4098,6 +4098,38 @@
         ]
       }
     },
+    "SpecificationBinding": {
+      "$id": "urn:mof:SpecificationBinding:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "WorkPacket \u5bf9\u5df2\u91c7\u7eb3 Specification \u5b57\u8282\u53ca\u5176\u6743\u5a01\u51b3\u7b56\u7684\u4e0d\u53ef\u53d8\u7ed1\u5b9a\u3002",
+      "properties": {
+        "content_digest": {
+          "description": "Specification \u5185\u5bb9\u6458\u8981",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "decision_ref": {
+          "description": "\u663e\u5f0f\u91c7\u7eb3\u540c\u4e00\u89c4\u8303\u5f15\u7528\u3001\u7248\u672c\u4e0e\u6458\u8981\u7684\u6743\u5a01\u51b3\u7b56\u5f15\u7528",
+          "type": "string"
+        },
+        "spec_ref": {
+          "description": "Specification \u7684 repo:// \u89c4\u8303\u5f15\u7528",
+          "type": "string"
+        },
+        "spec_version": {
+          "description": "Specification \u8bed\u4e49\u7248\u672c",
+          "type": "string"
+        }
+      },
+      "required": [
+        "spec_ref",
+        "spec_version",
+        "content_digest",
+        "decision_ref"
+      ],
+      "title": "SpecificationBinding",
+      "type": "object"
+    },
     "Stage": {
       "$id": "urn:mof:Stage:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -4362,6 +4394,25 @@
     "WorkPacket": {
       "$id": "urn:mof:WorkPacket:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "schema_version": {
+                "const": "work-packet/v2"
+              }
+            },
+            "required": [
+              "schema_version"
+            ]
+          },
+          "then": {
+            "required": [
+              "spec_binding"
+            ]
+          }
+        }
+      ],
       "description": "Candidate M2 schema for an ECOS WorkPacket: the dispatchable unit of\nmulti-agent work, carrying scope, budget, acceptance, authority, and\nrisk controls derived from the execution-control blueprint \u00a77.1.",
       "properties": {
         "acceptance": {
@@ -4414,13 +4465,16 @@
           "type": "object"
         },
         "schema_version": {
-          "description": "\u5fc5\u987b\u7b49\u4e8e work-packet/v1",
-          "pattern": "^work-packet/v1$",
+          "description": "work-packet/v1 (legacy) or work-packet/v2 (spec binding required)",
+          "pattern": "^work-packet/v[12]$",
           "type": "string"
         },
         "scope": {
           "description": "\u8bfb\u5199\u8fb9\u754c\u4e0e\u7ea6\u675f",
           "type": "object"
+        },
+        "spec_binding": {
+          "$ref": "#/$defs/SpecificationBinding"
         },
         "status": {
           "description": "\u751f\u547d\u5468\u671f\u72b6\u6001 (must match stateMachine key)",
