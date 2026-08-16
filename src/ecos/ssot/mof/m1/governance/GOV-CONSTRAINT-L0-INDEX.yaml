@@ -32,7 +32,7 @@ rule_expr:
     - constraint_count == 137
     - all(constraint.m3_parent == 'ConstraintL0' for constraint in derived)
 violation_code: E-L0-INDEX-001
-relation_constraints: []
+relation_constraints: {}
 source:
   ssot_ref: projects/ecos/src/ecos/l0/constraints.yaml
   generator: gen-l0-constraints.py
