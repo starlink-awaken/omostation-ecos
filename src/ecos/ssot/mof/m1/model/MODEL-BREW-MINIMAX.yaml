@@ -1,6 +1,6 @@
 type: ModelDefinition
 status: active
-engine_ref: ENG-CC-SWITCH
+engine_ref: ENG-MINIMAX-CLOUD
 model_driven_refs:
   source: brew+cc-switch
   synced_at: '2026-07-14T08:42:42Z'

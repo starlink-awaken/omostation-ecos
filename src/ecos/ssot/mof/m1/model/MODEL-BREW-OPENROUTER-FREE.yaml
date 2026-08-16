@@ -1,0 +1,40 @@
+type: ModelDefinition
+status: active
+engine_ref: ENG-OPENROUTER-CLOUD
+model_driven_refs:
+  source: openrouter_api_free_tier
+  synced_at: '2026-08-09T00:00:00Z'
+governance:
+  owner: aetherforge-gateway
+  steward: user-provided-key
+models:
+- model_id: google/gemma-4-26b-a4b-it:free
+  display_name: Gemma 4 26B (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 131072
+  capabilities: [chat]
+- model_id: google/gemma-4-31b-it:free
+  display_name: Gemma 4 31B (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 131072
+  capabilities: [chat]
+- model_id: nvidia/nemotron-3-nano-30b-a3b:free
+  display_name: Nemotron 3 Nano 30B (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 131072
+  capabilities: [chat]
+- model_id: nvidia/nemotron-3-super-120b-a12b:free
+  display_name: Nemotron 3 Super 120B (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 131072
+  capabilities: [chat]
+- model_id: nvidia/nemotron-3-ultra-550b-a55b:free
+  display_name: Nemotron 3 Ultra 550B (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 131072
+  capabilities: [chat]

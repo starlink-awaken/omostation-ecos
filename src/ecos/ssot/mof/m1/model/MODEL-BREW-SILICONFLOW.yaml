@@ -1,0 +1,31 @@
+type: ModelDefinition
+status: active
+engine_ref: ENG-SILICONFLOW-CLOUD
+governance:
+  owner: cc-switch
+  steward: aetherforge-credentials
+models:
+- model_id: Qwen/Qwen2.5-7B-Instruct
+  display_name: Qwen2.5 7B (SiliconFlow)
+  cost_per_1k_input: 0.0
+  cost_per_1k_output: 0.0
+  context_window: 32768
+  capabilities: [chat]
+- model_id: Qwen/Qwen2.5-72B-Instruct
+  display_name: Qwen2.5 72B (SiliconFlow)
+  cost_per_1k_input: 0.0004
+  cost_per_1k_output: 0.0004
+  context_window: 32768
+  capabilities: [chat, reasoning]
+- model_id: deepseek-ai/DeepSeek-V3
+  display_name: DeepSeek V3 (SiliconFlow)
+  cost_per_1k_input: 0.001
+  cost_per_1k_output: 0.002
+  context_window: 65536
+  capabilities: [chat, reasoning]
+- model_id: deepseek-ai/DeepSeek-R1
+  display_name: DeepSeek R1 (SiliconFlow)
+  cost_per_1k_input: 0.002
+  cost_per_1k_output: 0.008
+  context_window: 65536
+  capabilities: [chat, reasoning]

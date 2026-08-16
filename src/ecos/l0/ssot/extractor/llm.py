@@ -139,7 +139,7 @@ class OpenAIBackend(LLMBackend):
         self,
         model: str = "gpt-4o-mini",
         api_key: str = "",
-        base_url: str = "https://api.openai.com/v1",
+        base_url: str = os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"),
     ):
         self.model = model
         self.api_key = api_key
@@ -203,7 +203,7 @@ def _standard_backend_from_env() -> LLMBackend | None:
         return OpenAIBackend(
             model=model or "gpt-4o-mini",
             api_key=api_key or os.environ.get("OPENAI_API_KEY", ""),
-            base_url=base_url or "https://api.openai.com/v1",
+            base_url=base_url or os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"),
         )
 
     return None
@@ -636,7 +636,7 @@ class LLMExtractor(Extractor):
         ds_key = os.environ.get("DEEPSEEK_API_KEY", "")
         if ds_key:
             ds_model = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
-            ds_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+            ds_url = os.environ.get("DEEPSEEK_BASE_URL", os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"))
             backends.append(
                 OpenAIBackend(
                     model=ds_model,
@@ -652,7 +652,7 @@ class LLMExtractor(Extractor):
         oa_key = os.environ.get("OPENAI_API_KEY", "")
         if oa_key:
             oa_model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
-            oa_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+            oa_url = os.environ.get("OPENAI_BASE_URL", os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"))
             backends.append(
                 OpenAIBackend(
                     model=oa_model,
