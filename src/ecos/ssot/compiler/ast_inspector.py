@@ -45,6 +45,7 @@ class AstDependencyInspector:
                                 remediation="根据 L0 架构规范，跨层调用必须经由 Agora 路由 ('agora.client') 访问",
                                 line_number=getattr(node, "lineno", None),
                                 offending_symbol=symbol,
+                                suggested_patch=self._generate_suggested_patch(symbol),
                             )
                         )
             elif isinstance(node, ast.ImportFrom):
@@ -63,6 +64,7 @@ class AstDependencyInspector:
                                     remediation="根据 L0 架构规范，跨层调用必须经由 Agora 路由 ('agora.client') 访问",
                                     line_number=getattr(node, "lineno", None),
                                     offending_symbol=module_name,
+                                    suggested_patch=self._generate_suggested_patch(full_symbol),
                                 )
                             )
         return violations
@@ -73,3 +75,13 @@ class AstDependencyInspector:
             if symbol == prefix or symbol.startswith(f"{prefix}."):
                 return True
         return False
+
+    @staticmethod
+    def _generate_suggested_patch(symbol: str) -> str:
+        if "credentials" in symbol or "auth" in symbol:
+            return "from agora.client import get_service_client\nauth_client = get_service_client('bos://governance/mof/auth')"
+        elif "l4_kernel" in symbol:
+            return "from agora.client import get_service_client\nkernel_client = get_service_client('bos://core/kernel/v1')"
+        elif "runtime.private" in symbol:
+            return "from agora.client import get_service_client\nruntime_client = get_service_client('bos://runtime/client/v1')"
+        return f"# 建议改用标准服务契约路由访问: {symbol}\nfrom agora.client import get_service_client"

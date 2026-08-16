@@ -25,10 +25,11 @@ dashboard = []  # Dashboard/MOF BOS features use HTTP/MCP or fallback instead of
 # SSB — 签名链操作 (通过 cockpit ssb 调用)
 # 入口已收敛: ecoss-ssb → cockpit ssb
 
-# Dashboard / Scheduler
+# Dashboard / Scheduler / Governance
 ecos-dashboard = "ecos.cli.dashboard:main"
 ecos-scheduler = "ecos.cli.scheduler:main"
 ecos-watchdog = "ecos.cli.watchdog:main"
+ecos-constraint = "ecos.cli.constraint:main"
 
 # Workflow engine (通过 cockpit workflow 调用)
 # 入口已收敛: ecos-workflow → cockpit workflow

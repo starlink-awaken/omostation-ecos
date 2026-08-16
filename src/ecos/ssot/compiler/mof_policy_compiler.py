@@ -134,6 +134,19 @@ class MOFPolicyCompiler:
     ) -> EvaluationResult:
         return self.command_inspector.inspect_command(command_line)
 
+    def get_domain_rules(
+        self,
+        domain: str = "default",
+        layer: str = "L3",
+    ) -> list[PolicyRule]:
+        """Return compiled rules applicable to the given domain and layer."""
+        policy_set = self.compile()
+        matching_rules: list[PolicyRule] = []
+        for rule in policy_set.rules.values():
+            if layer in rule.applies_to or not rule.applies_to:
+                matching_rules.append(rule)
+        return matching_rules
+
 
 def compile_l0_constraints(path: Path | None = None) -> CompiledPolicySet:
     """Convenience helper to compile and return the active L0 policy set."""

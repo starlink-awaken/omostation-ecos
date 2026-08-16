@@ -23,9 +23,10 @@ class ViolationReport:
     remediation: str
     line_number: int | None = None
     offending_symbol: str | None = None
+    suggested_patch: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "rule_id": self.rule_id,
             "violation_code": self.violation_code,
             "severity": self.severity.value,
@@ -35,6 +36,9 @@ class ViolationReport:
             "line_number": self.line_number,
             "offending_symbol": self.offending_symbol,
         }
+        if self.suggested_patch is not None:
+            d["suggested_patch"] = self.suggested_patch
+        return d
 
 
 @dataclass
@@ -64,6 +68,8 @@ class PolicyRule:
     violation_code: str
     remediation_hint: str
     evaluator: Callable[[dict[str, Any]], tuple[bool, str | None]] | None = None
+    suggested_patch_template: str | None = None
+    examples: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass
