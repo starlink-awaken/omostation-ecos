@@ -156,7 +156,7 @@ def validate_node(node: dict, m2: dict) -> list[dict]:
     required = m2_type.get("requiredProperties", {})
     props = node.get("properties", {}) or {}
     for prop_name, prop_def in required.items():
-        val = node.get(prop_name) or props.get(prop_name)
+        val = node[prop_name] if prop_name in node else props.get(prop_name)
         if val is None or val == "":
             results.append(
                 {
