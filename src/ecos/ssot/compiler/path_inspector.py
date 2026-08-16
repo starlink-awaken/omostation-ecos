@@ -52,3 +52,5 @@ class PathBoundaryInspector:
                 )
 
         return EvaluationResult(passed=len(violations) == 0, violations=violations)
+
+    inspect_path_access = inspect_write
