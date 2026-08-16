@@ -1,0 +1,9 @@
+{
+  "artifacts": {
+    "json-schema": "11489de62e4dd702f615729c2c807d5385487208564e5ff4b27cfd8bc43360ed",
+    "pydantic": "83861fb2aeb2b55b41418f67f02f1595738ad4e2b228df6344ba0311f223d323",
+    "sqlite": "330bb509ea5b7ef5806dd1f8832778bda679228c126f03d939bba3cc1397569b",
+    "zod": "c1330a50af0e3f2c03360b736e9b2590dbdd8e55af880b7fa1738b8f7e663349"
+  },
+  "source_dir": "m2"
+}
