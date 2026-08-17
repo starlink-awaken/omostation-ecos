@@ -85,9 +85,7 @@ def _has_forbidden_prefix(value: str) -> bool:
     """Check whether a string literal targets a forbidden path prefix or component."""
     normalized = value.replace("\\", "/")
     return any(
-        normalized == prefix.rstrip("/")
-        or normalized.startswith(prefix)
-        or f"/{prefix}" in normalized
+        normalized == prefix.rstrip("/") or normalized.startswith(prefix) or f"/{prefix}" in normalized
         for prefix in (".omo/", "spaces/")
     )
 
@@ -115,21 +113,13 @@ class _GatekeeperVisitor(ast.NodeVisitor):
             func = node.func
             if isinstance(func, ast.Name) and func.id in IO_PATHLIB_CTOR and node.args:
                 return self._expr_is_forbidden_path(node.args[0])
-            if (
-                isinstance(func, ast.Attribute)
-                and func.attr in IO_PATHLIB_CTOR
-                and node.args
-            ):
+            if isinstance(func, ast.Attribute) and func.attr in IO_PATHLIB_CTOR and node.args:
                 return self._expr_is_forbidden_path(node.args[0])
         if isinstance(node, ast.BinOp):
-            return self._expr_is_forbidden_path(
-                node.left
-            ) or self._expr_is_forbidden_path(node.right)
+            return self._expr_is_forbidden_path(node.left) or self._expr_is_forbidden_path(node.right)
         if isinstance(node, ast.JoinedStr):
             return any(
-                isinstance(value, ast.Constant)
-                and isinstance(value.value, str)
-                and _has_forbidden_prefix(value.value)
+                isinstance(value, ast.Constant) and isinstance(value.value, str) and _has_forbidden_prefix(value.value)
                 for value in node.values
             )
         if isinstance(node, ast.Attribute):
@@ -141,18 +131,10 @@ class _GatekeeperVisitor(ast.NodeVisitor):
         def _mode_has_write(mode: str) -> bool:
             return any(flag in mode for flag in ("w", "a", "x", "+"))
 
-        if (
-            len(node.args) >= 2
-            and isinstance(node.args[1], ast.Constant)
-            and isinstance(node.args[1].value, str)
-        ):
+        if len(node.args) >= 2 and isinstance(node.args[1], ast.Constant) and isinstance(node.args[1].value, str):
             return _mode_has_write(node.args[1].value)
         for kw in node.keywords:
-            if (
-                kw.arg == "mode"
-                and isinstance(kw.value, ast.Constant)
-                and isinstance(kw.value.value, str)
-            ):
+            if kw.arg == "mode" and isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
                 return _mode_has_write(kw.value.value)
         return False
 
@@ -161,11 +143,7 @@ class _GatekeeperVisitor(ast.NodeVisitor):
         func = node.func
 
         # open(".omo/...", "w")
-        if (
-            isinstance(func, ast.Name)
-            and func.id == "open"
-            and self._open_mode_is_mutating(node)
-        ):
+        if isinstance(func, ast.Name) and func.id == "open" and self._open_mode_is_mutating(node):
             if node.args and self._expr_is_forbidden_path(node.args[0]):
                 self._add(
                     node.args[0],
@@ -211,9 +189,7 @@ class _GatekeeperVisitor(ast.NodeVisitor):
     # ── Assign to a path-like name using forbidden literal ──────
     def visit_Assign(self, node: ast.Assign) -> None:  # noqa: N802
         for target in node.targets:
-            if isinstance(target, ast.Name) and self._expr_is_forbidden_path(
-                node.value
-            ):
+            if isinstance(target, ast.Name) and self._expr_is_forbidden_path(node.value):
                 self.forbidden_names.add(target.id)
         self.generic_visit(node)
 
@@ -277,9 +253,7 @@ def _git_diff_files() -> list[Path]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="OMO Contract Gatekeeper")
     parser.add_argument("paths", nargs="*", help="Files or directories to check")
-    parser.add_argument(
-        "--diff", action="store_true", help="Only check Python files in git diff"
-    )
+    parser.add_argument("--diff", action="store_true", help="Only check Python files in git diff")
     parser.add_argument(
         "--baseline-file",
         help="YAML file listing grandfathered direct-io violations as path+line pairs",
@@ -346,9 +320,7 @@ def main(argv: list[str] | None = None) -> int:
             relative_path = str(f)
         raw_violations = check_file(f)
         violations = [
-            (lineno, detail)
-            for lineno, detail in raw_violations
-            if (relative_path, lineno) not in baseline_entries
+            (lineno, detail) for lineno, detail in raw_violations if (relative_path, lineno) not in baseline_entries
         ]
         suppressed += len(raw_violations) - len(violations)
         if violations:
@@ -362,9 +334,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Gatekeeper: {checked} files checked{baseline_note} — PASS")
     else:
         print(f"\nGatekeeper: violations detected in {checked} files checked — FAIL")
-        print(
-            "Remediation: route mutations through omo CLI / omo core / c2g ingress instead of direct file I/O."
-        )
+        print("Remediation: route mutations through omo CLI / omo core / c2g ingress instead of direct file I/O.")
 
     return exit_code
 

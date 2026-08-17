@@ -448,9 +448,7 @@ class MonitoringArchitecture:
         # 组件状态
         for name, component in self.components.items():
             try:
-                component_health = getattr(
-                    component, "get_health", lambda: {"status": "healthy"}
-                )()
+                component_health = getattr(component, "get_health", lambda: {"status": "healthy"})()
                 health["components"][name] = component_health
             except Exception as e:  # defensive fallback
                 health["components"][name] = {"status": "error", "error": str(e)}
@@ -479,11 +477,7 @@ class MonitoringArchitecture:
 
         # 系统健康
         health = self.get_system_health()
-        status_icon = (
-            "✅"
-            if health["status"] == "healthy"
-            else ("⚠️" if health["status"] == "warning" else "❌")
-        )
+        status_icon = "✅" if health["status"] == "healthy" else ("⚠️" if health["status"] == "warning" else "❌")
         report.append(f"\n🏥 系统健康: {status_icon} {health['status']}")
 
         # 配置问题
@@ -501,9 +495,7 @@ class MonitoringArchitecture:
         report.append("\n🔧 组件状态:")
         for name, component_health in health["components"].items():
             status = component_health.get("status", "unknown")
-            icon = (
-                "✅" if status == "healthy" else ("⚠️" if status == "warning" else "❌")
-            )
+            icon = "✅" if status == "healthy" else ("⚠️" if status == "warning" else "❌")
             report.append(f"  {icon} {name}: {status}")
 
         report.append("=" * 70)

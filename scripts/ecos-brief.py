@@ -49,17 +49,7 @@ def generate_brief(json_output: bool = False) -> dict:
         brief["sections"]["daemon"] = {"status": "not_initialized"}
 
     # 2. M0 快照
-    m0_path = (
-        ws
-        / "projects"
-        / "ecos"
-        / "src"
-        / "ecos"
-        / "ssot"
-        / "mof"
-        / "m0"
-        / "snapshot.yaml"
-    )
+    m0_path = ws / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m0" / "snapshot.yaml"
     if m0_path.exists():
         import yaml
 

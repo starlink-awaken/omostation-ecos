@@ -6,15 +6,11 @@ import sys
 import subprocess
 from pathlib import Path
 
-WF_CLI = str(
-    Path(__file__).parent.parent / "src" / "ecos" / "ssot" / "tools" / "mof-workflow.py"
-)
+WF_CLI = str(Path(__file__).parent.parent / "src" / "ecos" / "ssot" / "tools" / "mof-workflow.py")
 
 
 def run(*args):
-    return subprocess.run(
-        [sys.executable, WF_CLI] + list(args), capture_output=True, text=True
-    )
+    return subprocess.run([sys.executable, WF_CLI] + list(args), capture_output=True, text=True)
 
 
 class TestWorkflowCLI:

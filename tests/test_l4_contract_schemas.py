@@ -113,8 +113,6 @@ def test_l4_runtime_models_match_m2_required_fields(monkeypatch: pytest.MonkeyPa
     for filename, model in runtime_models.items():
         expected = SCHEMAS[filename]["required"]
         required = {
-            field.name
-            for field in fields(model)
-            if field.default is MISSING and field.default_factory is MISSING
+            field.name for field in fields(model) if field.default is MISSING and field.default_factory is MISSING
         }
         assert required == expected

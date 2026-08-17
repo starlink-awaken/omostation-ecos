@@ -70,17 +70,27 @@ class TestCanonicalize:
         )
 
     def test_v2_binding_is_invariant(self):
-        packet = dict(FIXED_PACKET, schema_version="work-packet/v2", spec_binding={
-            "spec_ref": "registry://spec/demo",
-            "spec_version": "1.0.0",
-            "content_digest": "sha256:" + "a" * 64,
-            "decision_ref": "ADR-0001",
-        })
+        packet = dict(
+            FIXED_PACKET,
+            schema_version="work-packet/v2",
+            spec_binding={
+                "spec_ref": "registry://spec/demo",
+                "spec_version": "1.0.0",
+                "content_digest": "sha256:" + "a" * 64,
+                "decision_ref": "ADR-0001",
+            },
+        )
         assert "spec_binding" in canonicalize(packet)
 
-    @pytest.mark.parametrize("binding", [None, {}, {"spec_ref": "x"}, {
-        "spec_ref": "x", "spec_version": "1.0.0", "content_digest": "bad", "decision_ref": "d"
-    }])
+    @pytest.mark.parametrize(
+        "binding",
+        [
+            None,
+            {},
+            {"spec_ref": "x"},
+            {"spec_ref": "x", "spec_version": "1.0.0", "content_digest": "bad", "decision_ref": "d"},
+        ],
+    )
     def test_v2_rejects_missing_or_invalid_binding(self, binding):
         packet = dict(FIXED_PACKET, schema_version="work-packet/v2")
         if binding is not None:
@@ -92,6 +102,7 @@ class TestCanonicalize:
         packet = dict(FIXED_PACKET, spec_binding={})
         with pytest.raises(ValueError, match="work-packet/v1"):
             canonicalize(packet)
+
     def test_deterministic(self):
         a = canonicalize(FIXED_PACKET)
         b = canonicalize(FIXED_PACKET)
@@ -171,7 +182,10 @@ class TestRenderPlatformEnvelope:
     def test_payload_identical_across_platforms(self):
         canonical = canonicalize(FIXED_PACKET)
         p_hash = compute_packet_hash(canonical)
-        payloads = [json.dumps(render_platform_envelope(FIXED_PACKET, p, p_hash)["invariant_payload"], sort_keys=True) for p in PLATFORMS]
+        payloads = [
+            json.dumps(render_platform_envelope(FIXED_PACKET, p, p_hash)["invariant_payload"], sort_keys=True)
+            for p in PLATFORMS
+        ]
         assert len(set(payloads)) == 1
 
     def test_envelope_is_deterministic_except_platform_label(self):
@@ -304,9 +318,7 @@ class TestBuildVerificationReceipt:
             executor_model_family="claude-opus",
             verifier_model_family="codex-o3",
             verdict="accept",
-            checks=[
-                {"command": ["pytest", "-q"], "returncode": 0, "stdout_hash": _FAKE_HASH_2}
-            ],
+            checks=[{"command": ["pytest", "-q"], "returncode": 0, "stdout_hash": _FAKE_HASH_2}],
         )
         assert receipt.verdict == "accept"
         assert receipt.receipt_hash.startswith("sha256:")

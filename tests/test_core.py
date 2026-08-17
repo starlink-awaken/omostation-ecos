@@ -15,9 +15,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(
     0,
-    os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"
-    ),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"),
 )
 
 # ═══════════════════════════════════════════
@@ -254,9 +252,7 @@ class TestIntegration:
         """STATE.yaml 存在且可解析"""
         import yaml
 
-        state_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "STATE.yaml"
-        )
+        state_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "STATE.yaml")
         with open(state_path) as f:
             state = yaml.safe_load(f)
         assert state["system"] == "eCOS"

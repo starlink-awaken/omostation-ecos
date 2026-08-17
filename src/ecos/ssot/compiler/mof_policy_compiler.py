@@ -95,7 +95,9 @@ class MOFPolicyCompiler:
                     rule_expr = str(raw_rule or "")
 
                 violation_code = str(item.get("violation_code") or item.get("violation") or f"E-{rule_id}")
-                violation_msg = str(item.get("violation_message") or item.get("description") or "请遵循 L0 协议与架构约束")
+                violation_msg = str(
+                    item.get("violation_message") or item.get("description") or "请遵循 L0 协议与架构约束"
+                )
 
                 rule = PolicyRule(
                     id=rule_id,

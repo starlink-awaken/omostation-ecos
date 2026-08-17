@@ -83,10 +83,7 @@ def validate_internal_transport(services: list[dict[str, Any]]) -> list[dict[str
                     "uri": uri,
                     "rule": "INTERNAL_MODULE_NOT_FOUND",
                     "level": "error",
-                    "message": (
-                        f"INTERNAL_MODULE_NOT_FOUND: {uri} -> "
-                        f"Missing 'module_path' or 'func_name'."
-                    ),
+                    "message": (f"INTERNAL_MODULE_NOT_FOUND: {uri} -> Missing 'module_path' or 'func_name'."),
                 }
             )
             continue
@@ -99,10 +96,7 @@ def validate_internal_transport(services: list[dict[str, Any]]) -> list[dict[str
                     "uri": uri,
                     "rule": "INTERNAL_MODULE_NOT_FOUND",
                     "level": "error",
-                    "message": (
-                        f"INTERNAL_MODULE_NOT_FOUND: {uri} -> "
-                        f"Cannot import module '{module_path}': {e}."
-                    ),
+                    "message": (f"INTERNAL_MODULE_NOT_FOUND: {uri} -> Cannot import module '{module_path}': {e}."),
                 }
             )
             continue
@@ -113,8 +107,7 @@ def validate_internal_transport(services: list[dict[str, Any]]) -> list[dict[str
                     "rule": "INTERNAL_MODULE_NOT_FOUND",
                     "level": "error",
                     "message": (
-                        f"INTERNAL_MODULE_NOT_FOUND: {uri} -> "
-                        f"Unexpected error importing '{module_path}': {e}."
+                        f"INTERNAL_MODULE_NOT_FOUND: {uri} -> Unexpected error importing '{module_path}': {e}."
                     ),
                 }
             )
@@ -173,10 +166,7 @@ def validate_required_scopes(
                         "uri": service.get("uri", "UNKNOWN"),
                         "rule": "INVALID_SCOPE",
                         "level": "error",
-                        "message": (
-                            f"INVALID_SCOPE: {service.get('uri', 'UNKNOWN')} "
-                            f"uses undefined scope '{scope}'."
-                        ),
+                        "message": (f"INVALID_SCOPE: {service.get('uri', 'UNKNOWN')} uses undefined scope '{scope}'."),
                     }
                 )
     return warnings, errors
@@ -252,12 +242,8 @@ def print_human_report(result: dict[str, Any]) -> None:
     console.print("\n[bold blue]BOS Contract Linter v0.1 Report[/bold blue]")
     console.print(f"Timestamp: {result['timestamp']}")
     status = result["status"]
-    status_color = {"success": "green", "warning": "yellow", "error": "red"}.get(
-        status, "white"
-    )
-    console.print(
-        f"Status: [bold {status_color}]{status.upper()}[/bold {status_color}]"
-    )
+    status_color = {"success": "green", "warning": "yellow", "error": "red"}.get(status, "white")
+    console.print(f"Status: [bold {status_color}]{status.upper()}[/bold {status_color}]")
     console.print(
         f"Summary: {result['summary']['total_checks']} checks, "
         f"{result['summary']['errors']} errors, "
@@ -285,13 +271,9 @@ def print_human_report(result: dict[str, Any]) -> None:
     if status == "success":
         console.print("\n[bold green]OK All BOS contracts are valid.[/bold green]")
     elif status == "warning":
-        console.print(
-            "\n[bold yellow]WARN Warnings detected. Please review.[/bold yellow]"
-        )
+        console.print("\n[bold yellow]WARN Warnings detected. Please review.[/bold yellow]")
     else:
-        console.print(
-            "\n[bold red]FAIL Errors detected. Fix them before committing.[/bold red]"
-        )
+        console.print("\n[bold red]FAIL Errors detected. Fix them before committing.[/bold red]")
 
 
 def explain_error(error_id: str) -> tuple[str, bool]:
@@ -356,9 +338,7 @@ def explain_error(error_id: str) -> tuple[str, bool]:
     return explanations.get(error_id, ""), error_id in explanations
 
 
-def analyze_impact(
-    uri: str, services: list[dict[str, Any]] | None = None
-) -> dict[str, Any]:
+def analyze_impact(uri: str, services: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     """Analyze the impact of changing a given BOS URI.
 
     Returns structured report:
@@ -457,9 +437,7 @@ def analyze_impact(
 
 def main() -> int:
     """Main entry point for mof contract-lint subcommand."""
-    parser = argparse.ArgumentParser(
-        description="Validate BOS Service Contracts (Phase 0+2 tool)."
-    )
+    parser = argparse.ArgumentParser(description="Validate BOS Service Contracts (Phase 0+2 tool).")
     parser.add_argument(
         "--json",
         action="store_true",
@@ -533,30 +511,22 @@ def main() -> int:
         console.print(f"\n[bold blue]Impact Analysis for {args.impact}[/bold blue]")
         console.print(f"Domain: {report['domain']}, Action: {report['action']}")
         if report["direct_dependencies"]:
-            console.print(
-                f"\n[bold]Direct Dependencies ({len(report['direct_dependencies'])}):[/bold]"
-            )
+            console.print(f"\n[bold]Direct Dependencies ({len(report['direct_dependencies'])}):[/bold]")
             for dep in report["direct_dependencies"][:10]:  # Cap display
                 console.print(f"  - {dep}")
             if len(report["direct_dependencies"]) > 10:
-                console.print(
-                    f"  ... and {len(report['direct_dependencies']) - 10} more"
-                )
+                console.print(f"  ... and {len(report['direct_dependencies']) - 10} more")
         else:
             console.print("\n[dim]No direct dependencies found.[/dim]")
         if report["affected_files"]:
-            console.print(
-                f"\n[bold]Affected Files ({len(report['affected_files'])}):[/bold]"
-            )
+            console.print(f"\n[bold]Affected Files ({len(report['affected_files'])}):[/bold]")
             for f in report["affected_files"]:
                 console.print(f"  - {f}")
         else:
             console.print(
                 f"\n[yellow]WARN:[/yellow] No file_mapping for (domain={report['domain']}, action={report['action']})"
             )
-            console.print(
-                "  Add to file_mappings in mof_contract_lint.py or open an issue."
-            )
+            console.print("  Add to file_mappings in mof_contract_lint.py or open an issue.")
             return 1  # A4: not-found exit 1
         return 0
 
@@ -575,9 +545,7 @@ def main() -> int:
     scope_warnings, scope_errors = validate_required_scopes(services)
     action_warnings = validate_action_naming(services)
 
-    result = build_result(
-        services, internal_errors, scope_warnings, scope_errors, action_warnings
-    )
+    result = build_result(services, internal_errors, scope_warnings, scope_errors, action_warnings)
 
     if args.json:
         print(json.dumps(result, indent=2, ensure_ascii=False))

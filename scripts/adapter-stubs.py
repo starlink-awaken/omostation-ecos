@@ -128,9 +128,7 @@ ADAPTERS = {
 def main():
     parser = argparse.ArgumentParser(description="eCOS v6 L3 适配器桩")
     parser.add_argument("--list", action="store_true", help="列出适配器")
-    parser.add_argument(
-        "--test", type=str, choices=list(ADAPTERS.keys()), help="测试适配器"
-    )
+    parser.add_argument("--test", type=str, choices=list(ADAPTERS.keys()), help="测试适配器")
     parser.add_argument("--config", type=str, default="{}", help="JSON 配置")
     args = parser.parse_args()
 

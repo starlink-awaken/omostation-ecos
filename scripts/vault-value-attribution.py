@@ -115,14 +115,10 @@ def format_report(results: dict) -> str:
     total_lines = sum(d["lines"] for d in results.values())
     total_refs = sum(d["refs"] for d in results.values())
 
-    lines.append(
-        f"  总计: {total_files} 文件 · {total_lines:,} 行 · {total_refs:,} 引用"
-    )
+    lines.append(f"  总计: {total_files} 文件 · {total_lines:,} 行 · {total_refs:,} 引用")
     lines.append("")
 
-    lines.append(
-        f"  {'域':12s} {'文件':>5s} {'行数':>7s} {'引用':>5s} {'密度':>5s} {'最旧':>5s}  {'价值'}"
-    )
+    lines.append(f"  {'域':12s} {'文件':>5s} {'行数':>7s} {'引用':>5s} {'密度':>5s} {'最旧':>5s}  {'价值'}")
     lines.append("  " + "-" * 58)
 
     max_files = max((d["files"] for d in results.values()), default=1)
@@ -132,9 +128,7 @@ def format_report(results: dict) -> str:
     for subdir in SUBDIRS:
         d = results.get(subdir, {"exists": False})
         if not d.get("exists"):
-            lines.append(
-                f"  {subdir:12s}  {'—':>5s}  {'—':>7s}  {'—':>5s}  {'—':>5s}  {'—':>5s}"
-            )
+            lines.append(f"  {subdir:12s}  {'—':>5s}  {'—':>7s}  {'—':>5s}  {'—':>5s}  {'—':>5s}")
             continue
 
         # 价值得分: 规模 40% + 引用密度 30% + 新鲜度 30%

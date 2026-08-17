@@ -26,11 +26,7 @@ class TestLoadConstraints:
     @patch("ecos.services.governance.l0_audit.CONSTRAINTS_PATH")
     def test_loads_constraints(self, mock_path):
         mock_path.exists.return_value = True
-        data = {
-            "constraints": [
-                {"id": "X4-C05", "rule": "no direct write", "type": "required"}
-            ]
-        }
+        data = {"constraints": [{"id": "X4-C05", "rule": "no direct write", "type": "required"}]}
         with patch(
             "ecos.services.governance.l0_audit.open",
             mock_open(read_data=json.dumps(data)),
@@ -55,9 +51,7 @@ class TestValidateOperation:
     @patch("ecos.services.governance.l0_audit.load_constraints")
     @patch("ecos.services.governance.l0_audit.log_operation")
     def test_write_operation_checks_x4_c05(self, mock_log, mock_load):
-        mock_load.return_value = [
-            {"id": "X4-C05", "rule": "no direct write", "type": "required"}
-        ]
+        mock_load.return_value = [{"id": "X4-C05", "rule": "no direct write", "type": "required"}]
         result = validate_operation("test", "write_file", "bos://test/resource")
         assert len(result["violations"]) == 1
         assert result["violations"][0]["constraint"] == "X4-C05"
@@ -81,9 +75,7 @@ class TestValidateOperation:
     @patch("ecos.services.governance.l0_audit.load_constraints")
     @patch("ecos.services.governance.l0_audit.log_operation")
     def test_passed_false_when_required_violation(self, mock_log, mock_load):
-        mock_load.return_value = [
-            {"id": "X4-C05", "rule": "no direct write", "type": "required"}
-        ]
+        mock_load.return_value = [{"id": "X4-C05", "rule": "no direct write", "type": "required"}]
         result = validate_operation("test", "write_file", "/local/path")
         assert result["passed"] is False
         assert len(result["violations"]) == 2  # X4-C05 + X4-C10

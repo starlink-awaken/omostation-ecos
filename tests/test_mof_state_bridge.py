@@ -4,14 +4,7 @@ import importlib.util
 from pathlib import Path
 
 
-MODULE_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "src"
-    / "ecos"
-    / "ssot"
-    / "tools"
-    / "mof-state-bridge.py"
-)
+MODULE_PATH = Path(__file__).resolve().parents[1] / "src" / "ecos" / "ssot" / "tools" / "mof-state-bridge.py"
 
 
 def _load_module():
@@ -26,9 +19,7 @@ def test_broker_imports_only_proposed_nodes(monkeypatch, tmp_path: Path) -> None
     module = _load_module()
     calls: list[dict] = []
 
-    def fake_create_planned_task(
-        omo_dir, *, task_data, ingress_plane, source_ref, now=None
-    ):
+    def fake_create_planned_task(omo_dir, *, task_data, ingress_plane, source_ref, now=None):
         calls.append(
             {
                 "omo_dir": omo_dir,
@@ -76,9 +67,7 @@ def test_broker_imports_only_proposed_nodes(monkeypatch, tmp_path: Path) -> None
     assert calls[0]["ingress_plane"] == "projects/ecos:mof-state-bridge"
     assert calls[0]["source_ref"] == "ecos:mof-state-bridge:m1-to-omo:OMOTASK-TASK-X"
     assert calls[0]["task_data"]["status"] == "candidate"
-    assert calls[0]["task_data"]["source_docs"] == [
-        "projects/ecos/src/ecos/ssot/mof/m1/omo_layer/OMOTASK-TASK-X.yaml"
-    ]
+    assert calls[0]["task_data"]["source_docs"] == ["projects/ecos/src/ecos/ssot/mof/m1/omo_layer/OMOTASK-TASK-X.yaml"]
     assert calls[0]["task_data"]["entry_gate"] == ["M1_OMOTASK_BROKER_IMPORT"]
 
 
@@ -86,9 +75,7 @@ def test_broker_blocks_non_proposed_nodes(monkeypatch, tmp_path: Path) -> None:
     module = _load_module()
     calls: list[dict] = []
 
-    def fake_create_planned_task(
-        omo_dir, *, task_data, ingress_plane, source_ref, now=None
-    ):
+    def fake_create_planned_task(omo_dir, *, task_data, ingress_plane, source_ref, now=None):
         calls.append(task_data)
         return task_data
 

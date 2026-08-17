@@ -71,9 +71,7 @@ def verify():
     if seqs:
         missing = sorted(set(range(1, seqs[-1] + 1)) - set(seqs))
         if missing:
-            issues.append(
-                f"Missing seq: {missing[:10]}{'...' if len(missing) > 10 else ''}"
-            )
+            issues.append(f"Missing seq: {missing[:10]}{'...' if len(missing) > 10 else ''}")
 
     # 3. Duplicate IDs
     ids = db.execute("SELECT id FROM ssb_events").fetchall()

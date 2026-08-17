@@ -18,9 +18,7 @@ class WorkflowAdmissionError(ValueError):
 
 
 def _canonical(value: dict[str, Any]) -> bytes:
-    return json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def admission_proof(grant: dict[str, Any]) -> str:

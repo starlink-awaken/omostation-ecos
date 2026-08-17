@@ -276,9 +276,7 @@ class X2BudgetDeducer:
             return {"ok": False, "error": str(e)}
 
         if debt_generated:
-            logger.warning(
-                "X2 budget depleted for %s: balance=%d", workflow_id, balance_after
-            )
+            logger.warning("X2 budget depleted for %s: balance=%d", workflow_id, balance_after)
 
         return {
             "ok": True,
@@ -429,10 +427,7 @@ def generate_m0_snapshot(workflow_id: str, m1_node: dict, result: dict) -> str |
         "result": {
             "passed": result.get("passed", 0),
             "failed": result.get("failed", 0),
-            "steps": [
-                {"name": s.get("name"), "status": s.get("status")}
-                for s in result.get("steps", [])
-            ],
+            "steps": [{"name": s.get("name"), "status": s.get("status")} for s in result.get("steps", [])],
             "violations": result.get("violations", []),
         },
         "governance": {

@@ -110,9 +110,7 @@ def _evaluate_rules(exprs: list[str], instance: dict) -> dict[str, bool]:
 def test_envelope(name: str) -> None:
     data = _load(name)
     assert data["m2_type"], "m2_type required"
-    assert isinstance(data["version"], str) and re.match(SEMVER, data["version"]), (
-        "version must be semver"
-    )
+    assert isinstance(data["version"], str) and re.match(SEMVER, data["version"]), "version must be semver"
     assert str(data["created"]).startswith("20"), "created must be ISO-8601 datetime"
     body = _body(data)
     assert body["m3_parent"], "m3_parent required"
@@ -151,9 +149,7 @@ def test_validation_rules_are_strict_python(name: str) -> None:
     body = _body(_load(name))
     for expr in _rule_exprs(body):
         for forbidden in FORBIDDEN_RULE_FRAGMENTS:
-            assert forbidden not in expr, (
-                f"{name} rule contains forbidden {forbidden!r}: {expr!r}"
-            )
+            assert forbidden not in expr, f"{name} rule contains forbidden {forbidden!r}: {expr!r}"
         compile(expr, f"<rule:{name}>", "eval")  # SyntaxError propagates
 
 
@@ -351,9 +347,7 @@ def test_outcome_has_schema_version_required() -> None:
 def test_outcome_has_from_commitment_ref_optional() -> None:
     body = _body(_load("outcome"))
     opt = body.get("optionalProperties") or {}
-    assert "from_commitment_ref" in opt, (
-        "Outcome must have from_commitment_ref in optionalProperties"
-    )
+    assert "from_commitment_ref" in opt, "Outcome must have from_commitment_ref in optionalProperties"
 
 
 def _outcome_rules() -> list[str]:
@@ -400,6 +394,4 @@ def test_outcome_valid_with_commitment_ref_passes() -> None:
 def test_relation_constraints_present(name: str) -> None:
     """Every W1-01 contract must declare relationConstraints (explicit relationships)."""
     body = _body(_load(name))
-    assert body.get("relationConstraints"), (
-        f"{name} must declare relationConstraints for explicit relationships"
-    )
+    assert body.get("relationConstraints"), f"{name} must declare relationConstraints for explicit relationships"

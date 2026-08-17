@@ -120,7 +120,7 @@ def main():
     results = [bench() for bench in BENCHMARKS]
 
     if args.json:
-        print(json.dumps(results, indent=2,ensure_ascii=False))
+        print(json.dumps(results, indent=2, ensure_ascii=False))
     else:
         for r in results:
             print(f"\n{'=' * 50}")

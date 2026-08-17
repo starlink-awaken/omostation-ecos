@@ -62,12 +62,8 @@ except ImportError:
 # ── 模块级常量（从 domain_manager.py 拆出，ADR-0108 P110-A）──
 H = Path.home()
 DOCS = H / "Documents"
-L0_CONSTRAINTS = (
-    Path(__file__).parent.parent.parent / "ssot" / "registry" / "L0-constraints.yaml"
-)
-L0_CONSTRAINTS_L4 = (
-    DOCS / "@学习进化/_knowledge/10-systems/基建架构/L0-constraints.yaml"
-)
+L0_CONSTRAINTS = Path(__file__).parent.parent.parent / "ssot" / "registry" / "L0-constraints.yaml"
+L0_CONSTRAINTS_L4 = DOCS / "@学习进化/_knowledge/10-systems/基建架构/L0-constraints.yaml"
 _L1_CACHE: dict[str, dict] = {}
 L1_TTL = 60
 BOS_CACHE_FILE = H / ".ecos" / "bos" / "cache.json"

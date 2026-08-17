@@ -29,9 +29,7 @@ import yaml
 
 DOCS = Path.home() / "Documents"
 NODES_DIR = DOCS / "驾驶舱" / "元模型" / "nodes"
-CONSTRAINTS_FILE = (
-    DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
-)
+CONSTRAINTS_FILE = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
 CARDS_DB = Path.home() / "Workspace" / "data" / "cards" / "cards.db"
 ECOS_DIR = Path.home() / ".ecos"
 
@@ -69,9 +67,7 @@ def get_m0_protocol_state() -> dict:
             "decay": decay,
             "remaining": max(0, (1 - decay) * 100),
             "age_days": age,
-            "status": "expired"
-            if decay >= 1.0
-            else ("aging" if decay >= 0.5 else "fresh"),
+            "status": "expired" if decay >= 1.0 else ("aging" if decay >= 0.5 else "fresh"),
             "m0_status": p.get("status", "active"),
         }
     return state
@@ -223,9 +219,7 @@ def main():
 
     print("⚠️ MOF Audit 独立 CLI 已弃用，请使用 cockpit 替代", file=sys.stderr)
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--create-cards", action="store_true", help="漂移项自动创建 CARDS DEBT 卡片"
-    )
+    parser.add_argument("--create-cards", action="store_true", help="漂移项自动创建 CARDS DEBT 卡片")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 

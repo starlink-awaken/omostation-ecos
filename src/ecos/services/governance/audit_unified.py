@@ -83,9 +83,7 @@ def _ssb_publish(event: dict) -> str | None:
     try:
         conn = sqlite3.connect(str(SSB_DB), timeout=5)
         c = conn.cursor()
-        tables = c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='ssb_events'"
-        ).fetchall()
+        tables = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ssb_events'").fetchall()
         if not tables:
             conn.close()
             return None
@@ -228,9 +226,7 @@ def create_audit_debt(uri: str, anomaly_type: str, detail: str) -> str | None:
         from datetime import date
 
         today = date.today().isoformat()
-        safe_uri = re.sub(
-            r"[^a-zA-Z0-9_-]", "_", uri.split("://")[-1] if "://" in uri else uri
-        )[:30]
+        safe_uri = re.sub(r"[^a-zA-Z0-9_-]", "_", uri.split("://")[-1] if "://" in uri else uri)[:30]
         cards_id = f"DEBT-AUDIT-{today}-{safe_uri}"
 
         conn = sqlite3.connect(str(cards_db))
@@ -312,9 +308,7 @@ def _query_ssb(hours: int = 24, event_type: str = None) -> list[dict]:  # type: 
     try:
         conn = sqlite3.connect(str(SSB_DB), timeout=5)
         c = conn.cursor()
-        tables = c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='ssb_events'"
-        ).fetchall()
+        tables = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ssb_events'").fetchall()
         if not tables:
             conn.close()
             return []
@@ -357,9 +351,7 @@ def _query_daemon_db(hours: int = 24) -> list[dict]:
     try:
         conn = sqlite3.connect(str(DAEMON_STATE_DB), timeout=5)
         c = conn.cursor()
-        tables = c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='cycles'"
-        ).fetchall()
+        tables = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='cycles'").fetchall()
         if not tables:
             conn.close()
             return []
@@ -395,9 +387,7 @@ def _query_healer_db(hours: int = 24) -> list[dict]:
     try:
         conn = sqlite3.connect(str(HEALER_STATE_DB), timeout=5)
         c = conn.cursor()
-        tables = c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='heal_attempts'"
-        ).fetchall()
+        tables = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='heal_attempts'").fetchall()
         if not tables:
             conn.close()
             return []
@@ -437,9 +427,7 @@ def query_events(
 
     # When source=all, skip "unified" to avoid double-counting (unified.jsonl aggregates
     # events that also appear in l0/bos JSONLs). Use --source unified to query only the aggregate.
-    sources_to_query = (
-        ["l0", "bos", "ssb", "daemon", "healer"] if source == "all" else [source]
-    )
+    sources_to_query = ["l0", "bos", "ssb", "daemon", "healer"] if source == "all" else [source]
 
     for s in sources_to_query:
         if s == "unified":
@@ -515,8 +503,7 @@ def print_audit_report(result: dict) -> None:
         print(f"  {ts} {src:<8} {etype:<18} {p_icon:<6} {summary}")
 
     print(
-        "\n  提示: 使用 --source ssb 查看 SSB 事件, --source daemon 查看 daemon cycles, "
-        "--source healer 查看修复记录\n"
+        "\n  提示: 使用 --source ssb 查看 SSB 事件, --source daemon 查看 daemon cycles, --source healer 查看修复记录\n"
     )
 
 

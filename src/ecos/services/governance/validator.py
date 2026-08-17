@@ -10,13 +10,7 @@ import sys
 from pathlib import Path
 
 REAL = (
-    Path.home()
-    / "Documents"
-    / "@学习进化"
-    / "_knowledge"
-    / "10-systems"
-    / "基建架构"
-    / "ecos-constraint-validator.py"
+    Path.home() / "Documents" / "@学习进化" / "_knowledge" / "10-systems" / "基建架构" / "ecos-constraint-validator.py"
 )
 
 if __name__ == "__main__":

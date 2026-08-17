@@ -104,11 +104,7 @@ def check_claude_guards() -> dict:
         if f.is_file() and not f.is_symlink():
             age = (now - datetime.fromtimestamp(f.stat().st_mtime)).days
             if age > max_age:
-                domain = (
-                    str(f.parent.relative_to(DOCS))
-                    if DOCS in f.parents
-                    else str(f.parent.name)
-                )
+                domain = str(f.parent.relative_to(DOCS)) if DOCS in f.parents else str(f.parent.name)
                 stale.append(
                     {
                         "file": str(f.relative_to(DOCS)),
@@ -124,9 +120,7 @@ def check_claude_guards() -> dict:
         "fresh": fresh,
         "stale": len(stale),
         "stale_files": stale,
-        "warning": f"⚠️ {len(stale)} 个 CLAUDE.md 过期，Agent 路由规则可能过时"
-        if stale
-        else "✅ 全部新鲜",
+        "warning": f"⚠️ {len(stale)} 个 CLAUDE.md 过期，Agent 路由规则可能过时" if stale else "✅ 全部新鲜",
         "action_required": len(stale) > 0,
     }
 
@@ -134,14 +128,7 @@ def check_claude_guards() -> dict:
 def get_protocol_risks() -> list[dict]:
     """从约束校验器获取协议衰减风险"""
     out, _ = run_script(
-        str(
-            Path.home()
-            / "Documents"
-            / "学习进化"
-            / "2-knowledge"
-            / "基建架构"
-            / "ecos-constraint-validator.py"
-        ),
+        str(Path.home() / "Documents" / "学习进化" / "2-knowledge" / "基建架构" / "ecos-constraint-validator.py"),
         ["--json"],
         timeout=15,
     )
@@ -152,9 +139,7 @@ def get_protocol_risks() -> list[dict]:
         for p in data.get("protocols", []):
             intro = datetime.strptime(p["introduced"], "%Y-%m-%d")
             age = (now - intro).days
-            decay = (
-                min(1.0, age / p["half_life_days"]) if p["half_life_days"] > 0 else 1.0
-            )
+            decay = min(1.0, age / p["half_life_days"]) if p["half_life_days"] > 0 else 1.0
             if decay > 0.8:
                 risks.append(
                     {
@@ -209,14 +194,10 @@ def format_brief(
         if claude_guards["action_required"]:
             lines.append("## 🔴 CLAUDE.md 保鲜告警 — 使用前必读")
             lines.append(f"> {claude_guards['warning']}")
-            lines.append(
-                "> Agent: 以下文件的域路由规则可能过时，执行前先验证内容是否仍然正确。"
-            )
+            lines.append("> Agent: 以下文件的域路由规则可能过时，执行前先验证内容是否仍然正确。")
             lines.append("")
             for sf in claude_guards["stale_files"]:
-                lines.append(
-                    f"- **{sf['file']}** — {sf['age_days']}d 未更新 ({sf['domain']})"
-                )
+                lines.append(f"- **{sf['file']}** — {sf['age_days']}d 未更新 ({sf['domain']})")
             lines.append("")
             lines.append(
                 f"> 总计: {claude_guards['total']} 个 CLAUDE.md · {claude_guards['fresh']} 新鲜 · {claude_guards['stale']} 过期"
@@ -224,9 +205,7 @@ def format_brief(
             lines.append("")
         else:
             lines.append("## ✅ CLAUDE.md 保鲜")
-            lines.append(
-                f"全部 {claude_guards['total']} 个 CLAUDE.md 新鲜 — Agent 可安全使用路由规则。"
-            )
+            lines.append(f"全部 {claude_guards['total']} 个 CLAUDE.md 新鲜 — Agent 可安全使用路由规则。")
             lines.append("")
 
     # 健康状态
@@ -234,17 +213,13 @@ def format_brief(
         lines.append("## 🟢 系统健康")
     else:
         lines.append("## 🔴 系统异常")
-    lines.append(
-        f"`ecos-health-check.py` → {'✅ 全部通过' if health_pass else '⚠️ 存在告警'}"
-    )
+    lines.append(f"`ecos-health-check.py` → {'✅ 全部通过' if health_pass else '⚠️ 存在告警'}")
     lines.append("")
 
     # SLA
     lines.append("## 📊 健康 SLA")
     if sla["total"] and sla["total"] > 0:
-        uptime_bar = "█" * int(sla["uptime"] / 10) + "░" * (
-            10 - int(sla["uptime"] / 10)
-        )
+        uptime_bar = "█" * int(sla["uptime"] / 10) + "░" * (10 - int(sla["uptime"] / 10))
         lines.append(f"- Uptime: **{sla['uptime']}%** [{uptime_bar}]")
         lines.append(f"- 连续通过: **{sla['consecutive_passes']}** 次")
         lines.append(f"- 总检查: {sla['total']} 次")
@@ -281,17 +256,7 @@ def format_brief(
 
     # L0 架构健康
     lines.append("## 🧬 L0 架构治理")
-    m0_file = (
-        Path.home()
-        / "Workspace"
-        / "projects"
-        / "ecos"
-        / "src"
-        / "ecos"
-        / "ssot"
-        / "mof"
-        / "M0-snapshot.yaml"
-    )
+    m0_file = Path.home() / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "M0-snapshot.yaml"
     if m0_file.exists():
         try:
             import yaml
@@ -300,15 +265,9 @@ def format_brief(
                 m0 = yaml.safe_load(f)
             lines.append(f"- M1 节点: {m0.get('m1_node_count', '?')} 个")
             daemon = m0.get("daemon", {})
-            lines.append(
-                f"- Daemon: {'🟢' if daemon.get('healthy') else '🟡'} {daemon.get('cycles', 0)} 周期"
-            )
+            lines.append(f"- Daemon: {'🟢' if daemon.get('healthy') else '🟡'} {daemon.get('cycles', 0)} 周期")
             protocols = m0.get("protocols", {})
-            aging = [
-                p
-                for p, s in protocols.items()
-                if s.get("status") in ("aging", "expired")
-            ]
+            aging = [p for p, s in protocols.items() if s.get("status") in ("aging", "expired")]
             if aging:
                 lines.append(f"- ⚠️ 老化协议: {', '.join(aging)}")
             else:
@@ -335,9 +294,7 @@ def format_brief(
 
     lines.append("")
     lines.append("---")
-    lines.append(
-        "> 下一步: `python3 ~/Documents/@驾驶舱/scripts/ecos-health-check.py` 查看详情"
-    )
+    lines.append("> 下一步: `python3 ~/Documents/@驾驶舱/scripts/ecos-health-check.py` 查看详情")
     return "\n".join(lines)
 
 
@@ -346,9 +303,7 @@ def check_freshness(output_path: str) -> bool:
     p = Path(output_path)
     if not p.exists():
         return False
-    age = (
-        datetime.now() - datetime.fromtimestamp(p.stat().st_mtime)
-    ).total_seconds() / 3600
+    age = (datetime.now() - datetime.fromtimestamp(p.stat().st_mtime)).total_seconds() / 3600
     return age < 1
 
 
@@ -366,9 +321,7 @@ def main():
 
     # 自动刷新检查: 如果简报 < 1h 且非强制，跳过
     if not args.force and check_freshness(args.output):
-        age = (
-            datetime.now() - datetime.fromtimestamp(Path(args.output).stat().st_mtime)
-        ).total_seconds() / 60
+        age = (datetime.now() - datetime.fromtimestamp(Path(args.output).stat().st_mtime)).total_seconds() / 60
         print(f"  ⏩ 简报在 {age:.0f} 分钟前生成，跳过刷新。使用 --force 强制。")
         return
 
@@ -380,9 +333,7 @@ def main():
     cards = get_top_cards(3)
     risks = get_protocol_risks()
     event_count = get_event_count_since(24)
-    health_output, health_code = run_script(
-        "ecos-health-check.py", ["--json"], timeout=45
-    )
+    health_output, health_code = run_script("ecos-health-check.py", ["--json"], timeout=45)
 
     # 解析健康结果
     health_pass = True
@@ -393,9 +344,7 @@ def main():
     except (json.JSONDecodeError, TypeError, AttributeError):
         health_pass = health_code == 0
 
-    text = format_brief(
-        sla, cards, risks, health_pass, health_output, event_count, claude_guards
-    )
+    text = format_brief(sla, cards, risks, health_pass, health_output, event_count, claude_guards)
 
     if args.json:
         print(

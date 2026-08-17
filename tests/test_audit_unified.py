@@ -139,9 +139,7 @@ class TestQueryJsonl:
         mock_exists.return_value = True
         now = datetime.now()
         lines = [
-            json.dumps(
-                {"timestamp": now.isoformat(), "source": "l0", "event_type": "read"}
-            ),
+            json.dumps({"timestamp": now.isoformat(), "source": "l0", "event_type": "read"}),
             json.dumps(
                 {
                     "timestamp": (now - timedelta(hours=2)).isoformat(),
@@ -179,9 +177,7 @@ class TestQueryJsonl:
         now = datetime.now()
         lines = [
             json.dumps({"timestamp": now.isoformat(), "source": "l0"}),
-            json.dumps(
-                {"timestamp": (now - timedelta(hours=48)).isoformat(), "source": "l0"}
-            ),
+            json.dumps({"timestamp": (now - timedelta(hours=48)).isoformat(), "source": "l0"}),
         ]
         with patch(
             "ecos.services.governance.audit_unified.open",

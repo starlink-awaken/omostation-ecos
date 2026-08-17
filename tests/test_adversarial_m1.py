@@ -56,9 +56,7 @@ def test_agora_connection_refused_fallback():
     # 模拟 httpx.Client 抛出 ConnectError
     with (
         patch("httpx.Client.get", side_effect=httpx.ConnectError("Connection refused")),
-        patch(
-            "ecos.workflow.agora_mcp_backend._unavailable_result"
-        ) as mock_unavailable,
+        patch("ecos.workflow.agora_mcp_backend._unavailable_result") as mock_unavailable,
     ):
         mock_unavailable.return_value = {
             "mode": "unavailable",
@@ -86,12 +84,8 @@ def test_agora_connection_refused_fallback():
 def test_agora_timeout_fallback():
     """测试 Agora 请求超时 (httpx.TimeoutException) -> 优雅降级且记录熔断"""
     with (
-        patch(
-            "httpx.Client.get", side_effect=httpx.ConnectTimeout("Connection timed out")
-        ),
-        patch(
-            "ecos.workflow.agora_mcp_backend._unavailable_result"
-        ) as mock_unavailable,
+        patch("httpx.Client.get", side_effect=httpx.ConnectTimeout("Connection timed out")),
+        patch("ecos.workflow.agora_mcp_backend._unavailable_result") as mock_unavailable,
     ):
         mock_unavailable.return_value = {
             "mode": "unavailable",
@@ -113,9 +107,7 @@ def test_agora_http_error_code_fallback():
 
     with (
         patch("httpx.Client.get", return_value=mock_resp),
-        patch(
-            "ecos.workflow.agora_mcp_backend._unavailable_result"
-        ) as mock_unavailable,
+        patch("ecos.workflow.agora_mcp_backend._unavailable_result") as mock_unavailable,
     ):
         mock_unavailable.return_value = {
             "mode": "unavailable",
@@ -162,9 +154,7 @@ def test_agora_invalid_json_fallback():
 def test_global_proxy_invalid_fallback():
     """测试全局代理环境变量指向无效代理 -> httpx 因设置 trust_env=False 能够直接避开代理并正常运行，即使代理挂掉也不受影响"""
     # 模拟全局代理挂载到一个无法连接的地址
-    os.environ["HTTP_PROXY"] = (
-        "http://192.0.2.1:8888"  # 192.0.2.0/24 为 RFC5737 测试保留网段，物理上绝不可达
-    )
+    os.environ["HTTP_PROXY"] = "http://192.0.2.1:8888"  # 192.0.2.0/24 为 RFC5737 测试保留网段，物理上绝不可达
     os.environ["HTTPS_PROXY"] = "http://192.0.2.1:8888"
 
     # 这里的 get/post 请求由于 trust_env=False 应该直接绕开代理，依然正常尝试连接 localhost。

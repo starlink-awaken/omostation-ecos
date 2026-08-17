@@ -93,9 +93,7 @@ def _prop_json_schema(prop: "M2Property", compiled: set[str]) -> dict:
                 "items": {"type": "string"},
                 "description": f"list of references →{prop.ref_target or '?'}",
             }
-        items_spec: dict = {
-            "type": _JSON_TYPES.get(prop.items_type or "string", "string")
-        }
+        items_spec: dict = {"type": _JSON_TYPES.get(prop.items_type or "string", "string")}
         if prop.items_type == "map":
             items_spec = {"type": "object"}
         return {"type": "array", "items": items_spec}
@@ -179,18 +177,12 @@ def emit_json_schema(schemas: list["M2Schema"], m2_dir: Path) -> str:
         if s.description:
             schema_doc["description"] = s.description
         if s.state_machine:
-            schema_doc["x-mof-state-machine"] = {
-                state: list(transitions) for state, transitions in s.state_machine
-            }
+            schema_doc["x-mof-state-machine"] = {state: list(transitions) for state, transitions in s.state_machine}
         if s.conditional_requirements:
             schema_doc["allOf"] = [
                 {
                     "if": {
-                        "properties": {
-                            requirement.property_name: {
-                                "const": requirement.equals
-                            }
-                        },
+                        "properties": {requirement.property_name: {"const": requirement.equals}},
                         "required": [requirement.property_name],
                     },
                     "then": {"required": list(requirement.required_names)},
@@ -220,16 +212,12 @@ def _py_type(prop: "M2Property", compiled: set[str]) -> str:
             return prop.ref_target
         return "str"
     if ptype == "list":
-        inner = _py_scalar(
-            prop.items_type or "string", prop.ref_target, prop.enum_values, compiled
-        )
+        inner = _py_scalar(prop.items_type or "string", prop.ref_target, prop.enum_values, compiled)
         return f"list[{inner}]"
     return _py_scalar(ptype, None, prop.enum_values, compiled)
 
 
-def _py_scalar(
-    ptype: str, ref_target: str | None, enum_values, compiled: set[str]
-) -> str:
+def _py_scalar(ptype: str, ref_target: str | None, enum_values, compiled: set[str]) -> str:
     if ptype == "ref":
         if ref_target and ref_target in compiled:
             return ref_target
@@ -296,7 +284,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
             lines.extend(
                 [
                     "",
-                    "    @model_validator(mode=\"after\")",
+                    '    @model_validator(mode="after")',
                     "    def _enforce_conditional_requirements(self):",
                 ]
             )
@@ -313,9 +301,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
     rebuilt = [s.name for s in schemas if s.referenced]
     if rebuilt:
         lines.append("")
-        lines.append(
-            "# Resolve cross-model forward references after all classes are defined."
-        )
+        lines.append("# Resolve cross-model forward references after all classes are defined.")
         for name in rebuilt:
             lines.append(f"{name}.model_rebuild()")
         lines.append("")
@@ -449,19 +435,13 @@ def emit_sqlite(schemas: list["M2Schema"], m2_dir: Path) -> str:
             if p.type == "ref":
                 target_identity = identities.get(p.ref_target or "")
                 if p.ref_target in compiled and target_identity:
-                    decls.append(
-                        f"    {_q(p.name)} TEXT" + (" NOT NULL" if p.required else "")
-                    )
+                    decls.append(f"    {_q(p.name)} TEXT" + (" NOT NULL" if p.required else ""))
                     fks.append(
                         f"    FOREIGN KEY ({_q(p.name)}) REFERENCES {_q(_snake(p.ref_target))}({_q(target_identity)})"
                     )
                 else:
-                    decls.append(
-                        f"    {_q(p.name)} TEXT" + (" NOT NULL" if p.required else "")
-                    )
-                    decls.append(
-                        f"    -- reference →{p.ref_target} (no FK target: no deterministic identity column)"
-                    )
+                    decls.append(f"    {_q(p.name)} TEXT" + (" NOT NULL" if p.required else ""))
+                    decls.append(f"    -- reference →{p.ref_target} (no FK target: no deterministic identity column)")
             elif (
                 p.type == "list"
                 and p.items_type == "ref"
@@ -478,12 +458,8 @@ def emit_sqlite(schemas: list["M2Schema"], m2_dir: Path) -> str:
                 )
                 lines.append("")
             elif p.type == "list" and p.items_type == "ref":
-                decls.append(
-                    f"    {_q(p.name)} TEXT" + (" NOT NULL" if p.required else "")
-                )
-                decls.append(
-                    f"    -- ref list →{p.ref_target} (no junction: source/target identity missing)"
-                )
+                decls.append(f"    {_q(p.name)} TEXT" + (" NOT NULL" if p.required else ""))
+                decls.append(f"    -- ref list →{p.ref_target} (no junction: source/target identity missing)")
             else:
                 col_type = _sqlite_type(p)
                 column = f"    {_q(p.name)} {col_type}"
@@ -527,8 +503,6 @@ def emit_sqlite(schemas: list["M2Schema"], m2_dir: Path) -> str:
                     body.append(entry + ",")
                 else:
                     body.append(entry)
-            lines.append(
-                f"CREATE TABLE IF NOT EXISTS {table} (\n" + "\n".join(body) + "\n);"
-            )
+            lines.append(f"CREATE TABLE IF NOT EXISTS {table} (\n" + "\n".join(body) + "\n);")
             lines.append("")
     return "\n".join(lines) + "\n"

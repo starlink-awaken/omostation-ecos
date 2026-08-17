@@ -93,11 +93,7 @@ def reset(backend_name: str, target: str = "") -> None:
             _circuits.pop(key, None)
         else:
             # 前缀匹配：清除所有以 backend_name 开头的电路
-            keys = [
-                k
-                for k in _circuits
-                if k.startswith(f"{backend_name}:") or k == backend_name
-            ]
+            keys = [k for k in _circuits if k.startswith(f"{backend_name}:") or k == backend_name]
             for k in keys:
                 del _circuits[k]
     logger.info("Circuit breaker RESET: %s", key)

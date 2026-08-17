@@ -41,9 +41,7 @@ class TheoryMatchPattern(BasePattern):
     def pattern_name(self) -> str:
         return "theory_match"
 
-    def evaluate(
-        self, rule: Rule, domain: DomainConfig, context: dict | None = None
-    ) -> CheckResult:
+    def evaluate(self, rule: Rule, domain: DomainConfig, context: dict | None = None) -> CheckResult:
         rule_id = rule.id
         rule_name = rule.name or rule_id
 
@@ -73,17 +71,13 @@ class TheoryMatchPattern(BasePattern):
                     }
                 )
             else:
-                unmatched.append(
-                    {"inference": inf.id, "conclusion": inf.conclusion[:60]}
-                )
+                unmatched.append({"inference": inf.id, "conclusion": inf.conclusion[:60]})
 
         details = [f"📊 {rule_name}: {len(matched)} 已匹配 / {len(unmatched)} 未匹配"]
         for m in matched[:5]:
             label = "🔗" if not m.get("auto_matched") else "🔄"
             theory = m["theory"]
-            details.append(
-                f"  ├─ {label} {m['inference']}: {theory[:50] if isinstance(theory, str) else theory}"
-            )
+            details.append(f"  ├─ {label} {m['inference']}: {theory[:50] if isinstance(theory, str) else theory}")
 
         return CheckResult(
             protocol_id=rule_id,

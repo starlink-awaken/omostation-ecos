@@ -8,9 +8,9 @@ from typing import Any, Callable
 
 
 class RuleSeverity(str, Enum):
-    REQUIRED = "required"       # 强拦截 (必须满足，违规直接阻断)
-    PREFERRED = "preferred"     # 软告警 (建议满足，违规产生 warning)
-    IMMUTABLE = "immutable"     # 不可变更 (系统核心基线)
+    REQUIRED = "required"  # 强拦截 (必须满足，违规直接阻断)
+    PREFERRED = "preferred"  # 软告警 (建议满足，违规产生 warning)
+    IMMUTABLE = "immutable"  # 不可变更 (系统核心基线)
 
 
 @dataclass(frozen=True)

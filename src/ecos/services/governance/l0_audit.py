@@ -42,15 +42,11 @@ def validate_operation(domain_id: str, operation: str, uri: str = None) -> dict:
     if operation.startswith("write"):
         for c in constraints:
             if c["id"] == "X4-C05":
-                violations.append(
-                    {"constraint": "X4-C05", "rule": c["rule"], "severity": c["type"]}
-                )
+                violations.append({"constraint": "X4-C05", "rule": c["rule"], "severity": c["type"]})
 
     # X4-C10: BOS URI格式
     if uri and not uri.startswith("bos://"):
-        violations.append(
-            {"constraint": "X4-C10", "rule": "URI格式", "severity": "required"}
-        )
+        violations.append({"constraint": "X4-C10", "rule": "URI格式", "severity": "required"})
 
     # X4-C08: KEMS结构 (write操作)
     if operation in ("domain_create", "domain_register"):

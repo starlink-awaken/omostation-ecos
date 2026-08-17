@@ -104,9 +104,7 @@ class InteractivePromptBuilder:
     """
 
     def __init__(self, template_name: str = "entity"):
-        self.template: dict[str, Any] = EXTRACTION_TEMPLATES.get(
-            template_name, EXTRACTION_TEMPLATES["entity"]
-        )
+        self.template: dict[str, Any] = EXTRACTION_TEMPLATES.get(template_name, EXTRACTION_TEMPLATES["entity"])
         self.answers: dict[str, str] = {}
 
     def build_prompt(self, source: TextSource) -> str:
@@ -119,9 +117,7 @@ class InteractivePromptBuilder:
             "",
             "```",
             source.raw_text[:500],
-            "```"
-            if len(source.raw_text) <= 500
-            else f"（{len(source.raw_text)}字，过长已截断）",
+            "```" if len(source.raw_text) <= 500 else f"（{len(source.raw_text)}字，过长已截断）",
             "",
             f"ID 前缀约定：{tpl['id_prefix']}",
             "",
@@ -156,9 +152,7 @@ class InteractivePromptBuilder:
             category=self._guess_category(),
             id=content.get("id", ""),
             content=content,
-            confidence=0.8
-            if all(self.answers.get(f) for f, _ in self.template["questions"][:3])
-            else 0.5,
+            confidence=0.8 if all(self.answers.get(f) for f, _ in self.template["questions"][:3]) else 0.5,
         )
         return candidate
 
@@ -186,12 +180,8 @@ class InteractiveExtractor(Extractor):
         return "interactive"
 
     def extract(self, source: TextSource) -> ExtractionResult:
-        return ExtractionResult(
-            summary="交互式提取器不会自动提取。请使用 InteractivePromptBuilder 引导用户。"
-        )
+        return ExtractionResult(summary="交互式提取器不会自动提取。请使用 InteractivePromptBuilder 引导用户。")
 
-    def build_session(
-        self, template_name: str, source: TextSource
-    ) -> InteractivePromptBuilder:
+    def build_session(self, template_name: str, source: TextSource) -> InteractivePromptBuilder:
         """创建一个交互式提取会话"""
         return InteractivePromptBuilder(template_name)

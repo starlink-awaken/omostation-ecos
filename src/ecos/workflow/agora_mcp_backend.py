@@ -132,9 +132,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
                 results["mode"] = "unavailable"
                 results["error_code"] = "BACKEND_UNAVAILABLE"
 
-                on_failure = (
-                    step.get("on_failure") or execution.get("on_failure") or "continue"
-                )
+                on_failure = step.get("on_failure") or execution.get("on_failure") or "continue"
                 if on_failure == "abort":
                     logger.warning("Step %s failed, aborting workflow", step_name)
                     break

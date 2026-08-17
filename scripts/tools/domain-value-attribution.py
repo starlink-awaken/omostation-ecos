@@ -58,9 +58,7 @@ def analyze_subdir(root: Path, subdirs: list[str]) -> list[dict]:
     for sd_name in subdirs:
         sd = root / sd_name
         if not sd.exists():
-            results.append(
-                {"name": sd_name, "exists": False, "files": 0, "lines": 0, "max_age": 0}
-            )
+            results.append({"name": sd_name, "exists": False, "files": 0, "lines": 0, "max_age": 0})
             continue
 
         md_files = []
@@ -114,13 +112,9 @@ def format_report(all_results: dict) -> str:
         grand_files += total_f
         grand_lines += total_l
 
-        lines.append(
-            f"  ── {domain_name} (value_tier={info['value_tier']}, {info['label']}) ──"
-        )
+        lines.append(f"  ── {domain_name} (value_tier={info['value_tier']}, {info['label']}) ──")
         lines.append(f"  总文件: {total_f}  总行数: {total_l:,}")
-        lines.append(
-            f"  {'子域':20s} {'文件':>5s} {'行数':>7s} {'密度':>5s} {'最旧':>5s}  {'活跃度'}"
-        )
+        lines.append(f"  {'子域':20s} {'文件':>5s} {'行数':>7s} {'密度':>5s} {'最旧':>5s}  {'活跃度'}")
         lines.append("  " + "-" * 54)
 
         max_f = max((r["files"] for r in results), default=1)
@@ -128,9 +122,7 @@ def format_report(all_results: dict) -> str:
 
         for r in results:
             if not r["exists"]:
-                lines.append(
-                    f"  {r['name']:20s}  {'—':>5s}  {'—':>7s}  {'—':>5s}  {'—':>5s}"
-                )
+                lines.append(f"  {r['name']:20s}  {'—':>5s}  {'—':>7s}  {'—':>5s}  {'—':>5s}")
                 continue
 
             # 活跃度得分: 规模 40% + 新鲜度 60%

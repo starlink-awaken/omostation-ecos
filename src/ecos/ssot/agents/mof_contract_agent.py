@@ -154,9 +154,7 @@ def _extract_first_action(explanation: str) -> str:
 
 def main() -> int:
     """CLI entry point for mof-contract-agent."""
-    parser = argparse.ArgumentParser(
-        description="mof-contract-agent — BOS Contract analysis and repair (Phase 3)."
-    )
+    parser = argparse.ArgumentParser(description="mof-contract-agent — BOS Contract analysis and repair (Phase 3).")
     parser.add_argument(
         "command",
         choices=["analyze", "diagnose"],

@@ -39,9 +39,7 @@ def log_entry(
 ):
     """记录一次入口事件"""
     init_log()
-    session_id = hashlib.md5(
-        f"{datetime.now().isoformat()}{entry_type}".encode()
-    ).hexdigest()[:12]
+    session_id = hashlib.md5(f"{datetime.now().isoformat()}{entry_type}".encode()).hexdigest()[:12]
 
     event = {
         "type": "entry.access",
@@ -144,9 +142,7 @@ def main():
         type=str,
         help="意图分类 (governance_check / task_execution / knowledge_retrieval / domain_work)",
     )
-    parser.add_argument(
-        "--result", type=str, default="pass", help="结果 (pass/fail/warn)"
-    )
+    parser.add_argument("--result", type=str, default="pass", help="结果 (pass/fail/warn)")
     parser.add_argument("--duration", type=int, default=0, help="耗时 ms")
     parser.add_argument("--detail", type=str, default="", help="补充信息")
     parser.add_argument("--report", action="store_true", help="查看入口统计报告")
@@ -163,9 +159,7 @@ def main():
         return
 
     if args.entry:
-        event = log_entry(
-            args.entry, args.intent, args.result, args.duration, args.detail
-        )
+        event = log_entry(args.entry, args.intent, args.result, args.duration, args.detail)
         if args.json:
             print(json.dumps(event, ensure_ascii=False, indent=2))
         else:

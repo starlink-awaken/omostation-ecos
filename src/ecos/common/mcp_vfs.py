@@ -8,9 +8,7 @@ from pydantic import BaseModel
 from ecos.protocol.ssb.ssb_client import SSBClient  # type: ignore[import-not-found]
 
 # Define the base workspace and documents paths
-WORKSPACE_ROOT = Path(
-    os.environ.get("WORKSPACE_ROOT", str(Path.home() / "Workspace"))
-).resolve()
+WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_ROOT", str(Path.home() / "Workspace"))).resolve()
 HOME_DIR = Path.home()
 DOCS_ROOT = HOME_DIR / "Documents"
 
@@ -42,17 +40,11 @@ def read_memory_resource(path: str) -> str:
         target_path = target_path.resolve()
 
         # Security: Prevent path traversal
-        if "CARDS" in str(target_path) and not str(target_path).startswith(
-            str(DOCS_ROOT / "驾驶舱" / "CARDS")
-        ):
+        if "CARDS" in str(target_path) and not str(target_path).startswith(str(DOCS_ROOT / "驾驶舱" / "CARDS")):
             return "Error: Path traversal detected."
-        elif "学习进化" in str(target_path) and not str(target_path).startswith(
-            str(DOCS_ROOT / "学习进化")
-        ):
+        elif "学习进化" in str(target_path) and not str(target_path).startswith(str(DOCS_ROOT / "学习进化")):
             return "Error: Path traversal detected."
-        elif "workspace" in path and not str(target_path).startswith(
-            str(WORKSPACE_ROOT)
-        ):
+        elif "workspace" in path and not str(target_path).startswith(str(WORKSPACE_ROOT)):
             return "Error: Path traversal detected."
 
         if not target_path.exists() or not target_path.is_file():
@@ -100,17 +92,11 @@ async def write_memory_resource(req: WriteMemoryRequest) -> str:
         target_path = target_path.resolve()
 
         # Security: Prevent path traversal
-        if "CARDS" in str(target_path) and not str(target_path).startswith(
-            str(DOCS_ROOT / "驾驶舱" / "CARDS")
-        ):
+        if "CARDS" in str(target_path) and not str(target_path).startswith(str(DOCS_ROOT / "驾驶舱" / "CARDS")):
             return "Error: Path traversal detected."
-        elif "学习进化" in str(target_path) and not str(target_path).startswith(
-            str(DOCS_ROOT / "学习进化")
-        ):
+        elif "学习进化" in str(target_path) and not str(target_path).startswith(str(DOCS_ROOT / "学习进化")):
             return "Error: Path traversal detected."
-        elif "workspace" in path and not str(target_path).startswith(
-            str(WORKSPACE_ROOT)
-        ):
+        elif "workspace" in path and not str(target_path).startswith(str(WORKSPACE_ROOT)):
             return "Error: Path traversal detected."
 
         if req.create_dirs:

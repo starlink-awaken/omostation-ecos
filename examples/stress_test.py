@@ -53,9 +53,7 @@ def bench_pagerank(nodes: int = 100, iterations: int = 20):
     elapsed = (time.monotonic() - start) * 1000
 
     throughput = 100 / (elapsed / 1000)
-    print(
-        f"  PageRank: {nodes}节点×{iterations}迭代×100次, {elapsed:.1f}ms, {throughput:.0f} ops/s"
-    )
+    print(f"  PageRank: {nodes}节点×{iterations}迭代×100次, {elapsed:.1f}ms, {throughput:.0f} ops/s")
     return throughput
 
 

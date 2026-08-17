@@ -59,12 +59,9 @@ def cmd_export(args):
                 for i in config.inferences
             ],
             "relations": [
-                {"source": r.source_id, "type": r.relation_type, "target": r.target_id}
-                for r in config.relations
+                {"source": r.source_id, "type": r.relation_type, "target": r.target_id} for r in config.relations
             ],
-            "rules": [
-                {"id": r.id, "pattern": r.pattern, "name": r.name} for r in config.rules
-            ],
+            "rules": [{"id": r.id, "pattern": r.pattern, "name": r.name} for r in config.rules],
             "state_machines": [
                 {
                     "id": sm.id,
@@ -99,9 +96,7 @@ def cmd_export(args):
         for i in config.inferences:
             w.writerow(["inference", i.id, i.title, i.conclusion[:60]])
         for r in config.relations:
-            w.writerow(
-                ["relation", f"{r.source_id}→{r.target_id}", r.relation_type, ""]
-            )
+            w.writerow(["relation", f"{r.source_id}→{r.target_id}", r.relation_type, ""])
         output = buf.getvalue()
 
     elif fmt == "md":

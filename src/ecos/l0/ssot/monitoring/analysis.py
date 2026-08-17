@@ -57,9 +57,7 @@ class AnomalyDetector:
             "percentile": 95,  # 百分位数
         }
 
-    def detect_anomalies(
-        self, values: list[float], timestamps: list[str]
-    ) -> list[dict[str, Any]]:
+    def detect_anomalies(self, values: list[float], timestamps: list[str]) -> list[dict[str, Any]]:
         """检测异常值"""
         if len(values) < 10:
             return []
@@ -83,9 +81,7 @@ class AnomalyDetector:
 
         return unique_anomalies
 
-    def _detect_std_dev_anomalies(
-        self, values: list[float], timestamps: list[str]
-    ) -> list[dict[str, Any]]:
+    def _detect_std_dev_anomalies(self, values: list[float], timestamps: list[str]) -> list[dict[str, Any]]:
         """使用标准差方法检测异常"""
         import statistics
 
@@ -120,9 +116,7 @@ class AnomalyDetector:
 
         return anomalies
 
-    def _detect_iqr_anomalies(
-        self, values: list[float], timestamps: list[str]
-    ) -> list[dict[str, Any]]:
+    def _detect_iqr_anomalies(self, values: list[float], timestamps: list[str]) -> list[dict[str, Any]]:
         """使用IQR方法检测异常"""
 
         anomalies = []
@@ -146,11 +140,7 @@ class AnomalyDetector:
 
             for i, value in enumerate(values):
                 if value < lower_bound or value > upper_bound:
-                    severity = (
-                        "high"
-                        if (value < q1 - 2 * iqr or value > q3 + 2 * iqr)
-                        else "medium"
-                    )
+                    severity = "high" if (value < q1 - 2 * iqr or value > q3 + 2 * iqr) else "medium"
 
                     anomalies.append(
                         {
@@ -210,9 +200,7 @@ class PerformanceTrendAnalyzer:
             anomalies=anomalies,
         )
 
-    def _create_empty_analysis(
-        self, metric_name: str, window_minutes: int
-    ) -> TrendAnalysis:
+    def _create_empty_analysis(self, metric_name: str, window_minutes: int) -> TrendAnalysis:
         """创建空分析"""
         return TrendAnalysis(
             metric_name=metric_name,
@@ -305,9 +293,7 @@ class PerformanceTrendAnalyzer:
         for metric_name, values in metrics_data.items():
             timestamps = timestamps_data.get(metric_name, [])
 
-            analysis = self.analyze_trend(
-                metric_name, values, timestamps, window_minutes
-            )
+            analysis = self.analyze_trend(metric_name, values, timestamps, window_minutes)
             results[metric_name] = analysis
 
             # 缓存结果
@@ -341,9 +327,7 @@ class PerformanceTrendAnalyzer:
                 report.append(f"\n{direction_icon} {metric_name}:")
                 report.append(f"  方向: {analysis.trend_direction.value}")
                 report.append(f"  斜率: {analysis.trend_slope:.6f}")
-                report.append(
-                    f"  相关性: {analysis.correlation:.3f} {significance_icon}"
-                )
+                report.append(f"  相关性: {analysis.correlation:.3f} {significance_icon}")
 
                 if analysis.forecast is not None:
                     report.append(f"  预测: {analysis.forecast:.2f}")

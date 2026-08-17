@@ -95,15 +95,11 @@ class TestStageTransition:
 
 class TestTransitionCondition:
     def test_predicate_true(self):
-        cond = TransitionCondition(
-            name="test", predicate=lambda ctx: ctx.get("ok", False), threshold=1.0
-        )
+        cond = TransitionCondition(name="test", predicate=lambda ctx: ctx.get("ok", False), threshold=1.0)
         assert cond.predicate({"ok": True}) is True
 
     def test_predicate_false(self):
-        cond = TransitionCondition(
-            name="test", predicate=lambda ctx: ctx.get("ok", False), threshold=1.0
-        )
+        cond = TransitionCondition(name="test", predicate=lambda ctx: ctx.get("ok", False), threshold=1.0)
         assert cond.predicate({"ok": False}) is False
 
     def test_default_description(self):
@@ -427,9 +423,7 @@ class TestSymphonyStateMachine:
         assert sm.validate_invariants() == []
 
     def test_validate_invariants_anchoring_fail(self):
-        sm = SymphonyStateMachine(
-            initial_context={"task": "build", "context_frozen": False}
-        )
+        sm = SymphonyStateMachine(initial_context={"task": "build", "context_frozen": False})
         sm.transition(SymphonyStage.ANCHORING)
         violated = sm.validate_invariants()
         assert "context_immutable" in violated

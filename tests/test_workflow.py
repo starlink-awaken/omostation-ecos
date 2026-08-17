@@ -113,9 +113,7 @@ class TestLoadFromM1:
     def test_match_by_id(self, mock_dir):
         mock_dir.exists.return_value = True
         mock_dir.glob.return_value = [Path("WORKFLOW-test.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = _load_from_m1("workflow-test-m1")
             assert result is not None
             assert result["id"] == "workflow-test-m1"
@@ -124,9 +122,7 @@ class TestLoadFromM1:
     def test_match_by_kebab(self, mock_dir):
         mock_dir.exists.return_value = True
         mock_dir.glob.return_value = [Path("WORKFLOW-test.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = _load_from_m1("test-m1")
             assert result is not None
 
@@ -134,9 +130,7 @@ class TestLoadFromM1:
     def test_match_by_name(self, mock_dir):
         mock_dir.exists.return_value = True
         mock_dir.glob.return_value = [Path("WORKFLOW-test.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = _load_from_m1("Test M1 Workflow")
             assert result is not None
 
@@ -144,9 +138,7 @@ class TestLoadFromM1:
     def test_no_match(self, mock_dir):
         mock_dir.exists.return_value = True
         mock_dir.glob.return_value = [Path("WORKFLOW-other.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = _load_from_m1("nonexistent")
             assert result is None
 
@@ -165,9 +157,7 @@ class TestLoadFromM1:
     def test_parse_error_skipped(self, mock_dir):
         mock_dir.exists.return_value = True
         mock_dir.glob.return_value = [Path("WORKFLOW-bad.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data="not valid yaml: {")
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data="not valid yaml: {")):
             result = _load_from_m1("test")
             assert result is None
 
@@ -191,9 +181,7 @@ class TestListWorkflows:
         mock_m1.exists.return_value = True
         mock_m1.glob.return_value = [Path("WORKFLOW-test.yaml")]
         mock_wf.exists.return_value = False
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = list_workflows()
             assert len(result) == 1
             assert result[0]["source"] == "m1"
@@ -206,9 +194,7 @@ class TestListWorkflows:
         mock_m1.glob.return_value = [Path("WORKFLOW-test.yaml")]
         mock_wf.exists.return_value = True
         mock_wf.glob.return_value = [Path("test-m1.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = list_workflows()
             names = [w["name"] for w in result]
             assert names.count("test-m1") == 1
@@ -229,9 +215,7 @@ class TestListFromM1:
     def test_lists_workflows(self, mock_dir):
         mock_dir.exists.return_value = True
         mock_dir.glob.return_value = [Path("WORKFLOW-test.yaml")]
-        with patch(
-            "ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))
-        ):
+        with patch("ecos.workflow.loader.open", mock_open(read_data=json.dumps(SAMPLE_M1_WF))):
             result = list_from_m1()
             assert len(result) == 1
             assert result[0]["id"] == "workflow-test-m1"
@@ -257,9 +241,7 @@ class TestListFromM1:
 class TestExecuteStep:
     @patch("ecos.workflow.actions.subprocess.run")
     def test_health_check_ok(self, mock_run):
-        mock_run.return_value.stdout = json.dumps(
-            {"results": [{"pass": True}, {"pass": True}]}
-        )
+        mock_run.return_value.stdout = json.dumps({"results": [{"pass": True}, {"pass": True}]})
         result = _execute_step("health_check")
         assert result["passed"] is True
 
@@ -396,9 +378,7 @@ class TestExecuteWorkflow:
     @patch("ecos.workflow.executor.log_operation")
     def test_workflow_step_exception(self, mock_log, mock_load):
         mock_load.return_value = SAMPLE_WF
-        with patch(
-            "ecos.workflow.executor._execute_step", side_effect=ValueError("boom")
-        ):
+        with patch("ecos.workflow.executor._execute_step", side_effect=ValueError("boom")):
             result = execute_workflow("test")
             assert result["failed"] == 2
 
@@ -589,9 +569,7 @@ class TestX2BudgetDeducer:
         original = X2BudgetDeducer.LEDGER_PATH
         X2BudgetDeducer.LEDGER_PATH = tmp_path / "test_ledger.jsonl"
         try:
-            result = X2BudgetDeducer.deduct(
-                "wf-test", {"execution": {"budget": {"token_limit": 1000}}}
-            )
+            result = X2BudgetDeducer.deduct("wf-test", {"execution": {"budget": {"token_limit": 1000}}})
             assert result["ok"] is True
             assert result["balance_before"] == 100000  # default
             assert result["balance_after"] == 99000
@@ -604,15 +582,11 @@ class TestX2BudgetDeducer:
         import json
 
         ledger = tmp_path / "test_ledger.jsonl"
-        ledger.write_text(
-            json.dumps({"event": "deduct", "balance_after": 50000}) + "\n"
-        )
+        ledger.write_text(json.dumps({"event": "deduct", "balance_after": 50000}) + "\n")
         original = X2BudgetDeducer.LEDGER_PATH
         X2BudgetDeducer.LEDGER_PATH = ledger
         try:
-            result = X2BudgetDeducer.check_budget(
-                {"execution": {"budget": {"token_limit": 1000}}}
-            )
+            result = X2BudgetDeducer.check_budget({"execution": {"budget": {"token_limit": 1000}}})
             assert result["balance"] == 50000
         finally:
             X2BudgetDeducer.LEDGER_PATH = original
@@ -666,9 +640,7 @@ class TestX2CircuitBreak:
                 "budget": {"token_limit": 500},
             },
         }
-        monkeypatch.setattr(
-            "ecos.workflow.executor.load_workflow", lambda name: test_wf
-        )
+        monkeypatch.setattr("ecos.workflow.executor.load_workflow", lambda name: test_wf)
 
         # 设置余额不足
         original = X2BudgetDeducer.LEDGER_PATH
@@ -841,15 +813,10 @@ class TestSymphonyBackend:
 
         monkeypatch.setattr(symphony, "append_jsonl_record", fake_append)
 
-        result = symphony.execute(
-            {"id": "wf-symphony", "steps": [{"name": "s1", "action": "health_check"}]}
-        )
+        result = symphony.execute({"id": "wf-symphony", "steps": [{"name": "s1", "action": "health_check"}]})
 
         assert result["passed"] >= 1
-        assert (
-            captured["path"]
-            == Path.home() / ".omo" / "state" / "llm_quota_ledger.jsonl"
-        )
+        assert captured["path"] == Path.home() / ".omo" / "state" / "llm_quota_ledger.jsonl"
         assert captured["entry"]["event"] == "cost_record"  # type: ignore[reportIndexIssue]
         assert captured["entry"]["workflow_id"] == "wf-symphony"  # type: ignore[reportIndexIssue]
 
@@ -871,17 +838,13 @@ class TestAgoraBackend:
     def test_step_to_bos_uri_action_map(self):
         from ecos.workflow.agora_mcp_backend import _step_to_bos_uri
 
-        result = _step_to_bos_uri(
-            {"name": "test", "action": "health_check"}, "health_check"
-        )
+        result = _step_to_bos_uri({"name": "test", "action": "health_check"}, "health_check")
         assert result == "bos://governance/omo/audit"
 
     def test_step_to_bos_uri_fallback(self):
         from ecos.workflow.agora_mcp_backend import _step_to_bos_uri
 
-        result = _step_to_bos_uri(
-            {"name": "test", "action": "custom_thing"}, "custom_thing"
-        )
+        result = _step_to_bos_uri({"name": "test", "action": "custom_thing"}, "custom_thing")
         assert "bos://" in result
 
     def test_agora_execute_fallback_on_unreachable(self):
@@ -1111,10 +1074,7 @@ class TestCustomCommand:
         )
         # domain_audit 依赖 ~/bin/ecos，但这是已注册 action
         # 所以 command 字段被忽略，走正常 action 路由
-        assert (
-            "result" not in result
-            or result.get("result", {}).get("stdout", "") != "should_not_run"
-        )
+        assert "result" not in result or result.get("result", {}).get("stdout", "") != "should_not_run"
 
 
 class TestSubWorkflow:
@@ -1298,9 +1258,7 @@ class TestDAGExecution:
                 executed_order.append(step.get("name", ""))
             return {"steps": [], "passed": 0, "failed": 0}
 
-        monkeypatch.setattr(
-            "ecos.workflow.backend_registry._default_executor", mock_execute
-        )
+        monkeypatch.setattr("ecos.workflow.backend_registry._default_executor", mock_execute)
 
         wf = {
             "execution": {"backend": "default", "mode": "sequential"},
@@ -1345,9 +1303,7 @@ class TestConditionalSteps:
         from ecos.workflow.backend_registry import _evaluate_when
 
         results = {"steps": [{"name": "前置", "status": "ok"}]}
-        assert (
-            _evaluate_when("${steps.前置.failed}", results) is True
-        )  # True=跳过（条件不满足）
+        assert _evaluate_when("${steps.前置.failed}", results) is True  # True=跳过（条件不满足）
 
     def test_referenced_step_not_found(self):
         from ecos.workflow.backend_registry import _evaluate_when
@@ -1366,21 +1322,15 @@ class TestConditionalSteps:
             for s in m1_node.get("steps", []):
                 name = s.get("name", "")
                 if name == "前置":
-                    result["steps"].append(
-                        {"name": name, "status": "failed", "result": {"passed": False}}
-                    )
+                    result["steps"].append({"name": name, "status": "failed", "result": {"passed": False}})
                     result["failed"] += 1
                 else:
-                    result["steps"].append(
-                        {"name": name, "status": "ok", "result": {"passed": True}}
-                    )
+                    result["steps"].append({"name": name, "status": "ok", "result": {"passed": True}})
                     result["passed"] += 1
                 executed_steps.append(name)
             return result
 
-        monkeypatch.setattr(
-            "ecos.workflow.backend_registry._default_executor", mock_execute
-        )
+        monkeypatch.setattr("ecos.workflow.backend_registry._default_executor", mock_execute)
 
         # 当 前置 失败时，后置 应被跳过
         wf = {
@@ -1434,13 +1384,9 @@ class TestDefaultMeshSink:
 
         # 应该 emit WorkflowRequested 事件
         assert len(sink_calls) >= 1, "应自动 emit Mesh 事件，无需显式传入 event_sink"
-        assert any(c.get("event_type") == "WorkflowRequested" for c in sink_calls), (
-            "应包含 WorkflowRequested 事件"
-        )
+        assert any(c.get("event_type") == "WorkflowRequested" for c in sink_calls), "应包含 WorkflowRequested 事件"
 
-    def test_default_mesh_sink_graceful_degradation_when_omo_not_found(
-        self, tmp_path, monkeypatch
-    ):
+    def test_default_mesh_sink_graceful_degradation_when_omo_not_found(self, tmp_path, monkeypatch):
         """找不到 OMO 时静默降级，不阻断 workflow 执行"""
         from ecos.workflow.executor import execute_m1_workflow
         import ecos.workflow.default_mesh_sink as dms
@@ -1516,9 +1462,7 @@ class TestMeshGate:
         monkeypatch.setattr(
             "ecos.workflow.mesh_gate._get_workflow_mesh_store"
             if hasattr(
-                __import__(
-                    "ecos.workflow.mesh_gate", fromlist=["_get_workflow_mesh_store"]
-                ),
+                __import__("ecos.workflow.mesh_gate", fromlist=["_get_workflow_mesh_store"]),
                 "_get_workflow_mesh_store",
             )
             else "ecos.workflow.default_mesh_sink._get_workflow_mesh_store",
@@ -1571,9 +1515,7 @@ class TestMeshGate:
             )
             result = execute_m1_workflow("test-warn-continue")
             assert result.get("error_code") != "MESH_GATE_BLOCKED"
-            assert any(
-                v.get("id") == "MESH-GATE-01" for v in result.get("violations", [])
-            )
+            assert any(v.get("id") == "MESH-GATE-01" for v in result.get("violations", []))
         finally:
             dms._find_omo_root = original
             dms._store_instance = None
@@ -1582,9 +1524,7 @@ class TestMeshGate:
 class TestSceneBindingBridge:
     """Phase 4: Scene binding bridge tests"""
 
-    def test_executor_emits_scene_binding_from_workflow_metadata(
-        self, tmp_path, monkeypatch
-    ):
+    def test_executor_emits_scene_binding_from_workflow_metadata(self, tmp_path, monkeypatch):
         """Executor should include scene_binding in WorkflowRequested when defined in workflow metadata."""
         sink_calls = []
 
@@ -1613,9 +1553,7 @@ class TestSceneBindingBridge:
 
         execute_m1_workflow("test-scene")
 
-        requested = [
-            c for c in sink_calls if c.get("event_type") == "WorkflowRequested"
-        ]
+        requested = [c for c in sink_calls if c.get("event_type") == "WorkflowRequested"]
         assert len(requested) >= 1
         assert requested[0]["payload"]["scene_binding"]["scene_id"] == "scene-1"
         assert requested[0]["payload"]["scene_binding"]["journey_id"] == "journey-1"
@@ -1651,9 +1589,7 @@ class TestSceneBindingBridge:
             },
         )
 
-        requested = [
-            c for c in sink_calls if c.get("event_type") == "WorkflowRequested"
-        ]
+        requested = [c for c in sink_calls if c.get("event_type") == "WorkflowRequested"]
         assert len(requested) >= 1
         assert requested[0]["payload"]["scene_binding"]["scene_id"] == "param-scene"
 
@@ -1679,9 +1615,7 @@ class TestSceneBindingBridge:
 
         execute_m1_workflow("test-no-scene")
 
-        requested = [
-            c for c in sink_calls if c.get("event_type") == "WorkflowRequested"
-        ]
+        requested = [c for c in sink_calls if c.get("event_type") == "WorkflowRequested"]
         assert len(requested) >= 1
         assert "scene_binding" not in requested[0]["payload"]
 

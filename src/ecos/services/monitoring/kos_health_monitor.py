@@ -45,13 +45,9 @@ def get_baseline():
 def check_drift(current_count: int, current_zones: dict[str, int]) -> list[dict]:
     alerts = []
     if current_count is None:
-        alerts.append(
-            {"metric": "total_docs", "level": "critical", "message": "DB_UNAVAILABLE"}
-        )
+        alerts.append({"metric": "total_docs", "level": "critical", "message": "DB_UNAVAILABLE"})
         return alerts
-    drift_pct = (
-        (current_count - BASELINE["documents"]) / max(BASELINE["documents"], 1) * 100
-    )
+    drift_pct = (current_count - BASELINE["documents"]) / max(BASELINE["documents"], 1) * 100
     t = THRESHOLDS["total_docs"]
     if abs(drift_pct) >= t["critical"]:
         alerts.append(

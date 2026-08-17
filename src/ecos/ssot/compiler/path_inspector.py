@@ -59,8 +59,7 @@ class PathBoundaryInspector:
         allowed_domain_roots: dict[str, list[str]] | None = None,
     ) -> None:
         self.protected_roots = [
-            self._normalize(p)
-            for p in (protected_roots or ["@工作文档", "documents/weijian/_entities/facts"])
+            self._normalize(p) for p in (protected_roots or ["@工作文档", "documents/weijian/_entities/facts"])
         ]
         self.allowed_domain_roots = {
             domain: [self._normalize(r) for r in roots]
@@ -82,9 +81,7 @@ class PathBoundaryInspector:
         """Check whether normalized path belongs to Documents content plane."""
         target_lower = norm_target.lower()
         return any(
-            target_lower == kw.lower()
-            or target_lower.startswith(f"{kw.lower()}/")
-            or f"/{kw.lower()}/" in target_lower
+            target_lower == kw.lower() or target_lower.startswith(f"{kw.lower()}/") or f"/{kw.lower()}/" in target_lower
             for kw in DOCUMENTS_ROOT_KEYWORDS
         )
 
@@ -97,7 +94,9 @@ class PathBoundaryInspector:
             # Rule E-DOC-001: No executable scripts in Documents
             if any(norm_target.endswith(ext) for ext in SCRIPT_EXTENSIONS):
                 script_name = Path(norm_target).name
-                suggested_dest = f"scripts/{caller_domain}/{script_name}" if caller_domain != "default" else f"scripts/{script_name}"
+                suggested_dest = (
+                    f"scripts/{caller_domain}/{script_name}" if caller_domain != "default" else f"scripts/{script_name}"
+                )
                 violations.append(
                     ViolationReport(
                         rule_id="X4-C15",
@@ -126,14 +125,10 @@ class PathBoundaryInspector:
                 )
 
         # 2. Protected Roots & Cross-domain Authority Check (DIP-02)
-        is_protected = any(
-            norm_target == r or norm_target.startswith(f"{r}/") for r in self.protected_roots
-        )
+        is_protected = any(norm_target == r or norm_target.startswith(f"{r}/") for r in self.protected_roots)
         if is_protected:
             allowed_roots = self.allowed_domain_roots.get(caller_domain, [])
-            is_domain_authorized = any(
-                norm_target == r or norm_target.startswith(f"{r}/") for r in allowed_roots
-            )
+            is_domain_authorized = any(norm_target == r or norm_target.startswith(f"{r}/") for r in allowed_roots)
             if not is_domain_authorized:
                 violations.append(
                     ViolationReport(

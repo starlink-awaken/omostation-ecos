@@ -123,13 +123,9 @@ class M2Schema:
     m3_parent: str
     description: str
     properties: tuple[M2Property, ...] = field(default_factory=tuple)
-    state_machine: tuple[tuple[str, tuple[str, ...]], ...] = field(
-        default_factory=tuple
-    )
+    state_machine: tuple[tuple[str, tuple[str, ...]], ...] = field(default_factory=tuple)
     validation_rules: tuple[dict, ...] = field(default_factory=tuple)
-    conditional_requirements: tuple[M2ConditionalRequirement, ...] = field(
-        default_factory=tuple
-    )
+    conditional_requirements: tuple[M2ConditionalRequirement, ...] = field(default_factory=tuple)
 
     @property
     def required_names(self) -> tuple[str, ...]:
@@ -156,9 +152,7 @@ def _parse_ref_target(description: str | None) -> str | None:
 
 def _normalize_type(ptype: str, name: str, path: Path) -> str:
     if ptype not in SUPPORTED_TYPES:
-        raise CompilerError(
-            f"{path.name}: property '{name}': unsupported type '{ptype}'"
-        )
+        raise CompilerError(f"{path.name}: property '{name}': unsupported type '{ptype}'")
     return TYPE_ALIASES.get(ptype, ptype)
 
 
@@ -189,8 +183,7 @@ def _resolve_body(raw: dict, m2_type: str, path: Path) -> dict:
             compat = raw.get(compat_key)
             if isinstance(compat, dict) and compat != exact:
                 raise CompilerError(
-                    f"{path.name}: schema '{m2_type}' has divergent exact and"
-                    f" compatible ('{compat_key}') bodies"
+                    f"{path.name}: schema '{m2_type}' has divergent exact and compatible ('{compat_key}') bodies"
                 )
         return exact
     compat_key = _snake_case(m2_type)
@@ -201,9 +194,7 @@ def _resolve_body(raw: dict, m2_type: str, path: Path) -> dict:
     raise CompilerError(f"{path.name}: schema '{m2_type}' has no resolvable body")
 
 
-def _parse_property(
-    name: str, spec: dict, required: bool, model_names: set[str], path: Path
-) -> M2Property:
+def _parse_property(name: str, spec: dict, required: bool, model_names: set[str], path: Path) -> M2Property:
     raw_type = str(spec.get("type", "string"))
     description = str(spec.get("description", "")).strip()
     if raw_type in model_names:
@@ -212,9 +203,7 @@ def _parse_property(
         items_type = None
     else:
         ptype = _normalize_type(raw_type, name, path)
-        ref_target = (
-            _parse_ref_target(description) if ptype in ("ref", "list") else None
-        )
+        ref_target = _parse_ref_target(description) if ptype in ("ref", "list") else None
         items_type = None
     if ptype == "list":
         items = spec.get("items") or {}
@@ -230,9 +219,7 @@ def _parse_property(
     if ptype == "enum":
         values = spec.get("enum") or spec.get("values")
         if not values:
-            raise CompilerError(
-                f"{path.name}: property '{name}': enum type requires explicit values"
-            )
+            raise CompilerError(f"{path.name}: property '{name}': enum type requires explicit values")
         enum_values = tuple(str(v) for v in values)
     return M2Property(
         name=name,
@@ -247,9 +234,7 @@ def _parse_property(
     )
 
 
-def _parse_properties(
-    body: dict, model_names: set[str], path: Path
-) -> tuple[M2Property, ...]:
+def _parse_properties(body: dict, model_names: set[str], path: Path) -> tuple[M2Property, ...]:
     props: list[M2Property] = []
     seen: dict[str, bool] = {}
     canonical = (("requiredProperties", True), ("optionalProperties", False))
@@ -262,13 +247,9 @@ def _parse_properties(
         for name, spec in specs.items():
             name = str(name)
             if name in seen:
-                raise CompilerError(
-                    f"{path.name}: conflicting duplicate property '{name}'"
-                )
+                raise CompilerError(f"{path.name}: conflicting duplicate property '{name}'")
             seen[name] = default_required
-            props.append(
-                _parse_property(name, spec, default_required, model_names, path)
-            )
+            props.append(_parse_property(name, spec, default_required, model_names, path))
     legacy = body.get("properties")
     if legacy is not None:
         if not isinstance(legacy, dict):
@@ -276,9 +257,7 @@ def _parse_properties(
         for name, spec in legacy.items():
             name = str(name)
             if name in seen:
-                raise CompilerError(
-                    f"{path.name}: conflicting duplicate property '{name}'"
-                )
+                raise CompilerError(f"{path.name}: conflicting duplicate property '{name}'")
             seen[name] = True
             required = bool(spec.get("required", False))
             props.append(_parse_property(name, spec, required, model_names, path))
@@ -290,13 +269,8 @@ def _parse_state_machine(sm_raw: dict) -> tuple[tuple[str, tuple[str, ...]], ...
         transitions_by_from: dict[str, list[str]] = {}
         for t in sm_raw.get("transitions") or []:
             if isinstance(t, dict):
-                transitions_by_from.setdefault(str(t.get("from", "")), []).append(
-                    str(t.get("to", ""))
-                )
-        return tuple(
-            (str(state), tuple(transitions_by_from.get(str(state), ())))
-            for state in sm_raw["states"]
-        )
+                transitions_by_from.setdefault(str(t.get("from", "")), []).append(str(t.get("to", "")))
+        return tuple((str(state), tuple(transitions_by_from.get(str(state), ()))) for state in sm_raw["states"])
     state_machine: list[tuple[str, tuple[str, ...]]] = []
     for state, meta in sm_raw.items():
         if isinstance(meta, dict):
@@ -317,31 +291,20 @@ def _parse_conditional_requirements(
     parsed: list[M2ConditionalRequirement] = []
     for index, raw in enumerate(raw_requirements):
         if not isinstance(raw, dict) or not isinstance(raw.get("when"), dict):
-            raise CompilerError(
-                f"{path.name}: conditional requirement {index} must contain 'when'"
-            )
+            raise CompilerError(f"{path.name}: conditional requirement {index} must contain 'when'")
         when = raw["when"]
         property_name = str(when.get("property") or "").strip()
         equals = str(when.get("equals") or "").strip()
         required = raw.get("required")
-        if (
-            not property_name
-            or not equals
-            or not isinstance(required, list)
-            or not required
-        ):
-            raise CompilerError(
-                f"{path.name}: conditional requirement {index} is incomplete"
-            )
+        if not property_name or not equals or not isinstance(required, list) or not required:
+            raise CompilerError(f"{path.name}: conditional requirement {index} is incomplete")
         required_names = tuple(str(name).strip() for name in required)
         unknown = ({property_name} | set(required_names)) - property_names
         if unknown or any(not name for name in required_names):
             raise CompilerError(
                 f"{path.name}: conditional requirement {index} references unknown properties {sorted(unknown)}"
             )
-        parsed.append(
-            M2ConditionalRequirement(property_name, equals, required_names)
-        )
+        parsed.append(M2ConditionalRequirement(property_name, equals, required_names))
     return tuple(parsed)
 
 
@@ -389,9 +352,7 @@ def load_m2_dir(m2_dir: Path) -> list[M2Schema]:
                 properties=properties,
                 state_machine=_parse_state_machine(body.get("stateMachine") or {}),
                 validation_rules=tuple(body.get("validationRules") or []),
-                conditional_requirements=_parse_conditional_requirements(
-                    body, properties, path
-                ),
+                conditional_requirements=_parse_conditional_requirements(body, properties, path),
             )
         )
     return schemas
@@ -405,9 +366,7 @@ class MofCompiler:
     or pass it explicitly to :meth:`write` / :meth:`check`.
     """
 
-    def __init__(
-        self, m2_dir: Path | str | None = None, out_dir: Path | str | None = None
-    ) -> None:
+    def __init__(self, m2_dir: Path | str | None = None, out_dir: Path | str | None = None) -> None:
         self.m2_dir = Path(m2_dir) if m2_dir else M2_DIR_DEFAULT
         self.out_dir = Path(out_dir) if out_dir else None
 
@@ -496,10 +455,7 @@ class MofCompiler:
         base = Path(out_dir) if out_dir else (self.out_dir or Path.cwd())
         problems: list[str] = []
         artifacts = self.compile()
-        fresh_hashes = {
-            cls: hashlib.sha256(content.encode("utf-8")).hexdigest()
-            for cls, content in artifacts.items()
-        }
+        fresh_hashes = {cls: hashlib.sha256(content.encode("utf-8")).hexdigest() for cls, content in artifacts.items()}
         manifest_path = self.manifest_path(base)
         recorded: dict[str, str] = {}
         if not manifest_path.exists():
@@ -509,15 +465,11 @@ class MofCompiler:
                 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
                 recorded = manifest.get("artifacts", {})
             except (json.JSONDecodeError, OSError) as exc:
-                problems.append(
-                    f"tampered manifest: {manifest_path} (unreadable: {exc})"
-                )
+                problems.append(f"tampered manifest: {manifest_path} (unreadable: {exc})")
             else:
                 for cls in artifacts:
                     if recorded.get(cls) != fresh_hashes[cls]:
-                        problems.append(
-                            f"tampered manifest: {manifest_path} (hash mismatch for {cls})"
-                        )
+                        problems.append(f"tampered manifest: {manifest_path} (hash mismatch for {cls})")
         for cls, content in artifacts.items():
             path = self.artifact_path(base)[cls]
             if not path.exists():
@@ -525,13 +477,7 @@ class MofCompiler:
                 continue
             actual = path.read_text(encoding="utf-8")
             if actual != content:
-                problems.append(
-                    f"tampered artifact: {path} (content differs from fresh compile)"
-                )
-            elif recorded.get(cls) and hashlib.sha256(
-                actual.encode("utf-8")
-            ).hexdigest() != recorded.get(cls):
-                problems.append(
-                    f"tampered artifact: {path} (hash differs from manifest record)"
-                )
+                problems.append(f"tampered artifact: {path} (content differs from fresh compile)")
+            elif recorded.get(cls) and hashlib.sha256(actual.encode("utf-8")).hexdigest() != recorded.get(cls):
+                problems.append(f"tampered artifact: {path} (hash differs from manifest record)")
         return problems

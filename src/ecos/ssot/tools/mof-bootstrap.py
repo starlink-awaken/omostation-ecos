@@ -288,9 +288,7 @@ def format_report(checks: list[dict]) -> str:
         icon = (
             "✅"
             if c["passed"]
-            else {"critical": "🔴", "high": "🟡", "medium": "🟢", "ok": "✅"}.get(
-                c["severity"], "❓"
-            )
+            else {"critical": "🔴", "high": "🟡", "medium": "🟢", "ok": "✅"}.get(c["severity"], "❓")
         )
         lines.append(f"  {icon} {c['check']}: {c['detail']}")
         if not c["passed"]:

@@ -49,12 +49,8 @@ def verify_m3() -> dict:
     relations = m3.get("m3", {}).get("relations", {})
 
     # Count types with hierarchy
-    with_parent = sum(
-        1 for e in elements.values() if isinstance(e, dict) and e.get("parent")
-    )
-    abstract = sum(
-        1 for e in elements.values() if isinstance(e, dict) and e.get("abstract")
-    )
+    with_parent = sum(1 for e in elements.values() if isinstance(e, dict) and e.get("parent"))
+    abstract = sum(1 for e in elements.values() if isinstance(e, dict) and e.get("abstract"))
 
     return {
         "passed": True,
@@ -106,10 +102,7 @@ def verify_m1() -> dict:
             m1_counts[d.name] = len(list(d.glob("*.yaml")))
 
     # Check M2→M1 coverage
-    [
-        f.stem.replace("_mgmt", "").replace("constraint_mgmt", "constraint").lower()
-        for f in M2_DIR.glob("*.yaml")
-    ]
+    [f.stem.replace("_mgmt", "").replace("constraint_mgmt", "constraint").lower() for f in M2_DIR.glob("*.yaml")]
 
     # Map M2 type names to M1 directory names
     m2_to_m1 = {
@@ -173,9 +166,7 @@ def verify_m0() -> dict:
         fresh = False
 
     protocols = m0.get("protocols", {})
-    aging = {
-        p: s for p, s in protocols.items() if s.get("status") in ("aging", "expired")
-    }
+    aging = {p: s for p, s in protocols.items() if s.get("status") in ("aging", "expired")}
 
     return {
         "passed": fresh,
@@ -265,9 +256,7 @@ def extract_protocols(results: dict) -> list[str]:
     # P1: M2 类型必须声明 m3_parent
     m2 = results.get("m2", {})
     if m2.get("passed"):
-        protocols.append(
-            "P-M2-01: 每个 M2 类型必须声明 m3_parent 指向 M3 中的父类型 ✅"
-        )
+        protocols.append("P-M2-01: 每个 M2 类型必须声明 m3_parent 指向 M3 中的父类型 ✅")
 
     # P2: M1 节点必须通过 M2 校验
     protocols.append("P-M1-01: 所有 M1 节点必须通过 mof-validate (575/575) ✅")
@@ -277,9 +266,7 @@ def extract_protocols(results: dict) -> list[str]:
     if m1.get("passed"):
         protocols.append("P-M1-02: 每个 M2 类型至少有 2 个 M1 实例 ✅")
     else:
-        protocols.append(
-            f"P-M1-02: 每个 M2 类型至少有 2 个 M1 实例 ⚠️ 缺口: {m1.get('gaps', [])}"
-        )
+        protocols.append(f"P-M1-02: 每个 M2 类型至少有 2 个 M1 实例 ⚠️ 缺口: {m1.get('gaps', [])}")
 
     # P4: M0 快照不超过 6h
     m0 = results.get("m0", {})
@@ -290,9 +277,7 @@ def extract_protocols(results: dict) -> list[str]:
     # P5: 老化协议必须有 successor
     aging = m0.get("aging_protocols", {})
     if aging:
-        protocols.append(
-            f"P-PROTO-01: 老化协议应声明 successor (当前 {len(aging)} 个无 successor) ⚠️"
-        )
+        protocols.append(f"P-PROTO-01: 老化协议应声明 successor (当前 {len(aging)} 个无 successor) ⚠️")
 
     # P6: L0 工具链自举
     tools = results.get("tools", {})
@@ -321,9 +306,7 @@ def generate_report(results: dict) -> str:
     ]
 
     # Summary
-    all_pass = all(
-        r.get("passed", False) for r in results.values() if isinstance(r, dict)
-    )
+    all_pass = all(r.get("passed", False) for r in results.values() if isinstance(r, dict))
     lines.append(f"  综合判定: {'✅ 全部通过' if all_pass else '⚠️ 存在问题'}")
     lines.append("")
 
@@ -394,9 +377,7 @@ def main():
         "self_ref": verify_self_ref(),
     }
 
-    all_pass = all(
-        r.get("passed", False) for r in results.values() if isinstance(r, dict)
-    )
+    all_pass = all(r.get("passed", False) for r in results.values() if isinstance(r, dict))
     results["all_pass"] = all_pass  # type: ignore[reportArgumentType]
 
     if args.json:

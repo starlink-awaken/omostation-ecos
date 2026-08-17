@@ -231,9 +231,7 @@ def cmd_compile(args):
     }
 
     json_path = Path(args.dir) / "compiled.json"
-    json_path.write_text(
-        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    json_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"✅ 编译完成: {json_path}")
     print(f"   实体: {output['entity_count']}")
@@ -268,9 +266,7 @@ def _derive_watch(args):
                 engine = RuleEngine()
                 report = engine.execute(config, rounds=args.rounds)
                 elapsed = time.time() - _t0
-                print(
-                    f"  ✅ 推导完成: {elapsed:.2f}s | {Reporter.summary_line(report)}"
-                )
+                print(f"  ✅ 推导完成: {elapsed:.2f}s | {Reporter.summary_line(report)}")
             except Exception as e:  # defensive fallback
                 print(f"  ❌ {e}")
 
@@ -338,9 +334,7 @@ def cmd_derive(args):
 
     # 输出 Markdown
     md = Reporter.to_markdown(report)
-    md_path = (
-        output_dir / f"derive-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.md"
-    )
+    md_path = output_dir / f"derive-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.md"
     md_path.write_text(md, encoding="utf-8")
     print(f"📄 报告: {md_path}")
 
@@ -473,9 +467,7 @@ def cmd_evolve(args):
                 print(f"     {line}")
 
         print(f"\n检查点: {report.checkpoint}")
-        print(
-            f"建议: ssot-kernel evolve --dir {args.dir} --action apply --id <suggestion_id>"
-        )
+        print(f"建议: ssot-kernel evolve --dir {args.dir} --action apply --id <suggestion_id>")
 
     elif args.action == "apply":
         # 通过 ID 应用建议
@@ -502,9 +494,7 @@ def cmd_evolve(args):
             return 0
         print(f"\n检查点列表 ({len(cps)}):")
         for cp in cps[:10]:
-            print(
-                f"  {cp['created_at']} | {cp['label'] or '未标记'} | {len(cp['files'])} 文件"
-            )
+            print(f"  {cp['created_at']} | {cp['label'] or '未标记'} | {len(cp['files'])} 文件")
 
     elif args.action == "restore":
         cp_name = args.name
@@ -601,9 +591,7 @@ def cmd_extract(args):
     if validation.conflicts:
         print(f"冲突 ({len(validation.conflicts)}):")
         for cf in validation.conflicts[:5]:
-            print(
-                f"  [{cf.severity}] {cf.field}: {cf.existing_value} vs {cf.extracted_value}"
-            )
+            print(f"  [{cf.severity}] {cf.field}: {cf.existing_value} vs {cf.extracted_value}")
 
     # 写入确认
     if args.write and extraction.candidates:
@@ -643,11 +631,7 @@ def cmd_stats(args):
     orgs = [e for e in config.entities if e.entity_type == "Organization"]
     roles = [e for e in config.entities if e.entity_type == "Role"]
     projects = [e for e in config.entities if e.entity_type == "Project"]
-    others = [
-        e
-        for e in config.entities
-        if e.entity_type not in ("Organization", "Role", "Project")
-    ]
+    others = [e for e in config.entities if e.entity_type not in ("Organization", "Role", "Project")]
 
     # 事实统计
     policies = [f for f in config.facts if f.tags and "policy" in f.tags]

@@ -31,9 +31,7 @@ DOCS = Path.home() / "Documents"
 SCRIPTS_DIR = DOCS / "驾驶舱" / "scripts"
 NODES_DIR = DOCS / "驾驶舱" / "元模型" / "nodes"
 M2_FILE = DOCS / "驾驶舱" / "元模型" / "M2-元模型.yaml"
-CONSTRAINTS_FILE = (
-    DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
-)
+CONSTRAINTS_FILE = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
 CARDS_DB = Path.home() / "Workspace" / "data" / "cards" / "cards.db"
 ARCH_FILE = DOCS / "驾驶舱" / "5+4+1+1架构全景.md"
 ENTITY_DIR = DOCS / "领域知识库"
@@ -290,11 +288,7 @@ def scan_entities() -> list[dict]:
         stat = md.stat()
         name = md.stem
         entity_type = "concept"
-        domain = (
-            str(md.parent.parent.parent.name)
-            if md.parent.parent.parent != ENTITY_DIR
-            else "领域知识库"
-        )
+        domain = str(md.parent.parent.parent.name) if md.parent.parent.parent != ENTITY_DIR else "领域知识库"
         # Infer entity type from path
         if "人物" in str(md):
             entity_type = "person"
@@ -340,9 +334,7 @@ def save_nodes(nodes: list[dict], node_type: str = "all"):
             f.write(f"# M1 Node: {n['id']}\n")
             f.write(f"# Type: {n['type']}\n")
             f.write(f"# Generated: {now()}\n\n")
-            yaml.dump(
-                n, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-            )
+            yaml.dump(n, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
         saved += 1
     return saved
 

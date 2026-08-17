@@ -184,12 +184,8 @@ class TestTCPNodeBasic:
         node.on("type_a", lambda msg: results.append("a"))
         node.on("type_b", lambda msg: results.append("b"))
 
-        msg_a = WireMessage(
-            msg_id="1", msg_type="type_a", source="x", target="test", payload={}
-        )
-        msg_b = WireMessage(
-            msg_id="2", msg_type="type_b", source="x", target="test", payload={}
-        )
+        msg_a = WireMessage(msg_id="1", msg_type="type_a", source="x", target="test", payload={})
+        msg_b = WireMessage(msg_id="2", msg_type="type_b", source="x", target="test", payload={})
 
         node._on_receive(msg_a)
         node._on_receive(msg_b)
@@ -198,9 +194,7 @@ class TestTCPNodeBasic:
 
     def test_handler_not_found(self):
         node = TCPNode("test", "127.0.0.1", 0)
-        msg = WireMessage(
-            msg_id="1", msg_type="unknown", source="x", target="test", payload={}
-        )
+        msg = WireMessage(msg_id="1", msg_type="unknown", source="x", target="test", payload={})
         node._on_receive(msg)
         assert len(node._message_log) == 1
 

@@ -55,10 +55,7 @@ def scan_claude_md(root: Path) -> list[dict]:
     """扫描所有 CLAUDE.md → Specification 节点"""
     nodes = []
     for md in sorted(root.rglob("CLAUDE.md")):
-        if any(
-            skip in str(md)
-            for skip in ["node_modules", ".git", ".venv", "Zotero", ".obsidian"]
-        ):
+        if any(skip in str(md) for skip in ["node_modules", ".git", ".venv", "Zotero", ".obsidian"]):
             continue
         try:
             with open(md, encoding="utf-8") as f:
@@ -133,10 +130,7 @@ def scan_state_md(root: Path) -> list[dict]:
     """扫描所有 STATE.md → Entity 节点"""
     nodes = []
     for md in sorted(root.rglob("STATE.md")):
-        if any(
-            skip in str(md)
-            for skip in ["node_modules", ".git", ".venv", "Zotero", ".obsidian"]
-        ):
+        if any(skip in str(md) for skip in ["node_modules", ".git", ".venv", "Zotero", ".obsidian"]):
             continue
         try:
             md.stat()
@@ -205,10 +199,7 @@ def scan_domains(root: Path) -> list[dict]:
         file_count = sum(
             1
             for _ in d.rglob("*")
-            if _.is_file()
-            and not any(
-                s in str(_) for s in [".git", ".obsidian", "node_modules", "Zotero"]
-            )
+            if _.is_file() and not any(s in str(_) for s in [".git", ".obsidian", "node_modules", "Zotero"])
         )
 
         nodes.append(
@@ -309,20 +300,12 @@ def scan_workspace_projects(ws_root: Path) -> list[dict]:
     }
 
     for proj_dir in sorted(projects_dir.iterdir()):
-        if (
-            not proj_dir.is_dir()
-            or proj_dir.name.startswith(".")
-            or proj_dir.name.startswith("_")
-        ):
+        if not proj_dir.is_dir() or proj_dir.name.startswith(".") or proj_dir.name.startswith("_"):
             continue
 
         name = proj_dir.name
         # Skip archived snapshots
-        if (
-            "archived" in name.lower()
-            or "snapshot" in name.lower()
-            or "legacy" in name.lower()
-        ):
+        if "archived" in name.lower() or "snapshot" in name.lower() or "legacy" in name.lower():
             continue
 
         layer, desc = project_map.get(name, ("L2", f"项目: {name}"))
@@ -476,9 +459,7 @@ def scan_cards_system() -> list[dict]:
             "layer": "L4",
             "properties": {
                 "entity_type": "system",
-                "sources": [
-                    str(cards_db.relative_to(HOME)) if cards_db.exists() else "N/A"
-                ],
+                "sources": [str(cards_db.relative_to(HOME)) if cards_db.exists() else "N/A"],
             },
         }
     )
@@ -497,12 +478,8 @@ def save_nodes(nodes: list[dict], output_dir: Path):
     for n in nodes:
         fp = output_dir / f"{n['id']}.yaml"
         with open(fp, "w", encoding="utf-8") as f:
-            f.write(
-                f"# M1 Node: {n['id']}\n# Type: {n['type']}\n# Modeled: {now()}\n\n"
-            )
-            yaml.dump(
-                n, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-            )
+            f.write(f"# M1 Node: {n['id']}\n# Type: {n['type']}\n# Modeled: {now()}\n\n")
+            yaml.dump(n, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
         saved += 1
     return saved
 

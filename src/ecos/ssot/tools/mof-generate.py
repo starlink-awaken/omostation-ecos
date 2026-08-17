@@ -135,11 +135,7 @@ def generate_all(dry_run: bool = True):
         "Protocol": (load_nodes("protocol"), generate_protocol),
         "Component": (load_nodes("component"), generate_component),
         "Entity": (
-            [
-                n
-                for n in load_nodes("entity")
-                if n.get("properties", {}).get("entity_type") == "domain"
-            ],
+            [n for n in load_nodes("entity") if n.get("properties", {}).get("entity_type") == "domain"],
             generate_domain,
         ),
     }

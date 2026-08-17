@@ -33,9 +33,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 BOSROUTE_DIR = PROJECT_ROOT / "src" / "ecos" / "ssot" / "mof" / "m1" / "bosroute"
 WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_ROOT", str(Path.home() / "Workspace")))
-AGORA_BOS_RESOLVER_PATH = (
-    WORKSPACE_ROOT / "projects" / "agora" / "src" / "agora" / "mcp" / "bos_resolver.py"
-)
+AGORA_BOS_RESOLVER_PATH = WORKSPACE_ROOT / "projects" / "agora" / "src" / "agora" / "mcp" / "bos_resolver.py"
 _CANONICAL_PERSONA_BRIDGE_URI_PREFIX = "bos://persona/sot-bridge-persona/"
 
 
@@ -95,15 +93,11 @@ def load_poc_services_from_file() -> dict[str, dict]:
     keys: list[str] = []
 
     # string literal keys: "bos://memory/kos/search":
-    for m in re.finditer(
-        r"""^\s{4}"(bos://[^"]+)":\s*BosService\(""", source, re.MULTILINE
-    ):
+    for m in re.finditer(r"""^\s{4}"(bos://[^"]+)":\s*BosService\(""", source, re.MULTILINE):
         keys.append(m.group(1))
 
     # f-string keys: f"{PREFIX}recall-entity":
-    for m in re.finditer(
-        r"""^\s{4}f"(?:\{[^}]+\})([^"]+)":\s*BosService\(""", source, re.MULTILINE
-    ):
+    for m in re.finditer(r"""^\s{4}f"(?:\{[^}]+\})([^"]+)":\s*BosService\(""", source, re.MULTILINE):
         keys.append(_CANONICAL_PERSONA_BRIDGE_URI_PREFIX + m.group(1))
 
     return {k: {"uri": k} for k in keys}
@@ -151,9 +145,7 @@ def print_header(summary: dict) -> None:
     print(f"  📦 POC 路由:       {CYAN}{summary['poc_total']:>4}{RESET}")
     print(f"  ✅ 匹配:           {GREEN}{summary['matched_count']:>4}{RESET}")
     print(f"  🟡 YAML-only:      {YELLOW}{summary['yaml_only_count']:>4}{RESET}")
-    print(
-        f"  🔴 POC-only:       {RED if summary['poc_only_count'] else GREEN}{summary['poc_only_count']:>4}{RESET}"
-    )
+    print(f"  🔴 POC-only:       {RED if summary['poc_only_count'] else GREEN}{summary['poc_only_count']:>4}{RESET}")
 
 
 def print_poc_only(poc_only: list[str]) -> None:
@@ -208,9 +200,7 @@ def print_verdict(summary: dict) -> bool:
     print(f"{BOLD}{'═' * 70}{RESET}")
     if has_gap:
         print(f"  {YELLOW}{BOLD}⚠️  发现 {gap_total} 处差异{RESET}")
-        print(
-            f"  {DIM}  ℹ  非阻塞告警 — 部分路由是仅 ecos 或仅 agora 的合法状态{RESET}"
-        )
+        print(f"  {DIM}  ℹ  非阻塞告警 — 部分路由是仅 ecos 或仅 agora 的合法状态{RESET}")
     else:
         print(f"  {GREEN}{BOLD}✅  完全对齐 — 零差异{RESET}")
     print(f"{BOLD}{'═' * 70}{RESET}\n")

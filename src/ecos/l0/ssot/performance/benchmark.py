@@ -98,18 +98,14 @@ class BenchmarkResult:
         # 时间得分（权重40%）
         time_score = min(
             100,
-            (self.config.target_execution_time * 1000)
-            / (self.metrics.total_execution_time_ms + 0.1)
-            * 40,
+            (self.config.target_execution_time * 1000) / (self.metrics.total_execution_time_ms + 0.1) * 40,
         )
         score -= 40 - time_score
 
         # 内存得分（权重30%）
         memory_score = min(
             100,
-            (self.config.target_memory_mb)
-            / (self.metrics.peak_memory_usage_mb + 0.1)
-            * 30,
+            (self.config.target_memory_mb) / (self.metrics.peak_memory_usage_mb + 0.1) * 30,
         )
         score -= 30 - memory_score
 
@@ -125,9 +121,7 @@ class BenchmarkResult:
     @property
     def meets_target(self) -> bool:
         """是否达到性能目标"""
-        time_met = self.metrics.total_execution_time_ms <= (
-            self.config.target_execution_time * 1000
-        )
+        time_met = self.metrics.total_execution_time_ms <= (self.config.target_execution_time * 1000)
         memory_met = self.metrics.peak_memory_usage_mb <= self.config.target_memory_mb
         # 对于性能测试，我们主要关注性能指标，质量指标不是硬性要求
         quality_met = self.metrics.blocked_rules == 0  # 只要有阻塞就算未达到目标
@@ -190,9 +184,7 @@ class PerformanceBenchmark:
     def get_benchmark_config(self, size: str) -> BenchmarkConfig:
         """获取基准测试配置"""
         if size not in self.benchmark_configs:
-            raise ValueError(
-                f"Unknown benchmark size: {size}. Available: {self.list_benchmarks()}"
-            )
+            raise ValueError(f"Unknown benchmark size: {size}. Available: {self.list_benchmarks()}")
         return self.benchmark_configs[size]
 
     def run_benchmark(
@@ -266,13 +258,9 @@ class PerformanceBenchmark:
                     metrics.total_execution_time_ms / 1000
                 )
             if metrics.total_rules > 0:
-                metrics.memory_per_rule_mb = (
-                    metrics.peak_memory_usage_mb / metrics.total_rules
-                )
+                metrics.memory_per_rule_mb = metrics.peak_memory_usage_mb / metrics.total_rules
 
-            result = BenchmarkResult(
-                config=config, metrics=metrics, report=report, success=report.all_passed
-            )
+            result = BenchmarkResult(config=config, metrics=metrics, report=report, success=report.all_passed)
 
             if verbose:
                 self._print_result(result)
@@ -280,9 +268,7 @@ class PerformanceBenchmark:
             return result
 
         except Exception as e:  # defensive fallback
-            return BenchmarkResult(
-                config=config, metrics=PerformanceMetrics(), success=False, error=str(e)
-            )
+            return BenchmarkResult(config=config, metrics=PerformanceMetrics(), success=False, error=str(e))
 
     def run_all_benchmarks(self, verbose: bool = True) -> dict[str, BenchmarkResult]:
         """运行所有基准测试"""
@@ -328,9 +314,7 @@ class PerformanceBenchmark:
                 "score_change": score_change,
                 "baseline_score": baseline.performance_score,
                 "current_score": current.performance_score,
-                "regression_detected": time_change > 20
-                or memory_change > 15
-                or score_change < -10,
+                "regression_detected": time_change > 20 or memory_change > 15 or score_change < -10,
             }
 
         return comparison
@@ -341,9 +325,7 @@ class PerformanceBenchmark:
         print(
             f"   执行时间: {result.metrics.total_execution_time_ms / 1000:.2f}s (目标: {result.config.target_execution_time}s)"
         )
-        print(
-            f"   峰值内存: {result.metrics.peak_memory_usage_mb:.2f}MB (目标: {result.config.target_memory_mb}MB)"
-        )
+        print(f"   峰值内存: {result.metrics.peak_memory_usage_mb:.2f}MB (目标: {result.config.target_memory_mb}MB)")
         print(f"   规则速率: {result.metrics.rules_per_second:.1f} rules/s")
         print(
             f"   通过率: {result.metrics.passed_rules}/{result.metrics.total_rules} ({result.metrics.passed_rules / result.metrics.total_rules * 100 if result.metrics.total_rules > 0 else 0:.1f}%)"
@@ -375,9 +357,7 @@ class PerformanceBenchmark:
 
         # 达标统计
         target_met = sum(1 for r in results.values() if r.meets_target)
-        print(
-            f"目标达成率: {target_met}/{len(results)} ({target_met / len(results) * 100:.0f}%)"
-        )
+        print(f"目标达成率: {target_met}/{len(results)} ({target_met / len(results) * 100:.0f}%)")
 
     def _calculate_change(self, baseline: float, current: float) -> float:
         """计算变化百分比"""
@@ -422,9 +402,7 @@ class PerformanceBenchmark:
 
         print(f"📄 基准测试结果已保存到: {filepath}")
 
-    def load_results(
-        self, filepath: str = "benchmark_results.json"
-    ) -> dict[str, BenchmarkResult]:
+    def load_results(self, filepath: str = "benchmark_results.json") -> dict[str, BenchmarkResult]:
         """加载基准测试结果"""
         with open(filepath, encoding="utf-8") as f:
             data = json.load(f)
@@ -439,9 +417,7 @@ class PerformanceBenchmark:
             )
 
             metrics = PerformanceMetrics(
-                total_execution_time_ms=result_data["metrics"][
-                    "total_execution_time_ms"
-                ],
+                total_execution_time_ms=result_data["metrics"]["total_execution_time_ms"],
                 peak_memory_usage_mb=result_data["metrics"]["peak_memory_usage_mb"],
                 rules_per_second=result_data["metrics"]["rules_per_second"],
                 passed_rules=result_data["metrics"]["passed_rules"],
@@ -450,9 +426,7 @@ class PerformanceBenchmark:
                 total_rules=result_data["config"]["rule_count"],
             )
 
-            result = BenchmarkResult(
-                config=config, metrics=metrics, success=result_data["success"]
-            )
+            result = BenchmarkResult(config=config, metrics=metrics, success=result_data["success"])
             results[size] = result
 
         return results
@@ -520,9 +494,7 @@ class MultiRoundBenchmark:
 class ComplexDependencyBenchmark:
     """复杂依赖链性能测试"""
 
-    def run(
-        self, complexity_level: str = "high", verbose: bool = False
-    ) -> BenchmarkResult:
+    def run(self, complexity_level: str = "high", verbose: bool = False) -> BenchmarkResult:
         """
         测试复杂依赖关系的性能影响
 
@@ -534,9 +506,7 @@ class ComplexDependencyBenchmark:
             "high": {"entity_count": 200, "fact_count": 400, "dependency_depth": 10},
         }
 
-        config_data = complexity_config.get(
-            complexity_level, complexity_config["medium"]
-        )
+        config_data = complexity_config.get(complexity_level, complexity_config["medium"])
 
         config = BenchmarkConfig(
             name=f"complex_dependency_{complexity_level}",
@@ -555,9 +525,7 @@ class ComplexDependencyBenchmark:
         )
 
         if verbose:
-            print(
-                f"🔗 复杂依赖测试: {complexity_level} 复杂度, 深度 {config_data['dependency_depth']}"
-            )
+            print(f"🔗 复杂依赖测试: {complexity_level} 复杂度, 深度 {config_data['dependency_depth']}")
 
         benchmark = PerformanceBenchmark()
         result = benchmark.run_benchmark(custom_config=config)

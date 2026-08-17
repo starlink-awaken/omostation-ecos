@@ -100,12 +100,8 @@ def _evaluate_rules(exprs: list[str], instance: dict) -> dict[str, bool]:
 def test_envelope(name: str) -> None:
     data = _load(name)
     assert data["m2_type"], "m2_type required"
-    assert isinstance(data["version"], str) and re.match(SEMVER, data["version"]), (
-        "version must be semver"
-    )
-    assert str(data["created"]).startswith(
-        "20"
-    ), "created must be ISO-8601 datetime"
+    assert isinstance(data["version"], str) and re.match(SEMVER, data["version"]), "version must be semver"
+    assert str(data["created"]).startswith("20"), "created must be ISO-8601 datetime"
     body = _body(data)
     assert body["m3_parent"], "m3_parent required"
     assert body["description"], "description required"
@@ -118,10 +114,7 @@ def test_envelope(name: str) -> None:
 
 def test_m3_anchors() -> None:
     assert _body(_load("work_packet"))["m3_parent"] == "BehavioralElement.Process"
-    assert (
-        _body(_load("completion_manifest"))["m3_parent"]
-        == "StructuralElement.Artifact"
-    )
+    assert _body(_load("completion_manifest"))["m3_parent"] == "StructuralElement.Artifact"
 
 
 # ── field types ──
@@ -143,9 +136,7 @@ def test_validation_rules_are_strict_python(name: str) -> None:
     body = _body(_load(name))
     for expr in _rule_exprs(body):
         for forbidden in FORBIDDEN_RULE_FRAGMENTS:
-            assert forbidden not in expr, (
-                f"{name} rule contains forbidden {forbidden!r}: {expr!r}"
-            )
+            assert forbidden not in expr, f"{name} rule contains forbidden {forbidden!r}: {expr!r}"
         compile(expr, f"<rule:{name}>", "eval")  # SyntaxError propagates
 
 

@@ -355,9 +355,7 @@ class ExecutionMetricsCollector:
         self.monitor = monitor or get_environment_manager().get_monitor("default")
         self.execution_history: deque = deque(maxlen=1000)
 
-    def collect(
-        self, report: DerivationReport, execution_time_ms: float
-    ) -> list[MetricValue]:
+    def collect(self, report: DerivationReport, execution_time_ms: float) -> list[MetricValue]:
         """收集执行指标"""
         metrics = []
         timestamp = datetime.now().isoformat()
@@ -482,9 +480,7 @@ class ExecutionMetricsCollector:
         cutoff_time = datetime.now() - timedelta(minutes=window_minutes)
 
         recent_executions = [
-            record
-            for record in self.execution_history
-            if datetime.fromisoformat(record["timestamp"]) >= cutoff_time
+            record for record in self.execution_history if datetime.fromisoformat(record["timestamp"]) >= cutoff_time
         ]
 
         if not recent_executions:
@@ -498,17 +494,13 @@ class ExecutionMetricsCollector:
 
         # 计算统计指标
         times = [record["execution_time_ms"] for record in recent_executions]
-        success_count = sum(
-            1 for record in recent_executions if record["report"].all_passed
-        )
+        success_count = sum(1 for record in recent_executions if record["report"].all_passed)
 
         avg_time = statistics.mean(times)
         success_rate = success_count / len(recent_executions)
 
         total_rules = sum(record["report"].total_rules for record in recent_executions)
-        total_time_sec = (
-            sum(record["execution_time_ms"] for record in recent_executions) / 1000
-        )
+        total_time_sec = sum(record["execution_time_ms"] for record in recent_executions) / 1000
         throughput = total_rules / total_time_sec if total_time_sec > 0 else 0
 
         return {
@@ -687,9 +679,7 @@ class QualityMetricsCollector:
         metrics.append(
             MetricValue(
                 name="quality.passed_ratio",
-                value=report.passed / report.total_rules
-                if report.total_rules > 0
-                else 0,
+                value=report.passed / report.total_rules if report.total_rules > 0 else 0,
                 timestamp=timestamp,
                 tags=env_tags,
             )
@@ -698,9 +688,7 @@ class QualityMetricsCollector:
         metrics.append(
             MetricValue(
                 name="quality.failed_ratio",
-                value=report.error / report.total_rules
-                if report.total_rules > 0
-                else 0,
+                value=report.error / report.total_rules if report.total_rules > 0 else 0,
                 timestamp=timestamp,
                 tags=env_tags,
             )
@@ -709,9 +697,7 @@ class QualityMetricsCollector:
         metrics.append(
             MetricValue(
                 name="quality.blocked_ratio",
-                value=report.blocker / report.total_rules
-                if report.total_rules > 0
-                else 0,
+                value=report.blocker / report.total_rules if report.total_rules > 0 else 0,
                 timestamp=timestamp,
                 tags=env_tags,
             )
@@ -817,9 +803,7 @@ class EnhancedMetricsCollector:
         # 执行指标
         if report:
             if self.monitor.should_collect():  # type: ignore[reportOptionalMemberAccess]
-                execution_metrics = self.execution_collector.collect(
-                    report, execution_time_ms
-                )
+                execution_metrics = self.execution_collector.collect(report, execution_time_ms)
                 all_metrics["execution"].extend(execution_metrics)
                 self._cache_metrics("execution", execution_metrics)
 
@@ -848,9 +832,7 @@ class EnhancedMetricsCollector:
             # 记录到监控器
             self.monitor.record_collection(metric.name, metric.value, metric.tags)  # type: ignore[reportOptionalMemberAccess]
 
-    def aggregate_metrics(
-        self, metric_name: str, time_window_minutes: int = 5
-    ) -> AggregatedMetric | None:
+    def aggregate_metrics(self, metric_name: str, time_window_minutes: int = 5) -> AggregatedMetric | None:
         """聚合指标"""
         self.monitor.generate_isolation_key("all", metric_name)  # type: ignore[reportOptionalMemberAccess]
 
@@ -859,11 +841,7 @@ class EnhancedMetricsCollector:
         for cache_key, cached_metrics in self.metrics_cache.items():
             if metric_name in cache_key:
                 cutoff_time = datetime.now() - timedelta(minutes=time_window_minutes)
-                recent_metrics = [
-                    m
-                    for m in cached_metrics
-                    if datetime.fromisoformat(m.timestamp) >= cutoff_time
-                ]
+                recent_metrics = [m for m in cached_metrics if datetime.fromisoformat(m.timestamp) >= cutoff_time]
                 all_metrics.extend(recent_metrics)
 
         if not all_metrics:
@@ -909,9 +887,7 @@ class EnhancedMetricsCollector:
             "business_metrics": self._get_latest_metrics("business"),
             "quality_metrics": self._get_latest_metrics("quality"),
             "cache_stats": {
-                "total_cached_metrics": sum(
-                    len(cache) for cache in self.metrics_cache.values()
-                ),
+                "total_cached_metrics": sum(len(cache) for cache in self.metrics_cache.values()),
                 "categories": len(self.metrics_cache),
             },
         }
@@ -962,9 +938,7 @@ class EnhancedMetricsCollector:
 
         # 执行统计（如果有）
         if hasattr(self.execution_collector, "get_execution_statistics"):
-            exec_stats = self.execution_collector.get_execution_statistics(
-                window_minutes=60
-            )
+            exec_stats = self.execution_collector.get_execution_statistics(window_minutes=60)
             report.append("\n⚡ 执行统计 (最近60分钟):")
             report.append(f"  总执行次数: {exec_stats['total_executions']}")
             report.append(f"  平均执行时间: {exec_stats['average_time_ms']:.2f}ms")

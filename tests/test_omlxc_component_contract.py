@@ -4,9 +4,7 @@ from pathlib import Path
 
 import yaml
 
-COMPONENT = (
-    Path(__file__).parents[1] / "src/ecos/ssot/mof/m1/component/COMP-WS-omlxc.yaml"
-)
+COMPONENT = Path(__file__).parents[1] / "src/ecos/ssot/mof/m1/component/COMP-WS-omlxc.yaml"
 
 
 def test_omlxc_component_tracks_the_released_hotfix() -> None:

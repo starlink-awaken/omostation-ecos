@@ -163,9 +163,7 @@ class RoleManager(RolePrimitive):
                 logger.warning("角色已存在: %s", definition.role_id)
                 return False
             self.roles[definition.role_id] = definition
-            logger.info(
-                "定义角色: %s, type=%s", definition.role_id, definition.role_type.value
-            )
+            logger.info("定义角色: %s, type=%s", definition.role_id, definition.role_type.value)
             return True
         except Exception as e:  # defensive fallback
             logger.error("定义角色失败: %s - %s", definition.role_id, str(e))
@@ -187,9 +185,7 @@ class RoleManager(RolePrimitive):
             logger.info("分配角色: agent=%s, role=%s", agent_id, role_id)
             return True
         except Exception as e:  # defensive fallback
-            logger.error(
-                "分配角色失败: agent=%s, role=%s - %s", agent_id, role_id, str(e)
-            )
+            logger.error("分配角色失败: agent=%s, role=%s - %s", agent_id, role_id, str(e))
             return False
 
     def switch_role(self, agent_id: str, new_role_id: str) -> bool:
@@ -276,9 +272,7 @@ class RoleCollaboration:
         self.tasks[task_id] = task
         return task
 
-    def assign_roles_to_task(
-        self, task_id: str, agent_assignments: dict[str, str]
-    ) -> bool:
+    def assign_roles_to_task(self, task_id: str, agent_assignments: dict[str, str]) -> bool:
         """为任务分配角色"""
         if task_id not in self.tasks:
             return False
@@ -310,9 +304,7 @@ class RoleCollaboration:
         task.status = "running"
         return True
 
-    def complete_task(
-        self, task_id: str, results: dict[str, Any] | None = None
-    ) -> bool:
+    def complete_task(self, task_id: str, results: dict[str, Any] | None = None) -> bool:
         """完成任务"""
         if task_id not in self.tasks:
             return False
@@ -400,20 +392,14 @@ class RoleEvaluator:
     def get_improvement_trend(self, agent_id: str, role_id: str) -> Optional[str]:
         """评估 Agent 改进趋势"""
         agent_evals = sorted(
-            [
-                e
-                for e in self.evaluations
-                if e.agent_id == agent_id and e.role_id == role_id
-            ],
+            [e for e in self.evaluations if e.agent_id == agent_id and e.role_id == role_id],
             key=lambda e: e.timestamp,
         )
         if len(agent_evals) < 2:
             return None
 
         recent_avg = sum(e.score for e in agent_evals[-3:]) / min(len(agent_evals), 3)
-        older_avg = sum(e.score for e in agent_evals[:-3]) / max(
-            len(agent_evals) - 3, 1
-        )
+        older_avg = sum(e.score for e in agent_evals[:-3]) / max(len(agent_evals) - 3, 1)
 
         if recent_avg > older_avg + 5:
             return "improving"
@@ -428,10 +414,7 @@ class RoleEvaluator:
             if e.role_id == role_id:
                 agent_scores[e.agent_id].append(e.score)
 
-        ranking = [
-            (agent_id, sum(scores) / len(scores))
-            for agent_id, scores in agent_scores.items()
-        ]
+        ranking = [(agent_id, sum(scores) / len(scores)) for agent_id, scores in agent_scores.items()]
         ranking.sort(key=lambda x: x[1], reverse=True)
         return ranking
 
@@ -523,9 +506,7 @@ class RoleSwitcher:
 
         return False, "切换失败"
 
-    def get_switch_history(
-        self, agent_id: str | None = None, limit: int = 50
-    ) -> list[dict[str, Any]]:
+    def get_switch_history(self, agent_id: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
         """获取切换历史"""
         if agent_id:
             history = [h for h in self._switch_history if h["agent_id"] == agent_id]

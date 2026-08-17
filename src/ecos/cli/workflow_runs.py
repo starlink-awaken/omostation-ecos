@@ -126,9 +126,7 @@ def cmd_runs(args: list[str]) -> None:
     for run in runs:
         print(_format_run(run, verbose))
     print(f"{'=' * 100}")
-    print(
-        f"总计: {total} runs | {ok_count} 成功 {failed_count} 失败 | {total_passed}✅ {total_failed}❌"
-    )
+    print(f"总计: {total} runs | {ok_count} 成功 {failed_count} 失败 | {total_passed}✅ {total_failed}❌")
 
 
 def _show_detail(workflow_id: str) -> None:

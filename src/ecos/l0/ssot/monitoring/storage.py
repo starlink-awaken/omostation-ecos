@@ -22,15 +22,11 @@ class MetricsStorage:
         """存储指标"""
         raise NotImplementedError
 
-    def query_metrics(
-        self, metric_name: str, start_time: str, end_time: str
-    ) -> list[MetricValue]:
+    def query_metrics(self, metric_name: str, start_time: str, end_time: str) -> list[MetricValue]:
         """查询指标"""
         raise NotImplementedError
 
-    def aggregate_metrics(
-        self, metric_name: str, aggregation: str = "avg"
-    ) -> AggregatedMetric | None:
+    def aggregate_metrics(self, metric_name: str, aggregation: str = "avg") -> AggregatedMetric | None:
         """聚合指标"""
         raise NotImplementedError
 
@@ -57,15 +53,11 @@ class InMemoryStorage(MetricsStorage):
 
             # 限制内存使用
             if len(self.metrics[metric.name]) > self.max_entries:
-                self.metrics[metric.name] = self.metrics[metric.name][
-                    self.max_entries // 2 :
-                ]
+                self.metrics[metric.name] = self.metrics[metric.name][self.max_entries // 2 :]
 
         return True
 
-    def query_metrics(
-        self, metric_name: str, start_time: str, end_time: str
-    ) -> list[MetricValue]:
+    def query_metrics(self, metric_name: str, start_time: str, end_time: str) -> list[MetricValue]:
         """查询指标"""
         if metric_name not in self.metrics:
             return []
@@ -73,15 +65,9 @@ class InMemoryStorage(MetricsStorage):
         start = datetime.fromisoformat(start_time)
         end = datetime.fromisoformat(end_time)
 
-        return [
-            m
-            for m in self.metrics[metric_name]
-            if start <= datetime.fromisoformat(m.timestamp) <= end
-        ]
+        return [m for m in self.metrics[metric_name] if start <= datetime.fromisoformat(m.timestamp) <= end]
 
-    def aggregate_metrics(
-        self, metric_name: str, aggregation: str = "avg"
-    ) -> AggregatedMetric | None:
+    def aggregate_metrics(self, metric_name: str, aggregation: str = "avg") -> AggregatedMetric | None:
         """聚合指标"""
         if metric_name not in self.metrics or not self.metrics[metric_name]:
             return None
@@ -167,9 +153,7 @@ class JSONStorage(MetricsStorage):
         self._write_data(data)
         return True
 
-    def query_metrics(
-        self, metric_name: str, start_time: str, end_time: str
-    ) -> list[MetricValue]:
+    def query_metrics(self, metric_name: str, start_time: str, end_time: str) -> list[MetricValue]:
         """查询指标"""
         data = self._read_data()
 
@@ -189,9 +173,7 @@ class JSONStorage(MetricsStorage):
 
         return result
 
-    def aggregate_metrics(
-        self, metric_name: str, aggregation: str = "avg"
-    ) -> AggregatedMetric | None:
+    def aggregate_metrics(self, metric_name: str, aggregation: str = "avg") -> AggregatedMetric | None:
         """聚合指标"""
         data = self._read_data()
 
@@ -237,11 +219,7 @@ class JSONStorage(MetricsStorage):
             original_count = len(metrics)
 
             # 过滤旧数据
-            cleaned_metrics = [
-                m
-                for m in metrics
-                if datetime.fromisoformat(m["timestamp"]) >= cutoff_time
-            ]
+            cleaned_metrics = [m for m in metrics if datetime.fromisoformat(m["timestamp"]) >= cutoff_time]
 
             data["metrics"][metric_name] = cleaned_metrics
             cleaned_count += original_count - len(cleaned_metrics)
@@ -314,9 +292,7 @@ class SQLiteStorage(MetricsStorage):
         self.conn.commit()
         return True
 
-    def query_metrics(
-        self, metric_name: str, start_time: str, end_time: str
-    ) -> list[MetricValue]:
+    def query_metrics(self, metric_name: str, start_time: str, end_time: str) -> list[MetricValue]:
         """查询指标"""
         cursor = self.conn.cursor()
 
@@ -344,9 +320,7 @@ class SQLiteStorage(MetricsStorage):
 
         return result
 
-    def aggregate_metrics(
-        self, metric_name: str, aggregation: str = "avg"
-    ) -> AggregatedMetric | None:
+    def aggregate_metrics(self, metric_name: str, aggregation: str = "avg") -> AggregatedMetric | None:
         """聚合指标"""
         cursor = self.conn.cursor()
 

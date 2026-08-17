@@ -21,30 +21,12 @@ import yaml
 HOME = Path.home()
 WS = HOME / "Workspace"
 L0_NODES = WS / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "nodes"
-M0_FILE = (
-    WS / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m0" / "snapshot.yaml"
-)
+M0_FILE = WS / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m0" / "snapshot.yaml"
 CARDS_DB = WS / "data" / "cards" / "cards.db"
 DAEMON_DB = HOME / ".ecos" / "daemon-state.db"
-CONSTRAINTS = (
-    WS
-    / "projects"
-    / "ecos"
-    / "src"
-    / "ecos"
-    / "ssot"
-    / "registry"
-    / "L0-constraints.yaml"
-)
+CONSTRAINTS = WS / "projects" / "ecos" / "src" / "ecos" / "ssot" / "registry" / "L0-constraints.yaml"
 if not CONSTRAINTS.exists():
-    CONSTRAINTS = (
-        HOME
-        / "Documents"
-        / "学习进化"
-        / "2-knowledge"
-        / "基建架构"
-        / "L0-constraints.yaml"
-    )
+    CONSTRAINTS = HOME / "Documents" / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
 
 
 def now():
@@ -102,9 +84,7 @@ def generate_m0_snapshot() -> dict:
     # Daemon state
     if DAEMON_DB.exists():
         conn = sqlite3.connect(str(DAEMON_DB))
-        cur = conn.execute(
-            "SELECT COUNT(*), exit_code FROM cycles ORDER BY id DESC LIMIT 1"
-        )
+        cur = conn.execute("SELECT COUNT(*), exit_code FROM cycles ORDER BY id DESC LIMIT 1")
         cycles_row = cur.fetchone()
         cycles = cycles_row[0] if cycles_row else 0
         last_exit = cycles_row[1] if cycles_row else None
@@ -138,9 +118,7 @@ def generate_m0_snapshot() -> dict:
                 "decay": round(decay, 2),
                 "remaining_pct": round(max(0, (1 - decay) * 100), 1),
                 "age_days": age,
-                "status": "expired"
-                if decay >= 1.0
-                else ("aging" if decay >= 0.5 else "fresh"),
+                "status": "expired" if decay >= 1.0 else ("aging" if decay >= 0.5 else "fresh"),
             }
         snap["protocols"] = protocols  # type: ignore[reportArgumentType]
 
@@ -222,14 +200,8 @@ def main():
     print(f"  Daemon: {snap.get('daemon', {})}")
     protocols = snap.get("protocols", {})
     for pid, state in protocols.items():
-        icon = (
-            "🔴"
-            if state["status"] == "expired"
-            else ("🟡" if state["status"] == "aging" else "🟢")
-        )
-        print(
-            f"  {icon} {pid:10s}: {state['remaining_pct']:5.0f}% remaining ({state['age_days']}d)"
-        )
+        icon = "🔴" if state["status"] == "expired" else ("🟡" if state["status"] == "aging" else "🟢")
+        print(f"  {icon} {pid:10s}: {state['remaining_pct']:5.0f}% remaining ({state['age_days']}d)")
 
     if stale:
         print(f"\n  ── SLA 逾期 ({len(stale)}) ──")

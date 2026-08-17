@@ -81,9 +81,7 @@ def load_v1_registry(path: Path) -> list[dict]:
 def migrate_constraint(v1: dict) -> dict:
     """v3 条目 → v2 派生条目 (12 字段形状, 复用原 migrate_constraint 逻辑)."""
     rule = v1.get("rule", "")
-    rule_expr = (
-        {"kind": "expr", "args": [rule]} if isinstance(rule, str) and rule else {}
-    )
+    rule_expr = {"kind": "expr", "args": [rule]} if isinstance(rule, str) and rule else {}
 
     violation = v1.get("violation", "")
     vio_code = "E-L0-000"
@@ -192,9 +190,7 @@ def main() -> int:
     if args.validate:
         for e in errors:
             print(f"[FAIL] {e}", file=sys.stderr)
-        print(
-            f"[{'FAIL' if errors else 'OK'}] {len(v2_entries)} 条校验, {len(errors)} 错误"
-        )
+        print(f"[{'FAIL' if errors else 'OK'}] {len(v2_entries)} 条校验, {len(errors)} 错误")
         return 1 if errors else 0
 
     if args.dry_run:

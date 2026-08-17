@@ -58,9 +58,7 @@ except ImportError:
 # =========================================================================
 
 
-def execute_m1_workflow(
-    name: str, params: dict | None = None, dry_run: bool = False
-) -> dict:
+def execute_m1_workflow(name: str, params: dict | None = None, dry_run: bool = False) -> dict:
     """执行 M1 工作流·通过 BackendRegistry 路由到对应后端
 
     Args:
@@ -130,15 +128,11 @@ def execute_m1_workflow(
     if isinstance(wf_meta, dict) and isinstance(wf_meta.get("scene_binding"), dict):
         sb = wf_meta["scene_binding"]
         if all(sb.get(k) for k in ("scene_id", "journey_id", "outcome_metric")):
-            _scene_binding = {
-                k: str(sb[k]) for k in ("scene_id", "journey_id", "outcome_metric")
-            }
+            _scene_binding = {k: str(sb[k]) for k in ("scene_id", "journey_id", "outcome_metric")}
     elif params.get("scene_binding") and isinstance(params["scene_binding"], dict):
         sb = params["scene_binding"]
         if all(sb.get(k) for k in ("scene_id", "journey_id", "outcome_metric")):
-            _scene_binding = {
-                k: str(sb[k]) for k in ("scene_id", "journey_id", "outcome_metric")
-            }
+            _scene_binding = {k: str(sb[k]) for k in ("scene_id", "journey_id", "outcome_metric")}
 
     emit_event(
         "WorkflowRequested",
@@ -200,9 +194,7 @@ def execute_m1_workflow(
         if violations:
             results["violations"] = violations
             if any(v.get("severity") == "error" for v in violations):
-                logger.warning(
-                    "Workflow blocked by %d validation violations", len(violations)
-                )
+                logger.warning("Workflow blocked by %d validation violations", len(violations))
                 results["error"] = f"治理约束未通过: {len(violations)} 个违规"
                 results["failed"] = 1
                 results["run_metadata"]["state"] = WorkflowRunState.FAILED.value
@@ -213,9 +205,7 @@ def execute_m1_workflow(
                 )
                 results["finished"] = datetime.now().isoformat()
                 return results
-            logger.info(
-                "Workflow validation: %d warnings (non-blocking)", len(violations)
-            )
+            logger.info("Workflow validation: %d warnings (non-blocking)", len(violations))
 
         # ── Mesh Gate: 验证 Workflow Mesh 连接 (Phase 3) ──
         mesh_violations = mesh_gate_check()
@@ -223,9 +213,7 @@ def execute_m1_workflow(
             results.setdefault("violations", []).extend(mesh_violations)
             if any(v.get("severity") == "error" for v in mesh_violations):
                 logger.warning("Workflow blocked by Mesh gate (strict mode)")
-                results["error"] = (
-                    "Mesh gate: Workflow Mesh not connected (strict mode)"
-                )
+                results["error"] = "Mesh gate: Workflow Mesh not connected (strict mode)"
                 results["failed"] = 1
                 results["error_code"] = "MESH_GATE_BLOCKED"
                 results["run_metadata"]["state"] = WorkflowRunState.FAILED.value
@@ -250,12 +238,8 @@ def execute_m1_workflow(
         budget_status = X2BudgetDeducer.check_budget(m1_node)
         if not budget_status.get("ok") and budget_status.get("budget"):
             logger.warning("Budget warnings: %s", budget_status.get("warnings"))
-            if budget_status.get("warnings") and any(
-                "余额不足" in w for w in budget_status.get("warnings", [])
-            ):
-                results["error"] = (
-                    f"X2 熔断: Token 余额不足 ({budget_status.get('balance', 0)})"
-                )
+            if budget_status.get("warnings") and any("余额不足" in w for w in budget_status.get("warnings", [])):
+                results["error"] = f"X2 熔断: Token 余额不足 ({budget_status.get('balance', 0)})"
                 results["failed"] = 1
                 results["error_code"] = "BUDGET_EXHAUSTED"
                 results["run_metadata"]["state"] = WorkflowRunState.FAILED.value
@@ -351,10 +335,7 @@ def execute_m1_workflow(
             results["steps"] = backend_result["steps"]
             results["passed"] = backend_result.get("passed", 0)
             results["failed"] = backend_result.get("failed", 0)
-            if (
-                backend_result.get("mode") == "unavailable"
-                or backend_result.get("error_code") == "BACKEND_UNAVAILABLE"
-            ):
+            if backend_result.get("mode") == "unavailable" or backend_result.get("error_code") == "BACKEND_UNAVAILABLE":
                 results["error_code"] = "BACKEND_UNAVAILABLE"
                 results["error"] = backend_result.get("error", "Backend unavailable")
                 results["run_metadata"]["state"] = WorkflowRunState.UNAVAILABLE.value
@@ -372,10 +353,7 @@ def execute_m1_workflow(
                 results["passed"] += 1
             else:
                 results["failed"] += 1
-            if (
-                backend_result.get("mode") == "unavailable"
-                or backend_result.get("error_code") == "BACKEND_UNAVAILABLE"
-            ):
+            if backend_result.get("mode") == "unavailable" or backend_result.get("error_code") == "BACKEND_UNAVAILABLE":
                 results["error_code"] = "BACKEND_UNAVAILABLE"
                 results["error"] = backend_result.get("error", "Backend unavailable")
                 results["run_metadata"]["state"] = WorkflowRunState.UNAVAILABLE.value
@@ -385,9 +363,7 @@ def execute_m1_workflow(
         results["error"] = str(e)
         results["error_code"] = "BACKEND_UNAVAILABLE"
         results["run_metadata"]["state"] = WorkflowRunState.UNAVAILABLE.value
-        results["steps"].append(
-            {"name": "backend", "status": "unavailable", "error": str(e)}
-        )
+        results["steps"].append({"name": "backend", "status": "unavailable", "error": str(e)})
     except Exception as e:  # defensive fallback
         logger.error("Workflow execution failed: %s", e)
         results["failed"] += 1
@@ -401,9 +377,7 @@ def execute_m1_workflow(
 
     if results["run_metadata"]["state"] == WorkflowRunState.PLANNED.value:
         results["run_metadata"]["state"] = (
-            WorkflowRunState.SUCCEEDED.value
-            if results["failed"] == 0
-            else WorkflowRunState.FAILED.value
+            WorkflowRunState.SUCCEEDED.value if results["failed"] == 0 else WorkflowRunState.FAILED.value
         )
     if results["run_metadata"]["state"] == WorkflowRunState.FAILED.value:
         for step in results.get("steps", []):
@@ -491,9 +465,7 @@ def _normalize_m1(wf: dict) -> dict:
 # =========================================================================
 
 
-def execute_workflow(
-    name: str, params: dict | None = None, dry_run: bool = False
-) -> dict:
+def execute_workflow(name: str, params: dict | None = None, dry_run: bool = False) -> dict:
     """执行工作流 — 向后兼容接口（全部委派 execute_m1_workflow）
 
     保持签名和返回值兼容，但所有执行逻辑通过 execute_m1_workflow 统一路由。
@@ -507,9 +479,7 @@ def execute_workflow(
 # =========================================================================
 
 
-def _execute_step(
-    action: str, params: dict | None = None, step: dict | None = None
-) -> dict:
+def _execute_step(action: str, params: dict | None = None, step: dict | None = None) -> dict:
     """执行单个步骤（通过 actions.py 注册表路由）
 
     支持自定义命令:
@@ -534,11 +504,7 @@ def _execute_step(
             for key in ("workflow", "command", "timeout", "args", "params"):
                 if key in step:
                     val = step[key]
-                    if (
-                        isinstance(val, dict)
-                        and key in step_params
-                        and isinstance(step_params[key], dict)
-                    ):
+                    if isinstance(val, dict) and key in step_params and isinstance(step_params[key], dict):
                         step_params[key].update(val)
                     else:
                         step_params[key] = val
@@ -573,9 +539,7 @@ def _execute_command(step: dict) -> dict:
         logger.info("Executing custom command: %s", " ".join(cmd))
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
         ok = r.returncode == 0
-        summary = (
-            r.stdout.strip()[:200] or r.stderr.strip()[:200] or ("✅" if ok else "❌")
-        )
+        summary = r.stdout.strip()[:200] or r.stderr.strip()[:200] or ("✅" if ok else "❌")
         return {
             "passed": ok,
             "summary": summary,
@@ -664,11 +628,7 @@ def test_workflow(name: str) -> dict:
         results["warnings"].append(v["message"])
 
     # ── 2. 后端解析验证 ──
-    backend_name = (
-        wf.get("execution", {}).get("backend")
-        or wf.get("execution", {}).get("mode")
-        or "default"
-    )
+    backend_name = wf.get("execution", {}).get("backend") or wf.get("execution", {}).get("mode") or "default"
     try:
         backend_fn = resolve_backend(m1_node)
         assert callable(backend_fn), "后端不可调用"
@@ -691,9 +651,7 @@ def test_workflow(name: str) -> dict:
         # 验证 action 名可解析
         handler = resolve_action(action)
         if handler is None:
-            print(
-                f"  ❌  [{i}/{len(steps)}] {step_name:25s}  action 不可解析: {action}"
-            )
+            print(f"  ❌  [{i}/{len(steps)}] {step_name:25s}  action 不可解析: {action}")
             results["steps"].append(
                 {
                     "name": step_name,
@@ -738,9 +696,7 @@ def test_workflow(name: str) -> dict:
     print()
     print(f"{'=' * 50}")
     print("  测试结果:")
-    print(
-        f"    步骤:        {len(steps)} 总 / {results['passed']} ✅ / {results['failed']} ❌"
-    )
+    print(f"    步骤:        {len(steps)} 总 / {results['passed']} ✅ / {results['failed']} ❌")
     print(f"    违规:        {len(errors)} error / {len(warnings)} warning")
     print(f"    后端:        {backend_name}")
     print(f"    未解析依赖:   {len(unresolved_deps)}")

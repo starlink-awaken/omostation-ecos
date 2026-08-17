@@ -211,9 +211,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "action", nargs="?", default="stats", choices=["resolve", "list", "stats"]
-    )
+    parser.add_argument("action", nargs="?", default="stats", choices=["resolve", "list", "stats"])
     parser.add_argument("query", nargs="?", default="")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()

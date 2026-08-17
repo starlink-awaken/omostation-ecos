@@ -85,9 +85,7 @@ class AgentRegistry:
                 metadata=metadata or {},
             )
             self.agents[agent_id] = agent
-            logger.info(
-                "注册 Agent: %s, name=%s, capabilities=%s", agent_id, name, capabilities
-            )
+            logger.info("注册 Agent: %s, name=%s, capabilities=%s", agent_id, name, capabilities)
             return agent
         except Exception as e:  # defensive fallback
             logger.error("注册 Agent 失败: %s - %s", agent_id, str(e))
@@ -142,11 +140,7 @@ class AgentRegistry:
 
     def discover_agents(self, capability: str) -> list[AgentInfo]:
         """发现具有特定能力的 Agent"""
-        return [
-            a
-            for a in self.agents.values()
-            if capability in a.capabilities and a.status == AgentStatus.IDLE
-        ]
+        return [a for a in self.agents.values() if capability in a.capabilities and a.status == AgentStatus.IDLE]
 
     def to_dict(self) -> dict[str, Any]:
         """转换为字典"""

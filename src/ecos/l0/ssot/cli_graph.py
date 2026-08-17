@@ -95,9 +95,7 @@ def cmd_graph(args):
         if not diagram_blocks:
             diagram_blocks = ["\n".join(pure_lines)]
 
-        diagrams_html = "\n".join(
-            f'<pre class="mermaid">\n{block}\n</pre>' for block in diagram_blocks
-        )
+        diagrams_html = "\n".join(f'<pre class="mermaid">\n{block}\n</pre>' for block in diagram_blocks)
 
         html = f"""<!DOCTYPE html>
 <html lang="zh-CN">

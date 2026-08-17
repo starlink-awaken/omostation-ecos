@@ -334,9 +334,7 @@ class IntelligentAlertingSystem:
 
         return new_alerts
 
-    def _create_alert(
-        self, rule: AlertRule, trigger_value: float, all_metrics: dict[str, float]
-    ) -> Alert:
+    def _create_alert(self, rule: AlertRule, trigger_value: float, all_metrics: dict[str, float]) -> Alert:
         """创建告警"""
         alert_id = f"{rule.id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
@@ -363,9 +361,7 @@ class IntelligentAlertingSystem:
         )
 
         # 生成增强建议
-        enhanced_recommendations = self._generate_enhanced_recommendations(
-            rule, trigger_value, all_metrics
-        )
+        enhanced_recommendations = self._generate_enhanced_recommendations(rule, trigger_value, all_metrics)
         alert.recommendations.extend(enhanced_recommendations)
 
         return alert
@@ -501,14 +497,9 @@ class IntelligentAlertingSystem:
 
     def _get_most_frequent_rules(self, top_n: int = 5) -> list[dict]:
         """获取最频繁触发的规则"""
-        sorted_rules = sorted(
-            self.stats["by_rule"].items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_rules = sorted(self.stats["by_rule"].items(), key=lambda x: x[1], reverse=True)
 
-        return [
-            {"rule_id": rule_id, "count": count}
-            for rule_id, count in sorted_rules[:top_n]
-        ]
+        return [{"rule_id": rule_id, "count": count} for rule_id, count in sorted_rules[:top_n]]
 
     def register_callback(self, callback: Callable[[Alert], None]):
         """注册告警回调函数"""
@@ -561,9 +552,7 @@ class IntelligentAlertingSystem:
         report.append("\n📊 活跃告警统计:")
         report.append(f"  总计: {active_count}")
         for severity, count in severity_counts.items():
-            icon = {"CRITICAL": "🔴", "ERROR": "🟠", "WARNING": "🟡", "INFO": "🔵"}.get(
-                severity, "⚪"
-            )
+            icon = {"CRITICAL": "🔴", "ERROR": "🟠", "WARNING": "🟡", "INFO": "🔵"}.get(severity, "⚪")
             report.append(f"  {icon} {severity}: {count}")
 
         # 历史统计
@@ -583,9 +572,7 @@ class IntelligentAlertingSystem:
                     "WARNING": "🟡",
                     "INFO": "🔵",
                 }.get(alert.severity.value, "⚪")
-                report.append(
-                    f"  {severity_icon} [{alert.severity.value}] {alert.name}"
-                )
+                report.append(f"  {severity_icon} [{alert.severity.value}] {alert.name}")
                 report.append(f"      时间: {alert.timestamp}")
                 report.append(f"      消息: {alert.message}")
                 if alert.recommendations:

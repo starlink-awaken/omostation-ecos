@@ -58,9 +58,7 @@ class TaskInfo:
             "priority": self.priority,
             "created_at": self.created_at.isoformat(),
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat()
-            if self.completed_at
-            else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
         }
 
 
@@ -93,9 +91,7 @@ class TaskScheduler:
                         task_id=task_data.get("task_id", task_id),
                         name=task_data.get("name", ""),
                         description=task_data.get("description", ""),
-                        required_capabilities=task_data.get(
-                            "required_capabilities", []
-                        ),
+                        required_capabilities=task_data.get("required_capabilities", []),
                         status=TaskStatus(task_data.get("status", "pending")),
                         assigned_agent=task_data.get("assigned_agent", ""),
                         priority=task_data.get("priority", 0),
@@ -225,11 +221,7 @@ class TaskScheduler:
 
     def get_pending_tasks(self) -> list[TaskInfo]:
         """获取待处理任务"""
-        return [
-            self.tasks[tid]
-            for tid in self.task_queue
-            if self.tasks[tid].status == TaskStatus.PENDING
-        ]
+        return [self.tasks[tid] for tid in self.task_queue if self.tasks[tid].status == TaskStatus.PENDING]
 
     def get_next_task(self) -> TaskInfo | None:
         """获取下一个任务"""

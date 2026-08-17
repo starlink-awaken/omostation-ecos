@@ -187,9 +187,7 @@ class CommunicationProtocol:
         self._message_log: list[dict[str, Any]] = []
         self._in_flight: dict[str, Message] = {}
 
-    def register_handler(
-        self, message_type: MessageType, handler: Callable[[Message], Any]
-    ) -> None:
+    def register_handler(self, message_type: MessageType, handler: Callable[[Message], Any]) -> None:
         self.message_handlers[message_type.value] = handler
 
     def connect(self, node_id: str) -> bool:
@@ -386,15 +384,10 @@ class StateSyncService:
         return self._l0.get_all()
 
     def get_all_with_versions(self) -> dict[str, tuple[Any, int]]:
-        return {
-            k: (v, self._l0.vector_clock.get(self.node_id, 0))
-            for k, v in self._l0.get_all().items()
-        }
+        return {k: (v, self._l0.vector_clock.get(self.node_id, 0)) for k, v in self._l0.get_all().items()}
 
     def sync_from(self, remote_state: dict[str, tuple[Any, int]]) -> dict[str, Any]:
-        remote_clock = {
-            self.node_id: max((v for _, v in remote_state.values()), default=0)
-        }
+        remote_clock = {self.node_id: max((v for _, v in remote_state.values()), default=0)}
         result = self._l0.merge_state(
             {k: v for k, (v, _) in remote_state.items()},
             remote_clock,
@@ -403,9 +396,7 @@ class StateSyncService:
         self._sync_log.append(
             {
                 "type": "sync_from",
-                "changes": list(result.conflicts)
-                if hasattr(result, "conflicts")
-                else [],
+                "changes": list(result.conflicts) if hasattr(result, "conflicts") else [],
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
@@ -554,9 +545,7 @@ class LoadBalancerExecutor:
             "weighted_round_robin": LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN,
             "ip_hash": LoadBalancingStrategy.IP_HASH,
         }
-        self._lb = LoadBalancer(
-            strategy_map.get(strategy, LoadBalancingStrategy.ROUND_ROBIN)
-        )
+        self._lb = LoadBalancer(strategy_map.get(strategy, LoadBalancingStrategy.ROUND_ROBIN))
         self._latencies: dict[str, list[float]] = {}
 
     def register_node(self, node_id: str, weight: int = 1) -> None:
@@ -570,9 +559,7 @@ class LoadBalancerExecutor:
             target,
             self._lb.nodes.get(
                 target,
-                __import__(
-                    "ecos.l0.governance.load_balancer", fromlist=["NodeLoad"]
-                ).NodeLoad(node_id=target),
+                __import__("ecos.l0.governance.load_balancer", fromlist=["NodeLoad"]).NodeLoad(node_id=target),
             ).connections  # type: ignore[reportOptionalMemberAccess]
             + 1,
         )
@@ -606,7 +593,5 @@ class LoadBalancerExecutor:
         return {
             "strategy": self._lb.strategy.value,
             "node_count": len(self._lb.nodes),
-            "node_latencies": {
-                nid: self.get_avg_latency(nid) for nid in self._latencies
-            },
+            "node_latencies": {nid: self.get_avg_latency(nid) for nid in self._latencies},
         }

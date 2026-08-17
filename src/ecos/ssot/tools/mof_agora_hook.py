@@ -36,9 +36,7 @@ HOME = Path.home()
 WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_ROOT", str(HOME / "Workspace")))
 ROUTES_CACHE = None
 ROUTES_CACHE_TIME = 0
-CACHE_TTL = int(
-    os.environ.get("BOS_ROUTES_CACHE_TTL", "300")
-)  # 5 min default, overridable
+CACHE_TTL = int(os.environ.get("BOS_ROUTES_CACHE_TTL", "300"))  # 5 min default, overridable
 AUDIT_LOG = HOME / ".ecos" / "bos-audit.jsonl"
 CARDS_DB = WORKSPACE_ROOT / "data" / "cards" / "cards.db"
 L0_M1 = WORKSPACE_ROOT / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m1"
@@ -207,9 +205,7 @@ def post_audit(bos_uri: str, status_code: int, duration_ms: int = 0):
                         "confidence": 1.0,
                         "risk_level": "HIGH" if status_code >= 500 else "LOW",
                         "priority": "P1" if status_code >= 500 else "P3",
-                        "action_required": "INVESTIGATE"
-                        if status_code >= 500
-                        else "NONE",
+                        "action_required": "INVESTIGATE" if status_code >= 500 else "NONE",
                     },
                 },
                 write_file=False,

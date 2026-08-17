@@ -76,9 +76,7 @@ def get_topology() -> dict:
             "L1_runtime": {
                 "name": "运行时矩阵",
                 "daemon": True,
-                "sla_uptime": run(
-                    ["python3", str(SCRIPTS / "ecos-sla-tracker.py"), "--json"]
-                ),
+                "sla_uptime": run(["python3", str(SCRIPTS / "ecos-sla-tracker.py"), "--json"]),
                 "scripts": 3,
                 "health": "active",
             },
@@ -92,9 +90,7 @@ def get_topology() -> dict:
             },
             "I0_fabric": {
                 "name": "集成织物",
-                "events": len(list((ECOS / "events").glob("*.jsonl")))
-                if (ECOS / "events").exists()
-                else 0,
+                "events": len(list((ECOS / "events").glob("*.jsonl"))) if (ECOS / "events").exists() else 0,
                 "registry": True,
                 "scripts": 2,
                 "health": "active",
@@ -122,9 +118,7 @@ def get_topology() -> dict:
 
 
 def get_health() -> dict:
-    health_out = run(
-        ["python3", str(SCRIPTS / "ecos-health-check.py"), "--json"], silent=False
-    )
+    health_out = run(["python3", str(SCRIPTS / "ecos-health-check.py"), "--json"], silent=False)
     try:
         data = json.loads(health_out)
         results = data.get("results", [])
@@ -265,20 +259,14 @@ def format_brief(topology: dict, health: dict, debts: dict, scripts_count: int) 
     lines.append(f"# eCOS v6 — 系统自述 ({now.strftime('%Y-%m-%d %H:%M')})")
     lines.append("")
 
-    lines.append(
-        f"**{topology['version']}** · {topology['phases'][0]} → {topology['phases'][1]}"
-    )
+    lines.append(f"**{topology['version']}** · {topology['phases'][0]} → {topology['phases'][1]}")
     lines.append("")
 
     # 拓扑
     lines.append("## 架构拓扑")
     for lid, layer in topology["layers"].items():
         name = layer.get("name", lid)
-        health_icon = (
-            "✅"
-            if layer.get("health") == "active"
-            else ("⚠️" if layer.get("health") == "partial" else "❌")
-        )
+        health_icon = "✅" if layer.get("health") == "active" else ("⚠️" if layer.get("health") == "partial" else "❌")
         extra = ""
         if "sla_uptime" in layer:
             extra = f" SLA: {layer['sla_uptime'][:30]}"
@@ -295,16 +283,12 @@ def format_brief(topology: dict, health: dict, debts: dict, scripts_count: int) 
     if health.get("all_pass") is True:
         lines.append(f"✅ {health['passed']}/{health['total']} 全部通过")
     elif health.get("all_pass") is False:
-        lines.append(
-            f"⚠️ {health['passed']}/{health['total']} 通过, {health['failed']} 项失败"
-        )
+        lines.append(f"⚠️ {health['passed']}/{health['total']} 通过, {health['failed']} 项失败")
     else:
         lines.append("⏳ 健康数据累积中")
 
     # 债务
-    lines.append(
-        f"\n📊 债务: {debts['total']} 项, {debts['open']} 开放, {debts['closed']} 已关闭"
-    )
+    lines.append(f"\n📊 债务: {debts['total']} 项, {debts['open']} 开放, {debts['closed']} 已关闭")
 
     # 脚本
     lines.append(f"\n📜 脚本: {scripts_count} 个")
@@ -376,18 +360,12 @@ def main():
 
     print("\n  📐 架构拓扑")
     for lid, layer in topology["layers"].items():
-        hid = (
-            "🟢"
-            if layer.get("health") == "active"
-            else ("🟡" if layer.get("health") == "partial" else "🔴")
-        )
+        hid = "🟢" if layer.get("health") == "active" else ("🟡" if layer.get("health") == "partial" else "🔴")
         name = layer.get("name", lid)
         print(f"  {hid} {lid}: {name}")
 
     h = health
-    health_str = (
-        f"🟢 {h['passed']}/{h['total']} 通过" if h.get("all_pass") else "⏳ 累积中"
-    )
+    health_str = f"🟢 {h['passed']}/{h['total']} 通过" if h.get("all_pass") else "⏳ 累积中"
     print(f"\n  🩺 健康: {health_str}")
     print(f"  📊 债务: {debts['total']} 项 (0 开放)")
     print(f"  📜 脚本: {len(scripts)} 个")

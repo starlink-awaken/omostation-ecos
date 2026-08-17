@@ -95,9 +95,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
                 results["mode"] = "unavailable"
                 results["error_code"] = "BACKEND_UNAVAILABLE"
                 results["error"] = result.get("error", "Swarm backend unavailable")
-            on_failure = (
-                step.get("on_failure") or execution.get("on_failure") or "continue"
-            )
+            on_failure = step.get("on_failure") or execution.get("on_failure") or "continue"
             if on_failure == "abort":
                 break
 
@@ -132,9 +130,7 @@ def _execute_step_swarm(
     if _cb_available("swarm", "agora-mcp"):
         # ── 第一防线：尝试通过 Agora MCP 发起 RPC 路由调用 ──
         _AGORA_MCP_URL = "http://127.0.0.1:7422"
-        logger.info(
-            "Swarm backend: Attempting RPC call via Agora MCP for goal: %s", goal
-        )
+        logger.info("Swarm backend: Attempting RPC call via Agora MCP for goal: %s", goal)
         try:
             import os
 
@@ -166,18 +162,13 @@ def _execute_step_swarm(
                     resp_json = resp.json()
                     if resp_json.get("status") == "ok":
                         result_data = resp_json.get("result", {})
-                        if (
-                            isinstance(result_data, dict)
-                            and result_data.get("status") == "failed"
-                        ):
+                        if isinstance(result_data, dict) and result_data.get("status") == "failed":
                             logger.warning(
                                 "Agora MCP call returned business error: %s. Falling back to subprocess.",
                                 result_data.get("error"),
                             )
                         else:
-                            logger.info(
-                                "Successfully executed swarm task via Agora MCP RPC"
-                            )
+                            logger.info("Successfully executed swarm task via Agora MCP RPC")
                             return {"ok": True, "data": result_data}
                     else:
                         logger.warning(

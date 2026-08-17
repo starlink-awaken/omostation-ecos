@@ -102,9 +102,7 @@ class GovernanceRegistry:
         """获取所有启用的检查器"""
         return [c for c in self.checkers if c.enabled]
 
-    def instantiate_checker(
-        self, registration: CheckerRegistration, repo_root: str | Path
-    ) -> GovernanceCheck:
+    def instantiate_checker(self, registration: CheckerRegistration, repo_root: str | Path) -> GovernanceCheck:
         """实例化检查器"""
         module = importlib.import_module(registration.module)
         checker_class = getattr(module, registration.class_name)

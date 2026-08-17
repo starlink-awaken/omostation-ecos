@@ -121,9 +121,7 @@ class PersonalKnowledgePrimitive(ABC):
         pass
 
     @abstractmethod
-    def get_recommendation(
-        self, user_id: str, context: dict[str, Any]
-    ) -> list[KnowledgeNode]:
+    def get_recommendation(self, user_id: str, context: dict[str, Any]) -> list[KnowledgeNode]:
         pass
 
     @abstractmethod
@@ -152,9 +150,7 @@ class PersonalKnowledgeManager(PersonalKnowledgePrimitive):
             for tag in node.tags:
                 self.tag_index[tag].add(node.node_id)
             self._idf_dirty = True
-            logger.info(
-                "添加知识: %s, type=%s", node.node_id, node.knowledge_type.value
-            )
+            logger.info("添加知识: %s, type=%s", node.node_id, node.knowledge_type.value)
             return True
         except Exception as e:  # defensive fallback
             logger.error("添加知识失败: %s - %s", node.node_id, str(e))
@@ -214,9 +210,7 @@ class PersonalKnowledgeManager(PersonalKnowledgePrimitive):
         ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         return [self.knowledge[nid] for nid, score in ranked[:limit] if score > 0]
 
-    def query_by_tags(
-        self, tags: list[str], match_all: bool = False
-    ) -> list[KnowledgeNode]:
+    def query_by_tags(self, tags: list[str], match_all: bool = False) -> list[KnowledgeNode]:
         """按标签查询"""
         if not tags:
             return []
@@ -265,9 +259,7 @@ class PersonalKnowledgeManager(PersonalKnowledgePrimitive):
             self.preferences[user_id][preference.key] = preference
         return True
 
-    def get_recommendation(
-        self, user_id: str, context: dict[str, Any] | None = None
-    ) -> list[KnowledgeNode]:
+    def get_recommendation(self, user_id: str, context: dict[str, Any] | None = None) -> list[KnowledgeNode]:
         recent = sorted(
             self.knowledge.values(),
             key=lambda x: (x.updated_at, x.access_count),
@@ -307,9 +299,7 @@ class PersonalKnowledgeManager(PersonalKnowledgePrimitive):
             for term in terms:
                 doc_freq[term] += 1
 
-        self._idf_cache = {
-            term: math.log((n_docs + 1) / (df + 1)) + 1 for term, df in doc_freq.items()
-        }
+        self._idf_cache = {term: math.log((n_docs + 1) / (df + 1)) + 1 for term, df in doc_freq.items()}
         self._idf_dirty = False
         return self._idf_cache
 
@@ -356,9 +346,7 @@ class KnowledgeGraphBuilder:
             return False
         self.nodes[node_id] = metadata or {}
         self._version += 1
-        self._change_log.append(
-            {"op": "add_node", "node_id": node_id, "v": self._version}
-        )
+        self._change_log.append({"op": "add_node", "node_id": node_id, "v": self._version})
         return True
 
     def update_node(self, node_id: str, metadata: dict[str, Any]) -> bool:
@@ -366,34 +354,23 @@ class KnowledgeGraphBuilder:
             return False
         self.nodes[node_id].update(metadata)
         self._version += 1
-        self._change_log.append(
-            {"op": "update_node", "node_id": node_id, "v": self._version}
-        )
+        self._change_log.append({"op": "update_node", "node_id": node_id, "v": self._version})
         return True
 
     def remove_node(self, node_id: str) -> bool:
         if node_id not in self.nodes:
             return False
         del self.nodes[node_id]
-        self.edges = [
-            e for e in self.edges if e.source != node_id and e.target != node_id
-        ]
+        self.edges = [e for e in self.edges if e.source != node_id and e.target != node_id]
         self._adjacency.pop(node_id, None)
         for adj in self._adjacency.values():
             adj[:] = [n for n in adj if n != node_id]
-        self._edge_index = {
-            (s, t): i
-            for i, (s, t, *_) in enumerate([(e.source, e.target) for e in self.edges])
-        }
+        self._edge_index = {(s, t): i for i, (s, t, *_) in enumerate([(e.source, e.target) for e in self.edges])}
         self._version += 1
-        self._change_log.append(
-            {"op": "remove_node", "node_id": node_id, "v": self._version}
-        )
+        self._change_log.append({"op": "remove_node", "node_id": node_id, "v": self._version})
         return True
 
-    def add_edge(
-        self, source: str, target: str, relation: str, weight: float = 1.0
-    ) -> bool:
+    def add_edge(self, source: str, target: str, relation: str, weight: float = 1.0) -> bool:
         edge_key = (source, target)
         if edge_key in self._edge_index:
             return False
@@ -405,9 +382,7 @@ class KnowledgeGraphBuilder:
         self.nodes.setdefault(source, {})
         self.nodes.setdefault(target, {})
         self._version += 1
-        self._change_log.append(
-            {"op": "add_edge", "source": source, "target": target, "v": self._version}
-        )
+        self._change_log.append({"op": "add_edge", "source": source, "target": target, "v": self._version})
         return True
 
     def update_edge(self, source: str, target: str, weight: float) -> bool:
@@ -524,20 +499,13 @@ class KnowledgeGraphBuilder:
             return {}
 
         scores: dict[str, float] = {nid: 1.0 / n for nid in self.nodes}
-        neighbor_counts: dict[str, int] = {
-            nid: max(len(self.get_neighbors(nid)), 1) for nid in self.nodes
-        }
-        neighbors_cache: dict[str, list[str]] = {
-            nid: self.get_neighbors(nid) for nid in self.nodes
-        }
+        neighbor_counts: dict[str, int] = {nid: max(len(self.get_neighbors(nid)), 1) for nid in self.nodes}
+        neighbors_cache: dict[str, list[str]] = {nid: self.get_neighbors(nid) for nid in self.nodes}
 
         for _ in range(iterations):
             new_scores: dict[str, float] = {}
             for nid in self.nodes:
-                rank_sum = sum(
-                    scores.get(nb, 0) / neighbor_counts[nb]
-                    for nb in neighbors_cache[nid]
-                )
+                rank_sum = sum(scores.get(nb, 0) / neighbor_counts[nb] for nb in neighbors_cache[nid])
                 new_scores[nid] = (1 - damping) / n + damping * rank_sum
             scores = new_scores
 
@@ -632,11 +600,7 @@ class KnowledgeGraphBuilder:
         return {
             "node_count": len(self.nodes),
             "edge_count": len(self.edges),
-            "avg_degree": (
-                sum(len(self.get_neighbors(n)) for n in self.nodes) / len(self.nodes)
-                if self.nodes
-                else 0
-            ),
+            "avg_degree": (sum(len(self.get_neighbors(n)) for n in self.nodes) / len(self.nodes) if self.nodes else 0),
         }
 
 
@@ -645,9 +609,7 @@ class PreferenceEngine:
 
     def __init__(self, decay_half_life_days: float = 30.0):
         self.preferences: dict[str, dict[str, float]] = {}
-        self._hit_counts: dict[str, dict[str, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
+        self._hit_counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
         self._last_hits: dict[str, dict[str, datetime]] = defaultdict(dict)
         self.decay_half_life = decay_half_life_days * 86400
 
@@ -664,17 +626,11 @@ class PreferenceEngine:
         last_hit = self._last_hits.get(user_id, {}).get(key)
         if last_hit:
             age = (datetime.now(timezone.utc) - last_hit).total_seconds()
-            decay = (
-                math.exp(-0.693 * age / self.decay_half_life)
-                if self.decay_half_life > 0
-                else 1.0
-            )
+            decay = math.exp(-0.693 * age / self.decay_half_life) if self.decay_half_life > 0 else 1.0
             return raw * decay
         return raw
 
-    def get_top_preferences(
-        self, user_id: str, limit: int = 5
-    ) -> list[tuple[str, float]]:
+    def get_top_preferences(self, user_id: str, limit: int = 5) -> list[tuple[str, float]]:
         prefs = self.preferences.get(user_id, {})
         scored = []
         for key in prefs:
@@ -688,9 +644,7 @@ class PreferenceEngine:
         return {
             key: {
                 "hit_count": self._hit_counts[user_id][key],
-                "last_hit": self._last_hits[user_id][key].isoformat()
-                if key in self._last_hits[user_id]
-                else None,
+                "last_hit": self._last_hits[user_id][key].isoformat() if key in self._last_hits[user_id] else None,
                 "current_score": self.get_preference(user_id, key),
             }
             for key in self.preferences.get(user_id, {})
@@ -734,9 +688,7 @@ class RecommendationEngine:
         self.knowledge_manager = knowledge_manager
         self.preference_engine = preference_engine
 
-    def recommend(
-        self, user_id: str, context: dict[str, Any] | None = None, limit: int = 10
-    ) -> list[Recommendation]:
+    def recommend(self, user_id: str, context: dict[str, Any] | None = None, limit: int = 10) -> list[Recommendation]:
         """多维度推荐"""
         top_prefs = dict(self.preference_engine.get_top_preferences(user_id, 10))
         recommendations: dict[str, tuple[float, str]] = {}
@@ -771,11 +723,7 @@ class RecommendationEngine:
                     node_id=node_id,
                     score=score,
                     reason=reason,
-                    metadata={
-                        "type": self.knowledge_manager.knowledge[
-                            node_id
-                        ].knowledge_type.value
-                    },
+                    metadata={"type": self.knowledge_manager.knowledge[node_id].knowledge_type.value},
                 )
             )
         return results
@@ -798,14 +746,9 @@ class RecommendationEngine:
                 scores[nid] = sim
 
         ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        return [
-            Recommendation(node_id=nid, score=score, reason="内容相似")
-            for nid, score in ranked[:limit]
-        ]
+        return [Recommendation(node_id=nid, score=score, reason="内容相似") for nid, score in ranked[:limit]]
 
-    def _preference_match(
-        self, user_id: str, node: KnowledgeNode, top_prefs: dict[str, float]
-    ) -> float:
+    def _preference_match(self, user_id: str, node: KnowledgeNode, top_prefs: dict[str, float]) -> float:
         if not top_prefs:
             return 0.0
 
@@ -818,9 +761,7 @@ class RecommendationEngine:
         max_possible = sum(top_prefs.values())
         return match_score / max_possible if max_possible > 0 else 0.0
 
-    def _tfidf_relevance(
-        self, node: KnowledgeNode, keywords: dict[str, float], idf: dict[str, float]
-    ) -> float:
+    def _tfidf_relevance(self, node: KnowledgeNode, keywords: dict[str, float], idf: dict[str, float]) -> float:
         if not keywords:
             return 0.0
 

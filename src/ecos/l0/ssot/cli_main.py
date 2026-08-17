@@ -47,9 +47,7 @@ def main(argv: list[str] | None = None) -> int:
         description="SSOT Kernel — 单一事实源知识工程通用引擎 v2.0",
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="详细输出")
-    parser.add_argument(
-        "--debug", action="store_true", help="出错时显示完整 Python 错误栈"
-    )
+    parser.add_argument("--debug", action="store_true", help="出错时显示完整 Python 错误栈")
 
     # 共享参数：所有子命令都继承 --debug
     _common = argparse.ArgumentParser(add_help=False)
@@ -73,18 +71,14 @@ def main(argv: list[str] | None = None) -> int:
     # compile
     p_compile = sub.add_parser("compile", help="编译 YAML 为 JSON", parents=[_common])
     p_compile.add_argument("--dir", default=".")
-    p_compile.add_argument(
-        "--no-cache", action="store_true", help="跳过缓存，强制重新加载"
-    )
+    p_compile.add_argument("--no-cache", action="store_true", help="跳过缓存，强制重新加载")
 
     # derive
     p_derive = sub.add_parser("derive", help="执行规则引擎", parents=[_common])
     p_derive.add_argument("--dir", default=".")
     p_derive.add_argument("--rounds", type=int, default=1, help="多轮迭代次数")
     p_derive.add_argument("--verbose", "-v", action="store_true", help="详细输出")
-    p_derive.add_argument(
-        "--watch", "-w", action="store_true", help="监听 YAML 文件变更自动重跑"
-    )
+    p_derive.add_argument("--watch", "-w", action="store_true", help="监听 YAML 文件变更自动重跑")
 
     # check
     p_check = sub.add_parser("check", help="只检查不输出报告", parents=[_common])
@@ -92,13 +86,9 @@ def main(argv: list[str] | None = None) -> int:
     p_check.add_argument("--verbose", "-v", action="store_true")
 
     # graph
-    p_graph = sub.add_parser(
-        "graph", help="可视化（mermaid 实体图/状态机）", parents=[_common]
-    )
+    p_graph = sub.add_parser("graph", help="可视化（mermaid 实体图/状态机）", parents=[_common])
     p_graph.add_argument("--dir", default=".")
-    p_graph.add_argument(
-        "--type", choices=["entities", "state-machine"], default="entities"
-    )
+    p_graph.add_argument("--type", choices=["entities", "state-machine"], default="entities")
     p_graph.add_argument(
         "--html",
         action="store_true",
@@ -132,23 +122,13 @@ def main(argv: list[str] | None = None) -> int:
         help="源文本类型",
     )
     p_extract.add_argument("--name", "-n", default="", help="源名称（用于元信息）")
-    p_extract.add_argument(
-        "--write", "-w", action="store_true", help="校验通过后自动写入 YAML"
-    )
-    p_extract.add_argument(
-        "--llm", action="store_true", help="强制使用 LLM 提取（跳过模板）"
-    )
-    p_extract.add_argument(
-        "--llm-model", default="", help="LLM 模型名（如 qwen2.5:7b，默认自动检测）"
-    )
+    p_extract.add_argument("--write", "-w", action="store_true", help="校验通过后自动写入 YAML")
+    p_extract.add_argument("--llm", action="store_true", help="强制使用 LLM 提取（跳过模板）")
+    p_extract.add_argument("--llm-model", default="", help="LLM 模型名（如 qwen2.5:7b，默认自动检测）")
 
     # completion
-    p_comp = sub.add_parser(
-        "completion", help="输出 Shell 自动补全脚本", parents=[_common]
-    )
-    p_comp.add_argument(
-        "--shell", default="bash", choices=["bash", "zsh"], help="Shell 类型"
-    )
+    p_comp = sub.add_parser("completion", help="输出 Shell 自动补全脚本", parents=[_common])
+    p_comp.add_argument("--shell", default="bash", choices=["bash", "zsh"], help="Shell 类型")
 
     # stats
     p_stats = sub.add_parser("stats", help="输出知识库统计信息", parents=[_common])
@@ -157,18 +137,14 @@ def main(argv: list[str] | None = None) -> int:
     # export
     p_export = sub.add_parser("export", help="导出知识库为通用格式", parents=[_common])
     p_export.add_argument("--dir", default=".", help="领域配置目录")
-    p_export.add_argument(
-        "--format", choices=["json", "csv", "md"], default="md", help="导出格式"
-    )
+    p_export.add_argument("--format", choices=["json", "csv", "md"], default="md", help="导出格式")
     p_export.add_argument("--output", "-o", default="", help="输出文件路径")
 
     # sync
     sub.add_parser("sync", help="同步操作", parents=[_common])
 
     # evolve
-    p_evolve = sub.add_parser(
-        "evolve", help="进化分析：从数据挖掘新规则", parents=[_common]
-    )
+    p_evolve = sub.add_parser("evolve", help="进化分析：从数据挖掘新规则", parents=[_common])
     p_evolve.add_argument("--dir", default=".")
     p_evolve.add_argument(
         "--action",
@@ -181,13 +157,9 @@ def main(argv: list[str] | None = None) -> int:
 
     # 监控子命令
     if MONITORING_AVAILABLE:
-        monitoring_sub = sub.add_parser(
-            "monitor", help="智能监控系统", parents=[_common]
-        )
+        monitoring_sub = sub.add_parser("monitor", help="智能监控系统", parents=[_common])
 
-        monitor_subparsers = monitoring_sub.add_subparsers(
-            dest="monitor_command", help="监控子命令"
-        )
+        monitor_subparsers = monitoring_sub.add_subparsers(dest="monitor_command", help="监控子命令")
 
         # monitor start
         p_monitor_start = monitor_subparsers.add_parser("start", help="启动监控")
@@ -200,12 +172,8 @@ def main(argv: list[str] | None = None) -> int:
         # monitor alerts
         p_monitor_alerts = monitor_subparsers.add_parser("alerts", help="查看告警信息")
         p_monitor_alerts.add_argument("--severity", help="过滤严重程度")
-        p_monitor_alerts.add_argument(
-            "--stats", action="store_true", help="显示统计信息"
-        )
-        p_monitor_alerts.add_argument(
-            "--report", action="store_true", help="生成告警报告"
-        )
+        p_monitor_alerts.add_argument("--stats", action="store_true", help="显示统计信息")
+        p_monitor_alerts.add_argument("--report", action="store_true", help="生成告警报告")
 
         # monitor metrics
         p_monitor_metrics = monitor_subparsers.add_parser("metrics", help="查看指标")
@@ -215,9 +183,7 @@ def main(argv: list[str] | None = None) -> int:
             default="all",
             help="指标类别",
         )
-        p_monitor_metrics.add_argument(
-            "--history", type=int, help="历史时间窗口（分钟）"
-        )
+        p_monitor_metrics.add_argument("--history", type=int, help="历史时间窗口（分钟）")
         p_monitor_metrics.add_argument("--export", help="导出数据到文件")
 
         # monitor report
@@ -225,12 +191,8 @@ def main(argv: list[str] | None = None) -> int:
         p_monitor_report.add_argument("--export", help="导出报告到文件")
 
         # monitor dashboard
-        p_monitor_dashboard = monitor_subparsers.add_parser(
-            "dashboard", help="监控仪表板"
-        )
-        p_monitor_dashboard.add_argument(
-            "--html", action="store_true", help="生成HTML仪表板"
-        )
+        p_monitor_dashboard = monitor_subparsers.add_parser("dashboard", help="监控仪表板")
+        p_monitor_dashboard.add_argument("--html", action="store_true", help="生成HTML仪表板")
         p_monitor_dashboard.add_argument("--export", help="导出仪表板数据")
 
     args = parser.parse_args(argv)

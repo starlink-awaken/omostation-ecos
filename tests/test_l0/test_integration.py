@@ -71,11 +71,7 @@ class TestEndToEndIntegration:
             sm.add_agent(f"agent-{i}")
 
         km = PersonalKnowledgeManager()
-        km.add_knowledge(
-            KnowledgeNode(
-                node_id="k1", knowledge_type=KnowledgeType.FACT, content={"text": "AI"}
-            )
-        )
+        km.add_knowledge(KnowledgeNode(node_id="k1", knowledge_type=KnowledgeType.FACT, content={"text": "AI"}))
 
         # Step 2: L1 运行时委托
         l1_sync = L1Sync("l1-node")

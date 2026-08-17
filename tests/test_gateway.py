@@ -43,9 +43,7 @@ def _patch_gateway_scripts(tmp_path, monkeypatch):
     )
     mock_dm.resolve_path.side_effect = lambda d: tmp_path / "scripts" / d["id"]
 
-    with patch(
-        "importlib.machinery.SourceFileLoader.load_module", return_value=mock_dm
-    ):
+    with patch("importlib.machinery.SourceFileLoader.load_module", return_value=mock_dm):
         import ecos.services.integration.gateway as gw
 
         gw.dm = mock_dm
@@ -87,9 +85,7 @@ class TestHTTPHandler:
         handler._send = MagicMock()
         handler.path = "/health"
         handler.do_GET()
-        handler._send.assert_called_once_with(
-            {"status": "ok", "service": "ecos-gateway"}
-        )
+        handler._send.assert_called_once_with({"status": "ok", "service": "ecos-gateway"})
 
     def test_not_found(self):
         from ecos.services.integration.gateway import BosHTTPHandler

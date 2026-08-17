@@ -47,9 +47,7 @@ def _domain_path(dd: str) -> str:
     alt2 = _PROJECT_ROOT / dd
     if alt2.exists():
         return str(alt2.resolve())
-    raise FileNotFoundError(
-        f"领域目录不存在: {dd}（已尝试: {p}, {alt}, {alt2}）\n  可用路径示例: domains/guozhuan"
-    )
+    raise FileNotFoundError(f"领域目录不存在: {dd}（已尝试: {p}, {alt}, {alt2}）\n  可用路径示例: domains/guozhuan")
 
 
 TOOLS = [

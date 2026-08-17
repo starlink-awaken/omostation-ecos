@@ -76,9 +76,7 @@ def ssot_sync(yaml_dir: str, md_dir: str) -> str:
 
 
 @mcp.tool()
-def ssot_extract(
-    file_path: str, domain_dir: str = "", use_llm: bool = False, model: str = ""
-) -> str:
+def ssot_extract(file_path: str, domain_dir: str = "", use_llm: bool = False, model: str = "") -> str:
     """从文件中提取知识结构（实体/事实），支持模板和 LLM"""
     result = do_extract(
         {
@@ -100,9 +98,7 @@ ECOS_SRC = Path(__file__).resolve().parent
 import importlib.util as _ilu
 
 _DM_PATH = ECOS_SRC / "services" / "governance" / "domain_manager.py"
-_spec = _ilu.spec_from_file_location(
-    "ecos.services.governance.domain_manager", _DM_PATH
-)
+_spec = _ilu.spec_from_file_location("ecos.services.governance.domain_manager", _DM_PATH)
 dm = _ilu.module_from_spec(_spec)  # type: ignore[reportArgumentType]
 _spec.loader.exec_module(dm)  # type: ignore[reportOptionalMemberAccess]
 
@@ -149,9 +145,7 @@ def domain_validate(domain: str) -> str:
     p = dm.resolve_path(d)
     if not p.exists():
         return json.dumps({"error": f"路径不存在: {p}"})
-    results = dm.validate_domain(
-        p, d.get("domain_type", "document"), d.get("governance_tier", 1)
-    )
+    results = dm.validate_domain(p, d.get("domain_type", "document"), d.get("governance_tier", 1))
     return json.dumps(
         {
             "domain": d.get("name", d["id"]),
@@ -248,9 +242,7 @@ def domain_search(query: str, max_results: int = 10) -> str:
                             rel = str(Path(line).relative_to(p))
                         except Exception:  # defensive fallback
                             rel = line
-                        results.append(
-                            {"uri": f"bos://{did}/{rel}", "domain": did, "file": rel}
-                        )
+                        results.append({"uri": f"bos://{did}/{rel}", "domain": did, "file": rel})
             except Exception:  # defensive fallback
                 pass
     return json.dumps({"results": results, "total": len(results)}, ensure_ascii=False)
@@ -271,11 +263,7 @@ def domain_tree(domain: str) -> str:
         if depth > 3:
             return []
         items = sorted(
-            [
-                i
-                for i in dir_path.iterdir()
-                if not i.name.startswith(".") and not i.name.startswith("__")
-            ],
+            [i for i in dir_path.iterdir() if not i.name.startswith(".") and not i.name.startswith("__")],
             key=lambda x: (not x.is_dir(), x.name),
         )
         result = []
@@ -286,9 +274,7 @@ def domain_tree(domain: str) -> str:
             result.append(node)
         return result
 
-    return json.dumps(
-        {"domain": d.get("name", d["id"]), "tree": _tree(p)}, ensure_ascii=False
-    )
+    return json.dumps({"domain": d.get("name", d["id"]), "tree": _tree(p)}, ensure_ascii=False)
 
 
 @mcp.tool()
@@ -456,13 +442,7 @@ def workflow_logs(recent: int = 10, status: str = "") -> str:
         runs = runs[:recent]
         safe = []
         for r in runs:
-            safe.append(
-                {
-                    k: v
-                    for k, v in r.items()
-                    if isinstance(v, (str, int, float, bool, list, dict)) or v is None
-                }
-            )
+            safe.append({k: v for k, v in r.items() if isinstance(v, (str, int, float, bool, list, dict)) or v is None})
         return json.dumps(
             {
                 "runs": safe,
@@ -565,9 +545,7 @@ def workflow_circuit_breaker_reset(backend: str = "") -> str:
             return json.dumps({"reset": True, "backend": backend}, ensure_ascii=False)
         else:
             count = reset_all()
-            return json.dumps(
-                {"reset": True, "all": True, "entries_reset": count}, ensure_ascii=False
-            )
+            return json.dumps({"reset": True, "all": True, "entries_reset": count}, ensure_ascii=False)
     except Exception as e:  # defensive fallback
         return json.dumps({"error": str(e)}, ensure_ascii=False)
 

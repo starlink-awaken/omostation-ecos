@@ -121,11 +121,7 @@ class MonitoringCLI:
         print("\n🏥 SSOT 监控系统状态")
         print("=" * 60)
 
-        status_icon = (
-            "✅"
-            if health["status"] == "healthy"
-            else ("⚠️" if health["status"] == "warning" else "❌")
-        )
+        status_icon = "✅" if health["status"] == "healthy" else ("⚠️" if health["status"] == "warning" else "❌")
         print(f"系统状态: {status_icon} {health['status']}")
 
         # 环境信息
@@ -147,20 +143,14 @@ class MonitoringCLI:
         print(f"  活跃告警: {alert_summary['total_active']}")
 
         for severity, count in alert_summary["by_severity"].items():
-            icon = {"CRITICAL": "🔴", "ERROR": "🟠", "WARNING": "🟡", "INFO": "🔵"}.get(
-                severity, "⚪"
-            )
+            icon = {"CRITICAL": "🔴", "ERROR": "🟠", "WARNING": "🟡", "INFO": "🔵"}.get(severity, "⚪")
             print(f"  {icon} {severity}: {count}")
 
         # 组件状态
         print("\n🔧 组件状态:")
         for name, component_health in health.get("components", {}).items():
             comp_status = component_health.get("status", "unknown")
-            icon = (
-                "✅"
-                if comp_status == "healthy"
-                else ("⚠️" if comp_status == "warning" else "❌")
-            )
+            icon = "✅" if comp_status == "healthy" else ("⚠️" if comp_status == "warning" else "❌")
             print(f"  {icon} {name}: {comp_status}")
 
         print("=" * 60)
@@ -170,12 +160,8 @@ class MonitoringCLI:
         print("\n📊 监控摘要:")
 
         # 执行统计
-        if hasattr(
-            self.metrics_collector.execution_collector, "get_execution_statistics"
-        ):
-            exec_stats = (
-                self.metrics_collector.execution_collector.get_execution_statistics()
-            )
+        if hasattr(self.metrics_collector.execution_collector, "get_execution_statistics"):
+            exec_stats = self.metrics_collector.execution_collector.get_execution_statistics()
             if exec_stats["total_executions"] > 0:
                 print(f"  执行次数: {exec_stats['total_executions']}")
                 print(f"  平均执行时间: {exec_stats['average_time_ms']:.2f}ms")
@@ -314,9 +300,7 @@ class MonitoringCLI:
             for category in categories:
                 # 获取聚合指标
                 for metric_name in list(snapshot.get(f"{category}_metrics", {}).keys()):
-                    aggregated = self.metrics_collector.aggregate_metrics(
-                        metric_name, time_window_minutes=args.history
-                    )
+                    aggregated = self.metrics_collector.aggregate_metrics(metric_name, time_window_minutes=args.history)
 
                     if aggregated:
                         print(f"\n{metric_name}:")
@@ -343,11 +327,7 @@ class MonitoringCLI:
         # 系统健康
         health = self.architecture.get_system_health()
         print("\n🏥 系统健康:")
-        status_icon = (
-            "✅"
-            if health["status"] == "healthy"
-            else ("⚠️" if health["status"] == "warning" else "❌")
-        )
+        status_icon = "✅" if health["status"] == "healthy" else ("⚠️" if health["status"] == "warning" else "❌")
         print(f"  {status_icon} 状态: {health['status']}")
 
         # 环境概览
@@ -373,9 +353,7 @@ class MonitoringCLI:
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(
-        prog="ssot-monitor", description="SSOT 智能监控工具"
-    )
+    parser = argparse.ArgumentParser(prog="ssot-monitor", description="SSOT 智能监控工具")
 
     subparsers = parser.add_subparsers(dest="command", help="子命令")
 

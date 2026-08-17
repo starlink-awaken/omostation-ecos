@@ -22,9 +22,7 @@ MCP_LOG = Path.home() / ".ecos" / "events" / "mcp-stream.jsonl"
 EVENT_LOG.parent.mkdir(parents=True, exist_ok=True)
 
 
-def publish(
-    event_type: str, payload: dict, source: str = "ecos-daemon", mcp: bool = False
-):
+def publish(event_type: str, payload: dict, source: str = "ecos-daemon", mcp: bool = False):
     now = datetime.now(timezone.utc).isoformat()
     evt = {
         "id": f"evt-{datetime.now().strftime('%Y%m%d%H%M%S%f')}",

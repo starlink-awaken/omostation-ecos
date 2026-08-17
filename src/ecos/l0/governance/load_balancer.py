@@ -55,9 +55,7 @@ class LoadBalancer:
         self.nodes: dict[str, NodeLoad] = {}
         self._persistence = persistence
         self.current_index: int = 0
-        self.health_check_interval = self.config.get(
-            "load_balancer.health_check_interval", 30
-        )
+        self.health_check_interval = self.config.get("load_balancer.health_check_interval", 30)
 
     def register_node(self, node_id: str, weight: int = 1) -> NodeLoad:
         """注册节点"""
@@ -131,9 +129,7 @@ class LoadBalancer:
             self._current_weights = {n.node_id: 0 for n in healthy_nodes}
 
         for node in healthy_nodes:
-            self._current_weights[node.node_id] = (
-                self._current_weights.get(node.node_id, 0) + node.weight
-            )
+            self._current_weights[node.node_id] = self._current_weights.get(node.node_id, 0) + node.weight
 
         selected = max(
             healthy_nodes,
@@ -158,9 +154,7 @@ class LoadBalancer:
 
         ring.sort(key=lambda x: x[0])
 
-        key_hash = int(
-            hashlib.md5(f"{self.current_index}".encode()).hexdigest()[:8], 16
-        )
+        key_hash = int(hashlib.md5(f"{self.current_index}".encode()).hexdigest()[:8], 16)
         self.current_index += 1
 
         for ring_hash, node_id in ring:

@@ -78,9 +78,7 @@ TYPE_ICONS = {
     "model": "\U0001f9e0",
     "view": "\U0001f441\ufe0f",
 }
-KEMS_PLANES = {
-    "document": ["_control", "_entities", "_knowledge", "_storage", "_archive"]
-}
+KEMS_PLANES = {"document": ["_control", "_entities", "_knowledge", "_storage", "_archive"]}
 
 
 # ── 懒加载函数（避免循环 import：domain_manager.py 在 import 本模块时尚未完全执行）──
@@ -129,13 +127,7 @@ def cmd_list(args):
     if "--json" in args:
         print(
             json.dumps(
-                [
-                    {
-                        k: d.get(k)
-                        for k in ["id", "name", "domain_type", "layer", "status"]
-                    }
-                    for d in registry
-                ],
+                [{k: d.get(k) for k in ["id", "name", "domain_type", "layer", "status"]} for d in registry],
                 indent=2,
                 ensure_ascii=False,
             )
@@ -176,9 +168,7 @@ def cmd_status(args):
         return
 
     p = resolve_path(d)
-    print(
-        f"\n  {TYPE_ICONS.get(d.get('domain_type', ''), '')} {d.get('name', d['id'])}"
-    )
+    print(f"\n  {TYPE_ICONS.get(d.get('domain_type', ''), '')} {d.get('name', d['id'])}")
     print(
         f"  ID: {d['id']}  |  类型: {d.get('domain_type', '?')}  |  层: {d.get('layer', '?')}  |  Tier: {d.get('governance_tier', '-')}"
     )
@@ -241,11 +231,7 @@ def cmd_tree(args):
         if depth > 3:
             return
         items = sorted(
-            [
-                i
-                for i in dir_path.iterdir()
-                if not i.name.startswith(".") and not i.name.startswith("__")
-            ],
+            [i for i in dir_path.iterdir() if not i.name.startswith(".") and not i.name.startswith("__")],
             key=lambda x: (not x.is_dir(), x.name),
         )
         for i, item in enumerate(items):
@@ -361,19 +347,14 @@ def cmd_stats(args):
     kems_ok = sum(
         1
         for d in docs
-        if resolve_path(d).exists()
-        and all((resolve_path(d) / p).is_dir() for p in KEMS_PLANES.get("document", []))
+        if resolve_path(d).exists() and all((resolve_path(d) / p).is_dir() for p in KEMS_PLANES.get("document", []))
     )
     print(f"  KEMS完整:  {kems_ok}/{len(docs)} (document域)")
     if docs and kems_ok < len(docs):
         for d in docs:
             p = resolve_path(d)
             if p.exists():
-                missing = [
-                    pl
-                    for pl in KEMS_PLANES.get("document", [])
-                    if not (p / pl).is_dir()
-                ]
+                missing = [pl for pl in KEMS_PLANES.get("document", []) if not (p / pl).is_dir()]
                 if missing:
                     print(f"    ⚠️  {d.get('name', '?')}: 缺 {' '.join(missing)}")
     print()
@@ -408,9 +389,7 @@ def cmd_create(args):
     path = Path(path_str) if path_str else default_path
 
     # 4. ID
-    domain_id = input(
-        f"  ID [{name.replace('@', '').replace(' ', '-').lower()}]: "
-    ).strip()
+    domain_id = input(f"  ID [{name.replace('@', '').replace(' ', '-').lower()}]: ").strip()
     if not domain_id:
         domain_id = name.replace("@", "").replace(" ", "-").lower()
 
@@ -503,11 +482,7 @@ def cmd_all_validate(args):
         icon = "✅" if failed == 0 else "⚠️"
         print(
             f"  {icon} {d.get('name', d['id']):<16} {passed}/{len(results)} passed"
-            + (
-                f"  (缺: {', '.join(n for n, ok, _ in results if not ok)[:50]})"
-                if failed
-                else ""
-            )
+            + (f"  (缺: {', '.join(n for n, ok, _ in results if not ok)[:50]})" if failed else "")
         )
 
     print(f"\n  {total_pass}✅  {total_fail}❌\n")
@@ -517,9 +492,7 @@ def cmd_all_validate(args):
 def cmd_register(args):
     """注册新域到L0"""
     if len(args) < 1:
-        print(
-            "用法: ecos domain register <路径> [--type document] [--name 名称] [--id domain-id]"
-        )
+        print("用法: ecos domain register <路径> [--type document] [--name 名称] [--id domain-id]")
         return
 
     path = Path(args[0])
@@ -575,9 +548,7 @@ def cmd_register(args):
         "governance_tier": tier,
         "domain_type": dtype,
         "claude_md": str(path / "CLAUDE.md") if (path / "CLAUDE.md").exists() else None,
-        "state_md": str(path / "_control" / "STATE.md")
-        if (path / "_control" / "STATE.md").exists()
-        else None,
+        "state_md": str(path / "_control" / "STATE.md") if (path / "_control" / "STATE.md").exists() else None,
         "status": "active",
         "storage": str(path),
         "description": f"注册于 {datetime.now().strftime('%Y-%m-%d')}",
@@ -589,9 +560,7 @@ def cmd_register(args):
     from .domain_manager import L0_CONSTRAINTS
 
     with open(L0_CONSTRAINTS, "w") as f:
-        yaml.dump(
-            data, f, default_flow_style=False, allow_unicode=True, sort_keys=False
-        )
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
     print(f"✅ 已注册: {name} ({domain_id}) → L0-constraints.yaml\n")
     print("   ℹ️  注意: yaml.dump 会重排文件格式（注释丢失）。用 git diff 确认变更。\n")
 

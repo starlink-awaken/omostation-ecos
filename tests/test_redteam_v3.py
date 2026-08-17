@@ -20,9 +20,7 @@ from pathlib import Path
 
 sys.path.insert(
     0,
-    os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"
-    ),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"),
 )
 
 ECOS_ROOT = Path(__file__).resolve().parent.parent
@@ -61,9 +59,7 @@ def t1_signature_forgery() -> bool:
         real_sig = compute_signature(9999, "fake_id", "ATTACKER", "{}")
         # 模拟攻击者用错密钥
         fake_key = os.urandom(32)
-        fake_sig = hmac.new(
-            fake_key, b"9999|fake_id|ATTACKER|{}", hashlib.sha256
-        ).hexdigest()[:16]
+        fake_sig = hmac.new(fake_key, b"9999|fake_id|ATTACKER|{}", hashlib.sha256).hexdigest()[:16]
         all_ok &= test(
             "错误密钥的签名不匹配",
             real_sig != fake_sig,
@@ -72,9 +68,7 @@ def t1_signature_forgery() -> bool:
 
     # 1.3 篡改payload后签名不匹配
     sig_orig = compute_signature(9998, "id_orig", "HERMES", '{"summary":"safe"}')
-    sig_tampered = compute_signature(
-        9998, "id_orig", "HERMES", '{"summary":"DROP TABLE users"}'
-    )
+    sig_tampered = compute_signature(9998, "id_orig", "HERMES", '{"summary":"DROP TABLE users"}')
     all_ok &= test("篡改payload后签名不匹配", sig_orig != sig_tampered)
 
     # 1.4 验证新发布事件自动签名
@@ -96,9 +90,7 @@ def t1_signature_forgery() -> bool:
         }
     )
     db = sqlite3.connect(str(SSB_DB))
-    sig = db.execute(
-        "SELECT agent_signature FROM ssb_events WHERE id = ?", (_test_eid,)
-    ).fetchone()
+    sig = db.execute("SELECT agent_signature FROM ssb_events WHERE id = ?", (_test_eid,)).fetchone()
     db.close()
     all_ok &= test(
         "新发布事件自动签名",
@@ -112,9 +104,7 @@ def t1_signature_forgery() -> bool:
         "SELECT COUNT(*) FROM ssb_events WHERE source_agent IN ('CAPTURE_WATCHER','FILTER_SCORER') AND agent_signature IS NULL"
     ).fetchone()[0]
     db2.close()
-    print(
-        f"  📝 感知管道未签名事件: {unsigned_by_pipeline}（CAPTURE_WATCHER/FILTER_SCORER直接写DB，已知缺口）"
-    )
+    print(f"  📝 感知管道未签名事件: {unsigned_by_pipeline}（CAPTURE_WATCHER/FILTER_SCORER直接写DB，已知缺口）")
 
     return all_ok
 
@@ -280,9 +270,7 @@ def t4_chain_integrity_attack() -> bool:
 
     # 4.2 检查是否有事件 seq 缺失
     db = sqlite3.connect(str(SSB_DB))
-    seqs = [
-        r[0] for r in db.execute("SELECT seq FROM ssb_events ORDER BY seq").fetchall()
-    ]
+    seqs = [r[0] for r in db.execute("SELECT seq FROM ssb_events ORDER BY seq").fetchall()]
     expected = list(range(1, seqs[-1] + 1))
     missing = set(expected) - set(seqs)
     db.close()
@@ -295,9 +283,7 @@ def t4_chain_integrity_attack() -> bool:
 
     # 4.3 auto-sign确认——最近一条新事件必须有签名
     db = sqlite3.connect(str(SSB_DB))
-    last = db.execute(
-        "SELECT seq, agent_signature FROM ssb_events ORDER BY seq DESC LIMIT 1"
-    ).fetchone()
+    last = db.execute("SELECT seq, agent_signature FROM ssb_events ORDER BY seq DESC LIMIT 1").fetchone()
     db.close()
 
     if last:

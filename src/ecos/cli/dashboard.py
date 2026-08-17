@@ -15,18 +15,12 @@ from pathlib import Path
 
 import yaml
 
-ECOS_HOME = Path(
-    os.environ.get("ECOS_HOME", str(Path.home() / "Workspace" / "projects" / "ecos"))
-)
-DATA_DIR = Path(
-    os.environ.get("ECOS_DATA_DIR", str(Path.home() / "Workspace" / "data"))
-)
+ECOS_HOME = Path(os.environ.get("ECOS_HOME", str(Path.home() / "Workspace" / "projects" / "ecos")))
+DATA_DIR = Path(os.environ.get("ECOS_DATA_DIR", str(Path.home() / "Workspace" / "data")))
 STATE_FILE = ECOS_HOME / "STATE.yaml"
 SSB_DB = DATA_DIR / "kos" / "ssb.db"
 WATCHDOG_FILE = Path.home() / ".hermes" / "ecos-watchdog" / "failures.json"
-AGORA_SERVICES_FILE = (
-    Path.home() / "Workspace" / "projects" / "agora" / "src" / "agora-services.json"
-)
+AGORA_SERVICES_FILE = Path.home() / "Workspace" / "projects" / "agora" / "src" / "agora-services.json"
 AGENTMESH_HEALTH_URL = "http://127.0.0.1:3000/v1/health"
 
 
@@ -168,9 +162,7 @@ def main():
         print("eCOS Dashboard data provider — converged to cockpit :8090")
         print("  --json  Output all dashboard data as JSON")
         print()
-        print(
-            "Web dashboard: http://localhost:{COCKPIT_DASHBOARD_PORT}/api/ecos/status"
-        )
+        print("Web dashboard: http://localhost:{COCKPIT_DASHBOARD_PORT}/api/ecos/status")
         return
 
     data = get_all_data()

@@ -121,9 +121,7 @@ def test_agora_unreachable_fallback_timeout():
 
     with (
         patch("ecos.workflow.executor.load_workflow", return_value=wf_node),
-        patch(
-            "httpx.Client.get", side_effect=httpx.TimeoutException("Request timed out")
-        ),
+        patch("httpx.Client.get", side_effect=httpx.TimeoutException("Request timed out")),
         patch("ecos.workflow.backend_registry._default_executor") as mock_default_exec,
     ):
         mock_default_exec.return_value = {
@@ -185,9 +183,7 @@ def test_proxy_bypassed_due_to_trust_env_false():
     the ability of httpx to contact Agora MCP because trust_env=False is explicitly specified.
     """
     # Setup bad proxy environment variables
-    env_backup = {
-        k: os.environ.get(k) for k in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"]
-    }
+    env_backup = {k: os.environ.get(k) for k in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"]}
     os.environ["HTTP_PROXY"] = "http://non-existent-proxy-host:8888"
     os.environ["HTTPS_PROXY"] = "http://non-existent-proxy-host:8888"
     os.environ["ALL_PROXY"] = "http://non-existent-proxy-host:8888"
@@ -234,9 +230,7 @@ def test_proxy_bypassed_due_to_trust_env_false():
             # Check that trust_env=False was passed to all httpx.Client instances
             assert len(client_init_args) >= 2
             for kwargs in client_init_args:
-                assert kwargs.get("trust_env") is False, (
-                    "trust_env must be set to False to bypass global proxies!"
-                )
+                assert kwargs.get("trust_env") is False, "trust_env must be set to False to bypass global proxies!"
 
     finally:
         # Restore environment

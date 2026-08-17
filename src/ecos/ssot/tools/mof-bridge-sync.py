@@ -33,33 +33,15 @@ import yaml
 
 # ── 路径 SSOT ──────────────────────────────────────────────
 TOOL_PATH = Path(__file__).resolve()
-REPO_ROOT = (
-    TOOL_PATH.parent.parent.parent.parent.parent
-)  # 5 层 = ~/Workspace/projects/ecos
-WORKSPACE_ROOT = (
-    TOOL_PATH.parent.parent.parent.parent.parent.parent.parent
-)  # 7 层 = ~/Workspace
+REPO_ROOT = TOOL_PATH.parent.parent.parent.parent.parent  # 5 层 = ~/Workspace/projects/ecos
+WORKSPACE_ROOT = TOOL_PATH.parent.parent.parent.parent.parent.parent.parent  # 7 层 = ~/Workspace
 
 M1_LIFECYCLE_DIR = REPO_ROOT / "src" / "ecos" / "ssot" / "mof" / "m1" / "lifecycle"
 M1_DIR = REPO_ROOT / "src" / "ecos" / "ssot" / "mof" / "m1"
 
-MODEL_DRIVEN_M3 = (
-    WORKSPACE_ROOT
-    / "projects"
-    / "model-driven"
-    / "src"
-    / "model_driven"
-    / "mof"
-    / "m3_extended.py"
-)
+MODEL_DRIVEN_M3 = WORKSPACE_ROOT / "projects" / "model-driven" / "src" / "model_driven" / "mof" / "m3_extended.py"
 MODEL_DRIVEN_PIPELINE = (
-    WORKSPACE_ROOT
-    / "projects"
-    / "model-driven"
-    / "src"
-    / "model_driven"
-    / "lifecycle"
-    / "pipeline.py"
+    WORKSPACE_ROOT / "projects" / "model-driven" / "src" / "model_driven" / "lifecycle" / "pipeline.py"
 )
 
 
@@ -150,14 +132,8 @@ def diff_stages(std_stages: list[dict], m1_nodes: dict) -> dict:
         if m1_stage_key:
             m1_by_stage[m1_stage_key] = (nid, n)
 
-    missing = [
-        s for stage_key, s in std_by_stage.items() if stage_key not in m1_by_stage
-    ]
-    extra = [
-        (nid, n)
-        for stage_key, (nid, n) in m1_by_stage.items()
-        if stage_key not in std_by_stage
-    ]
+    missing = [s for stage_key, s in std_by_stage.items() if stage_key not in m1_by_stage]
+    extra = [(nid, n) for stage_key, (nid, n) in m1_by_stage.items() if stage_key not in std_by_stage]
     drifts = []
     for stage_key, std in std_by_stage.items():
         if stage_key in m1_by_stage:
@@ -199,14 +175,8 @@ def diff_gates(std_gates: list[dict], m1_nodes: dict) -> dict:
         if from_s and to_s:
             m1_by_transition[(from_s, to_s)] = (nid, n)
 
-    missing = [
-        g for trans, g in std_by_transition.items() if trans not in m1_by_transition
-    ]
-    extra = [
-        (nid, n)
-        for trans, (nid, n) in m1_by_transition.items()
-        if trans not in std_by_transition
-    ]
+    missing = [g for trans, g in std_by_transition.items() if trans not in m1_by_transition]
+    extra = [(nid, n) for trans, (nid, n) in m1_by_transition.items() if trans not in std_by_transition]
     drifts = []
     for trans, std in std_by_transition.items():
         if trans in m1_by_transition:
@@ -239,10 +209,7 @@ def diff_gates(std_gates: list[dict], m1_nodes: dict) -> dict:
                 )
     return {
         "missing": missing,
-        "extra": [
-            {"id": eid, "file": str(info["file"].relative_to(REPO_ROOT))}
-            for eid, info in extra
-        ],
+        "extra": [{"id": eid, "file": str(info["file"].relative_to(REPO_ROOT))} for eid, info in extra],
         "drift": drifts,
     }
 
@@ -343,13 +310,9 @@ def format_report(stage_diff, gate_diff) -> str:
 
     lines.append("  ── Stage diff (按 stage key 匹配) ──")
     if stage_diff["missing"]:
-        lines.append(
-            f"  🔴 缺失 ({len(stage_diff['missing'])}): {[s['stage'] for s in stage_diff['missing']]}"
-        )
+        lines.append(f"  🔴 缺失 ({len(stage_diff['missing'])}): {[s['stage'] for s in stage_diff['missing']]}")
     if stage_diff["extra"]:
-        lines.append(
-            f"  🟡 多余 ({len(stage_diff['extra'])}): {[e['id'] for e in stage_diff['extra']]}"
-        )
+        lines.append(f"  🟡 多余 ({len(stage_diff['extra'])}): {[e['id'] for e in stage_diff['extra']]}")
     if stage_diff["drift"]:
         lines.append(f"  🟡 漂移 ({len(stage_diff['drift'])}):")
         for d in stage_diff["drift"]:
@@ -366,15 +329,11 @@ def format_report(stage_diff, gate_diff) -> str:
             f"  🔴 缺失 ({len(gate_diff['missing'])}): {[f'{g["from_stage"]}→{g["to_stage"]}' for g in gate_diff['missing']]}"
         )
     if gate_diff["extra"]:
-        lines.append(
-            f"  🟡 多余 ({len(gate_diff['extra'])}): {[e['id'] for e in gate_diff['extra']]}"
-        )
+        lines.append(f"  🟡 多余 ({len(gate_diff['extra'])}): {[e['id'] for e in gate_diff['extra']]}")
     if gate_diff["drift"]:
         lines.append(f"  🟡 漂移 ({len(gate_diff['drift'])}):")
         for d in gate_diff["drift"]:
-            lines.append(
-                f"     {d['id']} ({d['transition']}): {[(x['field'], x['std'], x['m1']) for x in d['drift']]}"
-            )
+            lines.append(f"     {d['id']} ({d['transition']}): {[(x['field'], x['std'], x['m1']) for x in d['drift']]}")
     if not (gate_diff["missing"] or gate_diff["extra"] or gate_diff["drift"]):
         lines.append("  ✅ Gate 完美同步")
     lines.append("")
@@ -390,9 +349,7 @@ def main():
     parser = argparse.ArgumentParser(description="model-driven ↔ M1 增量同步")
     parser.add_argument("--diff", action="store_true", help="仅 diff 不写盘 (默认)")
     parser.add_argument("--sync", action="store_true", help="实际写盘补全 M1 节点")
-    parser.add_argument(
-        "--json", dest="json_output", action="store_true", help="JSON 输出"
-    )
+    parser.add_argument("--json", dest="json_output", action="store_true", help="JSON 输出")
     parser.add_argument("--strict", action="store_true", help="有缺失时退出码非 0")
     args = parser.parse_args()
 

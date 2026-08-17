@@ -40,9 +40,7 @@ class TestGetTopology:
     @patch("ecos.services.core.whoami.ECOS")
     def test_returns_topology(self, mock_ecos, mock_scripts, mock_run):
         mock_ecos.__truediv__.return_value.glob.return_value = []
-        mock_scripts.__truediv__.return_value = Path(
-            "/fake/scripts/ecos-sla-tracker.py"
-        )
+        mock_scripts.__truediv__.return_value = Path("/fake/scripts/ecos-sla-tracker.py")
         mock_run.return_value = ""
         topo = get_topology()
         assert topo["version"] == "eCOS v6.3.0"
@@ -58,9 +56,7 @@ class TestGetTopology:
     @patch("ecos.services.core.whoami.ECOS")
     def test_layers_have_health(self, mock_ecos, mock_scripts, mock_run):
         mock_ecos.__truediv__.return_value.glob.return_value = []
-        mock_scripts.__truediv__.return_value = Path(
-            "/fake/scripts/ecos-sla-tracker.py"
-        )
+        mock_scripts.__truediv__.return_value = Path("/fake/scripts/ecos-sla-tracker.py")
         mock_run.return_value = ""
         topo = get_topology()
         for layer in [
@@ -78,12 +74,8 @@ class TestGetHealth:
     @patch("ecos.services.core.whoami.run")
     @patch("ecos.services.core.whoami.SCRIPTS")
     def test_all_pass(self, mock_scripts, mock_run):
-        mock_scripts.__truediv__.__truediv__.return_value = Path(
-            "/fake/ecos-health-check.py"
-        )
-        mock_run.return_value = json.dumps(
-            {"results": [{"pass": True}, {"pass": True}]}
-        )
+        mock_scripts.__truediv__.__truediv__.return_value = Path("/fake/ecos-health-check.py")
+        mock_run.return_value = json.dumps({"results": [{"pass": True}, {"pass": True}]})
         health = get_health()
         assert health["all_pass"] is True
         assert health["passed"] == 2
@@ -91,12 +83,8 @@ class TestGetHealth:
     @patch("ecos.services.core.whoami.run")
     @patch("ecos.services.core.whoami.SCRIPTS")
     def test_some_fail(self, mock_scripts, mock_run):
-        mock_scripts.__truediv__.__truediv__.return_value = Path(
-            "/fake/ecos-health-check.py"
-        )
-        mock_run.return_value = json.dumps(
-            {"results": [{"pass": True}, {"pass": False}]}
-        )
+        mock_scripts.__truediv__.__truediv__.return_value = Path("/fake/ecos-health-check.py")
+        mock_run.return_value = json.dumps({"results": [{"pass": True}, {"pass": False}]})
         health = get_health()
         assert health["all_pass"] is False
         assert health["failed"] == 1
@@ -104,9 +92,7 @@ class TestGetHealth:
     @patch("ecos.services.core.whoami.run")
     @patch("ecos.services.core.whoami.SCRIPTS")
     def test_bad_json(self, mock_scripts, mock_run):
-        mock_scripts.__truediv__.__truediv__.return_value = Path(
-            "/fake/ecos-health-check.py"
-        )
+        mock_scripts.__truediv__.__truediv__.return_value = Path("/fake/ecos-health-check.py")
         mock_run.return_value = "not json"
         health = get_health()
         assert health["all_pass"] is None

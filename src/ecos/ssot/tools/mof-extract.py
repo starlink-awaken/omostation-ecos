@@ -113,9 +113,7 @@ def extract_lessons(lessons_dir: Path) -> list[dict]:
                         "incident": incident[:200],
                         "lesson": lesson[:200],
                         "root_cause": root_cause[:200] if root_cause else "",
-                        "source": str(md.relative_to(Path.home()))
-                        if str(md).startswith(str(Path.home()))
-                        else str(md),
+                        "source": str(md.relative_to(Path.home())) if str(md).startswith(str(Path.home())) else str(md),
                         "severity": "medium",
                     },
                 }
@@ -292,9 +290,7 @@ def extract_ssot_writeback(workspace_root: Path):
             pass
 
     if written_count > 0:
-        print(
-            f"  🔄 SSOT Write-back: 成功反哺了 {written_count} 个已完成任务的 context_uri"
-        )
+        print(f"  🔄 SSOT Write-back: 成功反哺了 {written_count} 个已完成任务的 context_uri")
 
 
 def save_nodes(nodes: list[dict], output_dir: Path):
@@ -308,9 +304,7 @@ def save_nodes(nodes: list[dict], output_dir: Path):
             f.write(f"# Type: {n['type']}\n")
             f.write(f"# Extracted by mof-extract: {now()}\n")
             f.write("# ⚠️ 待人工审核\n\n")
-            yaml.dump(
-                n, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-            )
+            yaml.dump(n, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
         saved += 1
     return saved
 
@@ -415,17 +409,7 @@ def _resolve_output_dir() -> Path:
         return Path(explicit)
     workspace = os.environ.get("WORKSPACE_ROOT")
     if workspace:
-        return (
-            Path(workspace)
-            / "projects"
-            / "ecos"
-            / "src"
-            / "ecos"
-            / "ssot"
-            / "mof"
-            / "m1"
-            / "convention"
-        )
+        return Path(workspace) / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m1" / "convention"
     print(
         "  ❌ mof-extract: 无法解析输出目录。\n"
         "     设置 WORKSPACE_ROOT env(指向 ~/Workspace) 或 MOF_EXTRACT_OUTPUT 指向目标目录。\n"

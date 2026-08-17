@@ -46,34 +46,16 @@ except ImportError:
 # 5 层 parent: ~/Workspace/projects/ecos (repo_root)
 # 6 层 parent: ~/Workspace (workspace_root)
 TOOL_PATH = Path(__file__).resolve()
-REPO_ROOT = (
-    TOOL_PATH.parent.parent.parent.parent.parent
-)  # 5 层 = ~/Workspace/projects/ecos
-WORKSPACE_ROOT = (
-    TOOL_PATH.parent.parent.parent.parent.parent.parent.parent
-)  # 7 层 = ~/Workspace
+REPO_ROOT = TOOL_PATH.parent.parent.parent.parent.parent  # 5 层 = ~/Workspace/projects/ecos
+WORKSPACE_ROOT = TOOL_PATH.parent.parent.parent.parent.parent.parent.parent  # 7 层 = ~/Workspace
 
 M2_DIR = REPO_ROOT / "src" / "ecos" / "ssot" / "mof" / "m2"
 M1_DIR = REPO_ROOT / "src" / "ecos" / "ssot" / "mof" / "m1"
 
 # model-driven 跨仓路径 (WORKSPACE_ROOT 已是 ~/Workspace)
-MODEL_DRIVEN_M3 = (
-    WORKSPACE_ROOT
-    / "projects"
-    / "model-driven"
-    / "src"
-    / "model_driven"
-    / "mof"
-    / "m3_extended.py"
-)
+MODEL_DRIVEN_M3 = WORKSPACE_ROOT / "projects" / "model-driven" / "src" / "model_driven" / "mof" / "m3_extended.py"
 MODEL_DRIVEN_PIPELINE = (
-    WORKSPACE_ROOT
-    / "projects"
-    / "model-driven"
-    / "src"
-    / "model_driven"
-    / "lifecycle"
-    / "pipeline.py"
+    WORKSPACE_ROOT / "projects" / "model-driven" / "src" / "model_driven" / "lifecycle" / "pipeline.py"
 )
 
 
@@ -97,13 +79,9 @@ def load_m2_schemas() -> dict:
         if not mt:
             continue
         # 找 section dict (支持多种命名)
-        section = (
-            data.get(mt) or data.get(mt[0].lower() + mt[1:]) or data.get(mt.lower())
-        )
+        section = data.get(mt) or data.get(mt[0].lower() + mt[1:]) or data.get(mt.lower())
         if section is None:
-            top_other = [
-                k for k in data if k not in ("m2_type", "version", "created", "updated")
-            ]
+            top_other = [k for k in data if k not in ("m2_type", "version", "created", "updated")]
             if top_other:
                 section = {top_other[0]: None}
         if section:
@@ -304,9 +282,7 @@ def derive_stage_coverage(m1_nodes: list[dict], standard_stages: list[dict]) -> 
         stage = props.get("stage", "")
         nid = n.get("id", "?")
         if stage in {s["stage"] for s in standard_stages}:
-            m1_by_stage[stage].append(
-                {"id": nid, "file": n.get("_file"), "status": n.get("status")}
-            )
+            m1_by_stage[stage].append({"id": nid, "file": n.get("_file"), "status": n.get("status")})
         else:
             extra.append({"id": nid, "stage": stage, "file": n.get("_file")})
 
@@ -344,9 +320,7 @@ def derive_gate_coverage(m1_nodes: list[dict], standard_gates: list[dict]) -> di
         matched = None
         for sg in standard_gates:
             sg_key = sg["id"].replace("GATE-", "").lower()
-            if m1_key == sg_key or (
-                from_s == sg["from_stage"] and to_s == sg["to_stage"]
-            ):
+            if m1_key == sg_key or (from_s == sg["from_stage"] and to_s == sg["to_stage"]):
                 matched = sg
                 break
         if matched:
@@ -359,13 +333,9 @@ def derive_gate_coverage(m1_nodes: list[dict], standard_gates: list[dict]) -> di
                         "std": f"{matched['from_stage']} → {matched['to_stage']}",
                     }
                 )
-            m1_by_gate[matched["stage"] if False else matched["id"]].append(
-                {"id": nid, "file": n.get("_file")}
-            )
+            m1_by_gate[matched["stage"] if False else matched["id"]].append({"id": nid, "file": n.get("_file")})
         else:
-            extra.append(
-                {"id": nid, "from": from_s, "to": to_s, "file": n.get("_file")}
-            )
+            extra.append({"id": nid, "from": from_s, "to": to_s, "file": n.get("_file")})
 
     covered_ids = list(m1_by_gate.keys())
     missing = [g for g in standard_gates if g["id"] not in covered_ids]
@@ -376,18 +346,14 @@ def derive_gate_coverage(m1_nodes: list[dict], standard_gates: list[dict]) -> di
         "extra": extra,
         "inconsistent": inconsistent,
         "m1_by_gate": dict(m1_by_gate),
-        "coverage_pct": round(
-            100.0 * len(covered_ids) / max(len(standard_gates), 1), 1
-        ),
+        "coverage_pct": round(100.0 * len(covered_ids) / max(len(standard_gates), 1), 1),
     }
 
 
 # ── 推理 3: 3 Phase 评估 ───────────────────────────────────
 
 
-def derive_phase_assessment(
-    m1_nodes: list[dict], pipeline_phases: list[dict], gate_cov: dict
-) -> dict:
+def derive_phase_assessment(m1_nodes: list[dict], pipeline_phases: list[dict], gate_cov: dict) -> dict:
     """3 Phase 评估: 哪一阶段最完整, 哪一阶段最欠缺.
 
     指标: M1 阶段节点数 + M1 门禁数 + 各 phase 的 completeness
@@ -434,9 +400,7 @@ def derive_phase_assessment(
 # ── 推理 4: 风险 ──────────────────────────────────────────
 
 
-def derive_risks(
-    m1_nodes: list[dict], stage_cov: dict, gate_cov: dict, m2_schemas: dict
-) -> list[dict]:
+def derive_risks(m1_nodes: list[dict], stage_cov: dict, gate_cov: dict, m2_schemas: dict) -> list[dict]:
     """5 类风险:
     R1: Stage 缺失 (>0 个 standard stage 无 M1 实例)
     R2: Gate 缺失
@@ -489,9 +453,7 @@ def derive_risks(
         type_aliases.add(mt)
         type_aliases.add(mt[0].lower() + mt[1:])
         type_aliases.add(mt.lower())
-    drift = [
-        (n["id"], n.get("type")) for n in m1_nodes if n.get("type") not in type_aliases
-    ]
+    drift = [(n["id"], n.get("type")) for n in m1_nodes if n.get("type") not in type_aliases]
     if drift:
         risks.append(
             {
@@ -530,9 +492,7 @@ def derive_impact(m1_nodes: list[dict], target_id: str) -> dict:
         if n.get("layer") == target_layer or n.get("domain") == target_domain:
             direct.append(n["id"])
         np = n.get("properties") or {}
-        if target_m3 and (
-            np.get("m3_parent") == target_m3 or n.get("m3_parent") == target_m3
-        ):
+        if target_m3 and (np.get("m3_parent") == target_m3 or n.get("m3_parent") == target_m3):
             same_m3.append(n["id"])
 
     return {
@@ -560,12 +520,8 @@ def format_report(stage_cov, gate_cov, phase_assess, risks) -> str:
 
     # 7 阶段覆盖
     lines.append("  ── 7 阶段覆盖 (model-driven STANDARD_STAGES) ──")
-    lines.append(
-        f"     覆盖率: {stage_cov['coverage_pct']}%  ({len(stage_cov['covered'])}/{stage_cov['total']})"
-    )
-    for sid in [
-        s["stage"] for s in stage_cov.get("m1_by_stage", {}).keys() if False
-    ] + list(stage_cov["covered"]):
+    lines.append(f"     覆盖率: {stage_cov['coverage_pct']}%  ({len(stage_cov['covered'])}/{stage_cov['total']})")
+    for sid in [s["stage"] for s in stage_cov.get("m1_by_stage", {}).keys() if False] + list(stage_cov["covered"]):
         ms = stage_cov["m1_by_stage"].get(sid, [])
         lines.append(f"     ✓ {sid:18} ({len(ms)} M1 实例)")
     if stage_cov["missing"]:
@@ -576,9 +532,7 @@ def format_report(stage_cov, gate_cov, phase_assess, risks) -> str:
 
     # 4 门禁覆盖
     lines.append("  ── 4 门禁覆盖 (model-driven STANDARD_GATES) ──")
-    lines.append(
-        f"     覆盖率: {gate_cov['coverage_pct']}%  ({len(gate_cov['covered'])}/{gate_cov['total']})"
-    )
+    lines.append(f"     覆盖率: {gate_cov['coverage_pct']}%  ({len(gate_cov['covered'])}/{gate_cov['total']})")
     for gid in gate_cov["covered"]:
         mg = gate_cov["m1_by_gate"].get(gid, [])
         lines.append(f"     ✓ {gid:24} ({len(mg)} M1 实例)")
@@ -593,13 +547,9 @@ def format_report(stage_cov, gate_cov, phase_assess, risks) -> str:
     # 3 Phase 评估
     lines.append("  ── 3 Phase 评估 (model-driven PipelinePhase) ──")
     lines.append(f"     当前 eCOS Phase: {phase_assess['current_phase']}")
-    lines.append(
-        f"     Stage 实例总数: {phase_assess['stage_total']}  |  Gate 实例总数: {phase_assess['gate_total']}"
-    )
+    lines.append(f"     Stage 实例总数: {phase_assess['stage_total']}  |  Gate 实例总数: {phase_assess['gate_total']}")
     for p in phase_assess["phases"]:
-        lines.append(
-            f"     📍 {p['phase']:12} ({p['name']}) 含 {p['stage_count_in_phase']} stages: {p['stages']}"
-        )
+        lines.append(f"     📍 {p['phase']:12} ({p['name']}) 含 {p['stage_count_in_phase']} stages: {p['stages']}")
     lines.append("")
 
     # 风险
@@ -620,20 +570,14 @@ def format_report(stage_cov, gate_cov, phase_assess, risks) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="MOF 跨仓本体推理引擎 (model-driven 桥接)"
-    )
+    parser = argparse.ArgumentParser(description="MOF 跨仓本体推理引擎 (model-driven 桥接)")
     parser.add_argument("--stages", action="store_true", help="仅 7 阶段覆盖")
     parser.add_argument("--gates", action="store_true", help="仅 4 门禁")
     parser.add_argument("--phases", action="store_true", help="仅 3 Phase")
     parser.add_argument("--risks", action="store_true", help="仅风险")
     parser.add_argument("--impact", type=str, help="影响分析 (target M1 id)")
-    parser.add_argument(
-        "--json", dest="json_output", action="store_true", help="JSON 输出"
-    )
-    parser.add_argument(
-        "--strict", action="store_true", help="有 high 风险时退出码非 0"
-    )
+    parser.add_argument("--json", dest="json_output", action="store_true", help="JSON 输出")
+    parser.add_argument("--strict", action="store_true", help="有 high 风险时退出码非 0")
     parser.add_argument(
         "--gac-check",
         action="store_true",
@@ -708,9 +652,7 @@ def main():
                 print(f"  {p['phase']:12} {p['stages']}")
         elif args.risks:
             for r in risks:
-                icon = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(
-                    r["severity"], "⚪"
-                )
+                icon = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(r["severity"], "⚪")
                 print(f"  {icon} [{r['id']}] {r['detail']}")
         else:
             print(format_report(stage_cov, gate_cov, phase_assess, risks))
@@ -720,9 +662,7 @@ def main():
         import subprocess as _sp
         from pathlib import Path as _Path
 
-        workspace = (
-            _Path(__file__).resolve().parents[6]
-        )  # tools→ssot→ecos→src→projects→workspace
+        workspace = _Path(__file__).resolve().parents[6]  # tools→ssot→ecos→src→projects→workspace
         gac_tool = workspace / "bin" / "gac-mof-validate.py"
         if gac_tool.exists():
             print("\n=== GaC M2 drift (gac-mof-validate, ecos↔GaC 集成) ===")

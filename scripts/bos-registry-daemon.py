@@ -29,37 +29,14 @@ except ImportError:
 
 # ── Paths ──
 # SSOT (single source of truth) — project repo
-L0_CONSTRAINTS_SSOT = (
-    Path.home()
-    / "Workspace"
-    / "projects"
-    / "ecos"
-    / "src"
-    / "ecos"
-    / "l0"
-    / "constraints.yaml"
-)
+L0_CONSTRAINTS_SSOT = Path.home() / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "l0" / "constraints.yaml"
 # L4 cache copy — synced from SSOT
 L0_CONSTRAINTS_L4 = (
-    Path.home()
-    / "Documents"
-    / "@学习进化"
-    / "_knowledge"
-    / "10-systems"
-    / "基建架构"
-    / "L0-constraints.yaml"
+    Path.home() / "Documents" / "@学习进化" / "_knowledge" / "10-systems" / "基建架构" / "L0-constraints.yaml"
 )
 ROUTES_JSON = Path.home() / ".ecos" / "bos" / "routes.json"
 DOMAIN_MANAGER = (
-    Path.home()
-    / "Workspace"
-    / "projects"
-    / "ecos"
-    / "src"
-    / "ecos"
-    / "services"
-    / "governance"
-    / "domain_manager.py"
+    Path.home() / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "services" / "governance" / "domain_manager.py"
 )
 LOG_FILE = Path.home() / ".ecos" / "bos" / "daemon.log"
 
@@ -88,9 +65,7 @@ def update_routes() -> bool:
     # Pick best available L0 constraints source (SSOT first, then L4 cache)
     L0_PATH = L0_CONSTRAINTS_SSOT if L0_CONSTRAINTS_SSOT.exists() else L0_CONSTRAINTS_L4
     if not L0_PATH.exists():
-        log(
-            f"⚠️  L0-constraints.yaml not found (SSOT={L0_CONSTRAINTS_SSOT}, L4={L0_CONSTRAINTS_L4})"
-        )
+        log(f"⚠️  L0-constraints.yaml not found (SSOT={L0_CONSTRAINTS_SSOT}, L4={L0_CONSTRAINTS_L4})")
         return False
 
     registry = None
@@ -144,9 +119,7 @@ def update_routes() -> bool:
 
     # Write routes.json
     ROUTES_JSON.parent.mkdir(parents=True, exist_ok=True)
-    ROUTES_JSON.write_text(
-        json.dumps(routes, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    ROUTES_JSON.write_text(json.dumps(routes, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"✅ Updated routes.json: {len(routes['routes'])} domains")
     return True
 

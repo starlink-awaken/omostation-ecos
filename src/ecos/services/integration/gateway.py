@@ -133,9 +133,7 @@ def bos_search(query, domains=None, max_r=10):
                             rel = str(Path(line).relative_to(p))
                         except Exception:  # defensive fallback
                             rel = line
-                        results.append(
-                            {"uri": f"bos://{did}/{rel}", "domain": did, "file": rel}
-                        )
+                        results.append({"uri": f"bos://{did}/{rel}", "domain": did, "file": rel})
             except Exception:  # defensive fallback
                 pass
     return {"results": results, "total": len(results)}
@@ -219,9 +217,7 @@ def main():
         print("=== Health ===")
         print(json.dumps(bos_health(), indent=2, ensure_ascii=False)[:200])
         print("\n=== Resolve ===")
-        print(
-            json.dumps(bos_resolve("bos://vault/_state"), indent=2, ensure_ascii=False)
-        )
+        print(json.dumps(bos_resolve("bos://vault/_state"), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

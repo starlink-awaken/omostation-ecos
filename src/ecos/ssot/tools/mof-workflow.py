@@ -58,12 +58,7 @@ def _find(name_or_id):
         nid = n.get("id", "").lower()
         kebab = nid.replace("workflow-", "").replace("_", "-")
         nname = n.get("name", "").lower()
-        if (
-            name_lower == nid
-            or name_lower == kebab
-            or name_lower == nname
-            or name_lower in nid
-        ):
+        if name_lower == nid or name_lower == kebab or name_lower == nname or name_lower in nid:
             return n
     return None
 
@@ -171,9 +166,7 @@ def cmd_show(args):
     out = OutputFormatter(json_mode=args.json)
     node = _find(args.name)
     if not node:
-        print_error(
-            f"工作流未找到: {args.name}", "使用 'mof workflow list' 查看所有工作流"
-        )
+        print_error(f"工作流未找到: {args.name}", "使用 'mof workflow list' 查看所有工作流")
         return 1
 
     if args.json:
@@ -210,9 +203,7 @@ def cmd_show(args):
                 )
         if cl.get("invoked_by"):
             for i in cl["invoked_by"]:
-                print(
-                    f"  调用方: [{i.get('layer', '?')}] {i.get('component', '?')} ({i.get('mechanism', '?')})"
-                )
+                print(f"  调用方: [{i.get('layer', '?')}] {i.get('component', '?')} ({i.get('mechanism', '?')})")
 
     # 步骤
     steps = node.get("steps", [])
@@ -280,9 +271,7 @@ def cmd_validate(args):
     if name:
         node = _find(name)
         if not node:
-            print_error(
-                f"工作流未找到: {name}", "使用 'mof workflow list' 查看所有工作流"
-            )
+            print_error(f"工作流未找到: {name}", "使用 'mof workflow list' 查看所有工作流")
             return 1
         nodes = [node]
     else:
@@ -366,10 +355,7 @@ def cmd_validate(args):
         return 1
     else:
         if not args.ci:
-            out.print_success(
-                f"全部 {len(nodes)} 个通过"
-                + (f" ({len(warnings)} 个警告)" if warnings else "")
-            )
+            out.print_success(f"全部 {len(nodes)} 个通过" + (f" ({len(warnings)} 个警告)" if warnings else ""))
         return 0
 
 
@@ -385,9 +371,7 @@ def cmd_run(args):
     out.print_key_value(
         {
             "BOS URI": bos_uri,
-            "实现方": node.get("cross_layer", {})
-            .get("realized_by", [{}])[0]
-            .get("project", "?"),
+            "实现方": node.get("cross_layer", {}).get("realized_by", [{}])[0].get("project", "?"),
             "步骤数": str(len(node.get("steps", []))),
         },
         "基本信息",
@@ -398,10 +382,7 @@ def cmd_run(args):
         for s in node.get("steps", []):
             dep_ok = True
             if s.get("depends_on"):
-                dep_ok = all(
-                    d in [st.get("name") for st in node.get("steps", [])]
-                    for d in s["depends_on"]
-                )
+                dep_ok = all(d in [st.get("name") for st in node.get("steps", [])] for d in s["depends_on"])
             icon = "\033[32m✓\033[0m" if dep_ok else "\033[33m!\033[0m"
             print(f"  {icon} {s.get('order')}. {s.get('name')} → {s.get('action')}")
         out.print_success(f"干运行完成 ({len(node.get('steps', []))} 步骤)")
@@ -414,9 +395,7 @@ def cmd_run(args):
         out.print_info(f"提示: 使用 'agora call \"{bos_uri}\"' 执行该工作流")
     else:
         out.print_warning("该工作流无 BOS URI，需通过 Agora Service Mesh 路由")
-        out.print_info(
-            "提示: 使用 'agora pipeline <name> --goal \"...\"' 通过 Agora 执行"
-        )
+        out.print_info("提示: 使用 'agora pipeline <name> --goal \"...\"' 通过 Agora 执行")
 
     return 0
 
@@ -434,12 +413,8 @@ def cmd_relations(args):
         nid = node.get("id")
 
         upstream = [t for t in global_rels.get("triggers", []) if t.get("to") == nid]
-        downstream = [
-            t for t in global_rels.get("triggers", []) if t.get("from") == nid
-        ]
-        deps = [
-            d for d in global_rels.get("dependencies", []) if d.get("dependent") == nid
-        ]
+        downstream = [t for t in global_rels.get("triggers", []) if t.get("from") == nid]
+        deps = [d for d in global_rels.get("dependencies", []) if d.get("dependent") == nid]
 
         if args.json:
             out.print_json(
@@ -457,18 +432,14 @@ def cmd_relations(args):
         if upstream:
             out.print_section("上游触发")
             for u in upstream:
-                print(
-                    f"  ← \033[36m{u.get('from')}\033[0m \033[2m({u.get('note', '')})\033[0m"
-                )
+                print(f"  ← \033[36m{u.get('from')}\033[0m \033[2m({u.get('note', '')})\033[0m")
         else:
             out.print_info("上游触发: (无)")
 
         if downstream:
             out.print_section("下游触发")
             for d in downstream:
-                print(
-                    f"  → \033[36m{d.get('to')}\033[0m \033[2m({d.get('note', '')})\033[0m"
-                )
+                print(f"  → \033[36m{d.get('to')}\033[0m \033[2m({d.get('note', '')})\033[0m")
         else:
             out.print_info("下游触发: (无)")
 
@@ -492,10 +463,7 @@ def cmd_relations(args):
     triggers = global_rels.get("triggers", [])
     if triggers:
         out.print_section("触发链")
-        rows = [
-            [t.get("from", "?"), "→", t.get("to", "?"), t.get("note", "")]
-            for t in triggers
-        ]
+        rows = [[t.get("from", "?"), "→", t.get("to", "?"), t.get("note", "")] for t in triggers]
         out.print_table(["源", "", "目标", "说明"], rows)
 
     data_flows = global_rels.get("data_flows", [])
@@ -509,9 +477,7 @@ def cmd_relations(args):
     if deps:
         out.print_section("依赖关系")
         for d in deps:
-            print(
-                f"  \033[36m{d.get('dependent')}\033[0m 依赖 \033[36m{d.get('depends_on')}\033[0m"
-            )
+            print(f"  \033[36m{d.get('dependent')}\033[0m 依赖 \033[36m{d.get('depends_on')}\033[0m")
             if d.get("note"):
                 print(f"    \033[2m{d.get('note')}\033[0m")
 
@@ -576,9 +542,7 @@ def cmd_stats(args):
 
     catalog_stats = _load_catalog().get("stats", {})
     if catalog_stats.get("total", 0) != len(nodes):
-        out.print_warning(
-            f"注册表不一致: catalog={catalog_stats.get('total', 0)}, M1节点={len(nodes)}"
-        )
+        out.print_warning(f"注册表不一致: catalog={catalog_stats.get('total', 0)}, M1节点={len(nodes)}")
 
     out.print_divider()
     return 0
@@ -620,15 +584,8 @@ def cmd_graph(args):
     elif fmt == "mermaid":
         lines = ["graph TD"]
         for t in global_rels.get("triggers", []):
-            src = (
-                t["from"]
-                .replace("-", "_")
-                .replace("WORKFLOW_", "")
-                .replace("MECH_", "")
-            )
-            dst = (
-                t["to"].replace("-", "_").replace("WORKFLOW_", "").replace("MECH_", "")
-            )
+            src = t["from"].replace("-", "_").replace("WORKFLOW_", "").replace("MECH_", "")
+            dst = t["to"].replace("-", "_").replace("WORKFLOW_", "").replace("MECH_", "")
             lines.append(f"  {src} -->|triggers| {dst}")
         for d in global_rels.get("dependencies", []):
             dep = d["dependent"].replace("-", "_").replace("WORKFLOW_", "")
@@ -684,9 +641,7 @@ def cmd_check_refs(args):
                 errors.append(f"Dependency {field}: '{ref}' 无对应 M1 节点")
 
     if args.json:
-        out.print_json(
-            {"errors": errors, "warnings": warnings, "total_nodes": len(nodes)}
-        )
+        out.print_json({"errors": errors, "warnings": warnings, "total_nodes": len(nodes)})
         return 1 if errors else 0
 
     out.print_header(f"交叉引用校验 ({len(nodes)} 节点)")
@@ -724,9 +679,7 @@ def cmd_schema_report(args):
 
         has_structured = any(
             isinstance(s.get("input", {}), dict)
-            and any(
-                isinstance(v, dict) and "type" in v for v in s.get("input", {}).values()
-            )
+            and any(isinstance(v, dict) and "type" in v for v in s.get("input", {}).values())
             for s in steps
         )
         if has_structured:
@@ -818,9 +771,7 @@ def build_parser():
         choices=["memory", "omo", "analysis", "persona", "forge", "meta", "infra"],
         help="按 BOS 域过滤",
     )
-    list_parser.add_argument(
-        "--layer", choices=["L0", "L1", "L2", "I0", "L3", "L4"], help="按架构层过滤"
-    )
+    list_parser.add_argument("--layer", choices=["L0", "L1", "L2", "I0", "L3", "L4"], help="按架构层过滤")
     list_parser.add_argument(
         "--status",
         choices=["defined", "active", "deprecated", "archived"],

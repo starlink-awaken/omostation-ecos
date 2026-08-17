@@ -55,9 +55,7 @@ def cmd_list(args: list[str]):
 
     print(f"{'类型':12s} {'状态':10s} {'名称':50s}")
     print("-" * 75)
-    for c in sorted(
-        caps, key=lambda x: (x["_m2type"], x.get("status", ""), x.get("name", ""))
-    ):
+    for c in sorted(caps, key=lambda x: (x["_m2type"], x.get("status", ""), x.get("name", ""))):
         mtype = c["_m2type"]
         status = c.get("status", "?")
         name = (c.get("name", "?"))[:50]
@@ -90,10 +88,7 @@ def cmd_health():
 
     # Check for capabilities without successor
     deprecated_no_successor = [
-        c
-        for c in caps
-        if c.get("status") == "deprecated"
-        and not (c.get("properties", {}) or {}).get("successor")
+        c for c in caps if c.get("status") == "deprecated" and not (c.get("properties", {}) or {}).get("successor")
     ]
     if deprecated_no_successor:
         print("\n  ⚠️ 废弃但无 successor:")
@@ -153,9 +148,7 @@ def cmd_deprecate(args: list[str]):
             props = data.get("properties", {}) or {}
             props["deprecation_reason"] = reason
             data["properties"] = props
-            data["description"] = (
-                f"[DEPRECATED: {reason}] {data.get('description', '')}"
-            )
+            data["description"] = f"[DEPRECATED: {reason}] {data.get('description', '')}"
             with open(fp, "w") as f:
                 yaml.dump(
                     data,

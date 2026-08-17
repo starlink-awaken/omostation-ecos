@@ -49,9 +49,7 @@ def find_claude_md_files(root: str) -> list[Path]:
     """查找所有 CLAUDE.md / claude.md 文件"""
     files = []
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [
-            d for d in dirnames if d not in EXCLUDE_DIRS and not d.startswith(".")
-        ]
+        dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS and not d.startswith(".")]
         for fname in filenames:
             if fname in ("CLAUDE.md", "claude.md"):
                 filepath = Path(dirpath) / fname
@@ -130,9 +128,7 @@ def format_report(results: dict) -> str:
     lines.append(f"  保鲜阈值: {results['max_age_days']} 天")
     lines.append(f"  扫描总数: {results['total']}")
     lines.append(f"  新鲜   : {results['fresh']} ✅")
-    lines.append(
-        f"  过期   : {results['stale']} {'⚠️' if results['stale'] > 0 else '✅'}"
-    )
+    lines.append(f"  过期   : {results['stale']} {'⚠️' if results['stale'] > 0 else '✅'}")
     lines.append("")
 
     if results["stale"] > 0:
@@ -159,10 +155,7 @@ def format_report(results: dict) -> str:
     for domain in sorted(domains.keys()):
         d = domains[domain]
         status = "✅" if d["stale"] == 0 else "⚠️"
-        lines.append(
-            f"  {status} {domain:10s}  {d['total']:2d} 文件  "
-            f"过期 {d['stale']:1d}  最旧 {d['max_age']:3d}d"
-        )
+        lines.append(f"  {status} {domain:10s}  {d['total']:2d} 文件  过期 {d['stale']:1d}  最旧 {d['max_age']:3d}d")
 
     lines.append("")
     lines.append("=" * 60)
@@ -172,9 +165,7 @@ def format_report(results: dict) -> str:
 
 def main():
     parser = argparse.ArgumentParser(description="eCOS v6 CLAUDE.md Freshness Checker")
-    parser.add_argument(
-        "--max-age-days", type=int, default=60, help="保鲜阈值（天），默认 60"
-    )
+    parser.add_argument("--max-age-days", type=int, default=60, help="保鲜阈值（天），默认 60")
     parser.add_argument("--json", action="store_true", help="JSON 格式输出")
     parser.add_argument("--root", type=str, default=DEFAULT_ROOT, help="扫描根目录")
     args = parser.parse_args()

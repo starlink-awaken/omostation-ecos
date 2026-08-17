@@ -93,9 +93,7 @@ def match_event(event: dict, registry: dict[str, list[str]] | None = None) -> li
     matched: list[str] = []
 
     # 从多种字段提取 BOS URI
-    event_uri = (
-        event.get("bos_uri", "") or event.get("uri", "") or event.get("source", "")
-    )
+    event_uri = event.get("bos_uri", "") or event.get("uri", "") or event.get("source", "")
 
     if not event_uri:
         return matched
@@ -144,9 +142,7 @@ def execute_matched(event: dict, dry_run: bool = False) -> list[dict]:
             event.get("bos_uri", event.get("source", "unknown")),
             wf_id,
         )
-        result = execute_m1_workflow(
-            wf_id, params={"trigger_event": event}, dry_run=dry_run
-        )
+        result = execute_m1_workflow(wf_id, params={"trigger_event": event}, dry_run=dry_run)
         result["triggered_by"] = wf_id
         results.append(result)
 
@@ -184,8 +180,7 @@ def _trigger_heal(failed_workflow_id: str, failed_result: dict) -> dict | None:
         _HEAL_WORKFLOW,
         params={
             "heal_target": failed_workflow_id,
-            "heal_reason": f"Workflow {failed_workflow_id} failed: "
-            f"{failed_result.get('failed', 0)} steps failed",
+            "heal_reason": f"Workflow {failed_workflow_id} failed: {failed_result.get('failed', 0)} steps failed",
         },
     )
 
@@ -231,9 +226,7 @@ def listen_forever(
         _poll_jsonl(events_file, registry, interval, dry_run)
 
 
-def _poll_jsonl(
-    events_file: Path, registry: dict[str, list[str]], interval: float, dry_run: bool
-) -> None:
+def _poll_jsonl(events_file: Path, registry: dict[str, list[str]], interval: float, dry_run: bool) -> None:
     """轮询 JSONL 事件文件"""
     last_position = events_file.stat().st_size if events_file.exists() else 0
 
@@ -258,9 +251,7 @@ def _poll_jsonl(
                     event = json.loads(line)
                     wf_ids = match_event(event, registry)
                     if wf_ids:
-                        logger.info(
-                            "Event matched %s: %s", wf_ids, event.get("bos_uri", "")
-                        )
+                        logger.info("Event matched %s: %s", wf_ids, event.get("bos_uri", ""))
                         if not dry_run:
                             execute_matched(event)
                 except (json.JSONDecodeError, Exception) as e:  # defensive fallback
@@ -269,9 +260,7 @@ def _poll_jsonl(
         last_position = current_size
 
 
-def _listen_agora_sse(
-    agora_url: str, registry: dict[str, list[str]], dry_run: bool
-) -> None:
+def _listen_agora_sse(agora_url: str, registry: dict[str, list[str]], dry_run: bool) -> None:
     """监听 Agora SSE 事件流（粘性重连）"""
     import httpx
 

@@ -67,9 +67,7 @@ def check_system_state() -> dict:
         if result.returncode == 0:
             try:
                 data = json.loads(result.stdout)
-                state["claude_md"]["age_days"] = max(
-                    (f["age_days"] for f in data.get("files", [])), default=0
-                )
+                state["claude_md"]["age_days"] = max((f["age_days"] for f in data.get("files", [])), default=0)
                 state["claude_md"]["stale_count"] = data.get("stale", 0)
             except (json.JSONDecodeError, KeyError):
                 pass
@@ -117,9 +115,7 @@ def evaluate_constraints(constraints: list[dict], state: dict) -> list[dict]:
             detail = f"最旧 CLAUDE.md: {age} 天"
         elif "value_tier" in rule:
             # 简化: 检查是否有域缺少 value_tier
-            missing = [
-                d for d, v in state["domain"].items() if v.get("value_tier") is None
-            ]
+            missing = [d for d, v in state["domain"].items() if v.get("value_tier") is None]
             passed = len(missing) == 0
             detail = f"缺失: {missing}" if missing else "全部已声明"
         else:
@@ -160,9 +156,7 @@ def format_report(results: list[dict], mode: str, constraints: dict = None) -> s
             half = p["half_life_days"]
             decay = min(1.0, age_days / half)
             value_remaining = max(0, (1 - decay) * 100)
-            bar = "█" * int(value_remaining / 10) + "░" * (
-                10 - int(value_remaining / 10)
-            )
+            bar = "█" * int(value_remaining / 10) + "░" * (10 - int(value_remaining / 10))
 
             age_str = f"{age_days}d" if age_days > 0 else "0d"
             status = "⚠️ 超期" if decay > 1.0 else "✅" if decay < 0.5 else "⏳"
@@ -225,9 +219,7 @@ def main():
         print(format_report(results, mode, constraints))
 
     if args.enforce:
-        required_fail = [
-            r for r in results if r["type"] == "required" and not r["passed"]
-        ]
+        required_fail = [r for r in results if r["type"] == "required" and not r["passed"]]
         sys.exit(1 if required_fail else 0)
     else:
         sys.exit(0)

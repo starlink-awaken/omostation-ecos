@@ -99,9 +99,7 @@ class CompletionManifest:
     def __post_init__(self) -> None:
         """Enforce receipt invariants even when callers bypass the builder."""
         if self.status not in VALID_STATUSES:
-            raise ValueError(
-                f"Invalid status '{self.status}'. Valid statuses: {VALID_STATUSES} (no 'done')"
-            )
+            raise ValueError(f"Invalid status '{self.status}'. Valid statuses: {VALID_STATUSES} (no 'done')")
         if not SHA256_RE.fullmatch(self.packet_hash):
             raise ValueError("packet_hash must match sha256:<64 lowercase hex>")
         if not self.assignment_id:
@@ -139,28 +137,16 @@ class VerificationReceipt:
 
     def __post_init__(self) -> None:
         if not SHA256_RE.fullmatch(self.candidate_packet_hash):
-            raise ValueError(
-                "candidate_packet_hash must match sha256:<64 lowercase hex>"
-            )
+            raise ValueError("candidate_packet_hash must match sha256:<64 lowercase hex>")
         if not SHA256_RE.fullmatch(self.measured_packet_hash):
-            raise ValueError(
-                "measured_packet_hash must match sha256:<64 lowercase hex>"
-            )
+            raise ValueError("measured_packet_hash must match sha256:<64 lowercase hex>")
         if not self.read_only:
             raise ValueError("read_only must be True for verification receipts")
         if not self.direct_measurement:
-            raise ValueError(
-                "direct_measurement must be True for verification receipts"
-            )
+            raise ValueError("direct_measurement must be True for verification receipts")
         if self.verdict not in VALID_VERDICTS:
-            raise ValueError(
-                f"Invalid verdict '{self.verdict}'. "
-                f"Valid verdicts: {VALID_VERDICTS} (never 'done')"
-            )
-        if (
-            self.executor_model_family == self.verifier_model_family
-            and not self.allow_same_model
-        ):
+            raise ValueError(f"Invalid verdict '{self.verdict}'. Valid verdicts: {VALID_VERDICTS} (never 'done')")
+        if self.executor_model_family == self.verifier_model_family and not self.allow_same_model:
             raise ValueError(
                 f"executor and verifier share model_family "
                 f"'{self.executor_model_family}'; "
@@ -171,9 +157,7 @@ class VerificationReceipt:
         if not self.checks:
             raise ValueError("verification receipt requires at least one command check")
         for check in self.checks:
-            if not isinstance(check.command, list) or not all(
-                isinstance(argument, str) for argument in check.command
-            ):
+            if not isinstance(check.command, list) or not all(isinstance(argument, str) for argument in check.command):
                 raise ValueError("check.command must be a list of strings")
             if not SHA256_RE.fullmatch(check.stdout_hash):
                 raise ValueError("check.stdout_hash must match sha256:<64 lowercase hex>")
@@ -227,7 +211,10 @@ def canonicalize(packet: dict[str, Any]) -> str:
     binding = packet.get("spec_binding")
     if version == "work-packet/v2":
         if not isinstance(binding, dict) or set(binding) != {
-            "spec_ref", "spec_version", "content_digest", "decision_ref"
+            "spec_ref",
+            "spec_version",
+            "content_digest",
+            "decision_ref",
         }:
             raise ValueError("work-packet/v2 requires complete spec_binding")
         if not all(isinstance(binding[key], str) and binding[key].strip() for key in binding):
@@ -236,11 +223,7 @@ def canonicalize(packet: dict[str, Any]) -> str:
             raise ValueError("spec_binding.content_digest must match sha256:<64 lowercase hex>")
     elif version == "work-packet/v1" and binding is not None:
         raise ValueError("work-packet/v1 does not accept spec_binding")
-    invariant_fields = {
-        key: packet[key]
-        for key in INVARIANT_FIELDS
-        if key in packet and packet[key] is not None
-    }
+    invariant_fields = {key: packet[key] for key in INVARIANT_FIELDS if key in packet and packet[key] is not None}
     return json.dumps(invariant_fields, sort_keys=True, separators=(",", ":"))
 
 
@@ -250,9 +233,7 @@ def compute_packet_hash(canonical: str) -> str:
     return f"{HASH_PREFIX}{digest}"
 
 
-def render_platform_envelope(
-    packet: dict[str, Any], platform: str, packet_hash: str
-) -> dict[str, Any]:
+def render_platform_envelope(packet: dict[str, Any], platform: str, packet_hash: str) -> dict[str, Any]:
     """渲染平台信封: 保留 invariant payload + hash, 附加平台元数据"""
     if platform not in PLATFORMS:
         raise ValueError(f"Unknown platform: {platform}. Valid: {PLATFORMS}")
@@ -282,9 +263,7 @@ def build_completion_manifest(
     checks 中每个 entry 必须有 command, returncode, stdout_hash.
     """
     if status not in VALID_STATUSES:
-        raise ValueError(
-            f"Invalid status '{status}'. Valid statuses: {VALID_STATUSES} (no 'done')"
-        )
+        raise ValueError(f"Invalid status '{status}'. Valid statuses: {VALID_STATUSES} (no 'done')")
     if "packet_id" not in packet:
         raise ValueError("packet instance must include packet_id")
 
@@ -295,9 +274,7 @@ def build_completion_manifest(
             if not SHA256_RE.fullmatch(stdout_hash):
                 raise ValueError("stdout_hash must match sha256:<64 lowercase hex>")
             command = c.get("command")
-            if not isinstance(command, list) or not all(
-                isinstance(argument, str) for argument in command
-            ):
+            if not isinstance(command, list) or not all(isinstance(argument, str) for argument in command):
                 raise ValueError("check.command must be a list of strings")
             parsed_checks.append(
                 CompletionCheck(
@@ -351,15 +328,12 @@ def build_verification_receipt(
     if not direct_measurement:
         raise ValueError("direct_measurement must be True for verification receipts")
     if verdict not in VALID_VERDICTS:
-        raise ValueError(
-            f"Invalid verdict '{verdict}'. Valid verdicts: {VALID_VERDICTS} (never 'done')"
-        )
+        raise ValueError(f"Invalid verdict '{verdict}'. Valid verdicts: {VALID_VERDICTS} (never 'done')")
     if not executor_model_family or not verifier_model_family:
         raise ValueError("executor_model_family and verifier_model_family are required")
     if executor_model_family == verifier_model_family and not allow_same_model:
         raise ValueError(
-            f"executor and verifier share model_family '{executor_model_family}'; "
-            "set allow_same_model=True to override"
+            f"executor and verifier share model_family '{executor_model_family}'; set allow_same_model=True to override"
         )
 
     parsed_checks: list[CompletionCheck] = []
@@ -367,13 +341,9 @@ def build_verification_receipt(
         for c in checks:
             stdout_hash_val = c.get("stdout_hash", "")
             if not SHA256_RE.fullmatch(stdout_hash_val):
-                raise ValueError(
-                    "check stdout_hash must match sha256:<64 lowercase hex"
-                )
+                raise ValueError("check stdout_hash must match sha256:<64 lowercase hex")
             command = c.get("command")
-            if not isinstance(command, list) or not all(
-                isinstance(argument, str) for argument in command
-            ):
+            if not isinstance(command, list) or not all(isinstance(argument, str) for argument in command):
                 raise ValueError("check.command must be a list of strings")
             parsed_checks.append(
                 CompletionCheck(
@@ -460,9 +430,7 @@ def main() -> None:
 
     packet = load_packet(Path(args.packet))
     if "packet_id" not in packet:
-        raise ValueError(
-            "packet file is a schema/envelope, not a WorkPacket instance; packet_id is required"
-        )
+        raise ValueError("packet file is a schema/envelope, not a WorkPacket instance; packet_id is required")
     canonical = canonicalize(packet)
     packet_hash = compute_packet_hash(canonical)
 

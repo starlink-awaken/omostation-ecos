@@ -34,9 +34,7 @@ class VersionConsistencyPattern(BasePattern):
     def pattern_name(self) -> str:
         return "version_consistency"
 
-    def evaluate(
-        self, rule: Rule, domain: DomainConfig, context: dict | None = None
-    ) -> CheckResult:
+    def evaluate(self, rule: Rule, domain: DomainConfig, context: dict | None = None) -> CheckResult:
         rule_id = rule.id
         rule_name = rule.name or rule_id
 

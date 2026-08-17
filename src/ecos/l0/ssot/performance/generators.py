@@ -131,9 +131,7 @@ class TestDataGenerator:
         domain.facts = self._generate_facts(fact_count)
 
         # 生成推论
-        domain.inferences = self._generate_inferences(
-            inference_count, domain.entities, domain.facts
-        )
+        domain.inferences = self._generate_inferences(inference_count, domain.entities, domain.facts)
 
         # 生成规则
         domain.rules = self._generate_rules(rule_count, domain.entities, domain.facts)
@@ -167,9 +165,7 @@ class TestDataGenerator:
                 attributes = {}
                 for attr_name in template["attributes"]:
                     if attr_name in self.vocabulary:
-                        attributes[attr_name] = random.choice(
-                            self.vocabulary[attr_name]
-                        )
+                        attributes[attr_name] = random.choice(self.vocabulary[attr_name])
                     else:
                         attributes[attr_name] = self._generate_random_value(attr_name)
 
@@ -200,9 +196,7 @@ class TestDataGenerator:
                 title=f"政策{i + 1}",
                 value=random.choice(["批准", "通过", "发布", "修订"]),
                 source="performance_test_generator",
-                date=(
-                    datetime.now() - timedelta(days=random.randint(0, 365))
-                ).isoformat(),
+                date=(datetime.now() - timedelta(days=random.randint(0, 365))).isoformat(),
                 tags=["policy"],
             )
             facts.append(fact)
@@ -218,18 +212,14 @@ class TestDataGenerator:
                 value=random.randint(1, 1000),
                 unit=random.choice(template["units"]),
                 source="performance_test_generator",
-                date=(
-                    datetime.now() - timedelta(days=random.randint(0, 365))
-                ).isoformat(),
+                date=(datetime.now() - timedelta(days=random.randint(0, 365))).isoformat(),
                 tags=["data"],
             )
             facts.append(fact)
 
         return facts
 
-    def _generate_inferences(
-        self, count: int, entities: list[Entity], facts: list[Fact]
-    ) -> list[Inference]:
+    def _generate_inferences(self, count: int, entities: list[Entity], facts: list[Fact]) -> list[Inference]:
         """生成推论列表"""
         inferences: list[Inference] = []
 
@@ -263,9 +253,7 @@ class TestDataGenerator:
 
         return inferences
 
-    def _generate_rules(
-        self, count: int, entities: list[Entity], facts: list[Fact]
-    ) -> list[Rule]:
+    def _generate_rules(self, count: int, entities: list[Entity], facts: list[Fact]) -> list[Rule]:
         """生成规则列表"""
         rules = []
 
@@ -353,9 +341,7 @@ class TestDataGenerator:
 
         return relations
 
-    def _generate_rule_logic(
-        self, pattern_info: dict, entity_id: str, attr: str, value: str
-    ) -> str:
+    def _generate_rule_logic(self, pattern_info: dict, entity_id: str, attr: str, value: str) -> str:
         """生成规则逻辑，处理不同的模板格式"""
         template = pattern_info["logic_template"]
 
@@ -392,9 +378,7 @@ class TestDataGenerator:
         elif "amount" in field_name.lower() or "budget" in field_name.lower():
             return str(random.randint(100, 1000000))
         elif "date" in field_name.lower():
-            return (
-                datetime.now() + timedelta(days=random.randint(-365, 365))
-            ).isoformat()
+            return (datetime.now() + timedelta(days=random.randint(-365, 365))).isoformat()
         else:
             return f"random_value_{random.randint(1, 1000)}"
 
@@ -416,9 +400,7 @@ class TestDataGenerator:
         domain.facts = self._generate_contradiction_facts(fact_count)
 
         # 生成矛盾检测规则
-        domain.rules = self._generate_contradiction_rules(
-            rule_count, domain.entities, domain.facts
-        )
+        domain.rules = self._generate_contradiction_rules(rule_count, domain.entities, domain.facts)
 
         return domain
 
@@ -484,17 +466,13 @@ class TestDataGenerator:
 
         return facts
 
-    def _generate_contradiction_rules(
-        self, count: int, entities: list[Entity], facts: list[Fact]
-    ) -> list[Rule]:
+    def _generate_contradiction_rules(self, count: int, entities: list[Entity], facts: list[Fact]) -> list[Rule]:
         """生成矛盾检测规则"""
         rules = []
 
         for i in range(count):
             # 生成不同类型的矛盾检测条件
-            condition_type = random.choice(
-                ["mechanism_check", "ratio_check", "existence_check"]
-            )
+            condition_type = random.choice(["mechanism_check", "ratio_check", "existence_check"])
 
             if condition_type == "mechanism_check" and entities:
                 entity = random.choice(entities)
@@ -546,9 +524,7 @@ class TestDataGenerator:
         domain.facts = self._generate_fact_chain(fact_count, dependency_depth)
 
         # 生成复杂依赖规则
-        domain.rules = self._generate_dependency_rules(
-            entity_count, domain.entities, domain.facts, dependency_depth
-        )
+        domain.rules = self._generate_dependency_rules(entity_count, domain.entities, domain.facts, dependency_depth)
 
         return domain
 
@@ -569,9 +545,7 @@ class TestDataGenerator:
                     attributes={
                         "chain_id": str(chain_id),
                         "chain_level": str(i),
-                        "depends_on_chain": str(chain_id - 1)
-                        if chain_id > 0
-                        else "root",
+                        "depends_on_chain": str(chain_id - 1) if chain_id > 0 else "root",
                     },
                     confidence=Confidence.FACT,
                     source="dependency_test_generator",
@@ -676,9 +650,7 @@ class DomainDataFactory:
     def create_high_dependency_dataset() -> DomainConfig:
         """创建高依赖关系数据集"""
         generator = TestDataGenerator()
-        return generator.generate_complex_dependency_domain(
-            entity_count=150, fact_count=300, dependency_depth=8
-        )
+        return generator.generate_complex_dependency_domain(entity_count=150, fact_count=300, dependency_depth=8)
 
     @staticmethod
     def create_contradiction_heavy_dataset() -> DomainConfig:

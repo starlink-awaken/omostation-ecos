@@ -112,9 +112,7 @@ def _parse_retry_config(execution: dict) -> dict:
             "max_attempts": int(retry["max_attempts"]),
             "policy": retry.get("policy", "on_failure"),
             "backoff": {
-                "initial_delay": float(
-                    retry.get("backoff", {}).get("initial_delay", 1.0)
-                ),
+                "initial_delay": float(retry.get("backoff", {}).get("initial_delay", 1.0)),
                 "multiplier": float(retry.get("backoff", {}).get("multiplier", 2.0)),
                 "max_delay": float(retry.get("backoff", {}).get("max_delay", 60.0)),
                 "jitter": float(retry.get("backoff", {}).get("jitter", 0.1)),
@@ -139,9 +137,7 @@ def _parse_retry_config(execution: dict) -> dict:
 def _compute_backoff_delay(attempt: int, config: dict) -> float:
     """计算退避延迟（秒）"""
     backoff = config.get("backoff", {})
-    delay = backoff.get("initial_delay", 1.0) * (
-        backoff.get("multiplier", 2.0) ** (attempt - 1)
-    )
+    delay = backoff.get("initial_delay", 1.0) * (backoff.get("multiplier", 2.0) ** (attempt - 1))
     delay = min(delay, backoff.get("max_delay", 60.0))
     jitter = backoff.get("jitter", 0.0)
     if jitter > 0:
@@ -255,9 +251,7 @@ def _default_executor(m1_node: dict, params: dict | None = None) -> dict:
                 ok = step_result.get("passed", True)
                 if ok:
                     break
-                if attempt >= max_attempts or not _should_retry(
-                    policy, step_result, None
-                ):
+                if attempt >= max_attempts or not _should_retry(policy, step_result, None):
                     break
                 delay = _compute_backoff_delay(attempt, retry_config)
                 logger.info(
@@ -287,9 +281,7 @@ def _default_executor(m1_node: dict, params: dict | None = None) -> dict:
         else:
             ok = False
 
-        attempt_info = (
-            f" (attempt {attempt}/{max_attempts})" if max_attempts > 1 else ""
-        )
+        attempt_info = f" (attempt {attempt}/{max_attempts})" if max_attempts > 1 else ""
 
         if ok:
             results["steps"].append(
@@ -309,11 +301,7 @@ def _default_executor(m1_node: dict, params: dict | None = None) -> dict:
                 }
             )
             results["failed"] += 1
-            on_failure = (
-                step.get("on_failure")
-                or execution_config.get("on_failure")
-                or "continue"
-            )
+            on_failure = step.get("on_failure") or execution_config.get("on_failure") or "continue"
             if on_failure == "abort":
                 break
         else:
@@ -325,11 +313,7 @@ def _default_executor(m1_node: dict, params: dict | None = None) -> dict:
                 }
             )
             results["failed"] += 1
-            on_failure = (
-                step.get("on_failure")
-                or execution_config.get("on_failure")
-                or "continue"
-            )
+            on_failure = step.get("on_failure") or execution_config.get("on_failure") or "continue"
             if on_failure == "abort":
                 break
 
@@ -339,9 +323,7 @@ def _default_executor(m1_node: dict, params: dict | None = None) -> dict:
 # ── 注册/解析 API ──
 
 
-def register(
-    name: str, module_path: str, entrypoint: str = "execute", description: str = ""
-) -> None:
+def register(name: str, module_path: str, entrypoint: str = "execute", description: str = "") -> None:
     """注册一个 workflow backend
 
     Args:
@@ -378,9 +360,7 @@ def resolve(m1_node: dict) -> Callable:
     _ensure_backends_registered()
     backend_info = _backends.get(backend_name)
     if not backend_info:
-        raise BackendResolutionError(
-            f"Workflow backend is not registered: {backend_name}"
-        )
+        raise BackendResolutionError(f"Workflow backend is not registered: {backend_name}")
 
     # Lazy load
     if backend_info["instance"] is None:
@@ -390,9 +370,7 @@ def resolve(m1_node: dict) -> Callable:
             backend_info["instance"] = func
         except (ImportError, AttributeError) as e:
             logger.error("Failed to load backend '%s': %s", backend_name, e)
-            raise BackendResolutionError(
-                f"Workflow backend cannot be loaded: {backend_name}"
-            ) from e
+            raise BackendResolutionError(f"Workflow backend cannot be loaded: {backend_name}") from e
 
     return backend_info["instance"]
 

@@ -246,9 +246,7 @@ class IntelligentRecoverySystem:
         except (ImportError, AttributeError) as _e:
             raise ValueError(f"Unknown strategy: {strategy_name}")
 
-    def _select_recovery_strategy(
-        self, context: RecoveryContext, severity: RecoverySeverity
-    ) -> str | None:
+    def _select_recovery_strategy(self, context: RecoveryContext, severity: RecoverySeverity) -> str | None:
         """根据上下文选择最佳策略"""
         # 查找历史成功模式
         similar_history = self.history_manager.find_similar_errors(context.error_info)
@@ -283,9 +281,7 @@ class IntelligentRecoverySystem:
             print("🟢 低严重错误，使用自动策略")
             return "auto"
 
-    def _record_recovery_attempt(
-        self, error: Exception, context: RecoveryContext, success: bool
-    ):
+    def _record_recovery_attempt(self, error: Exception, context: RecoveryContext, success: bool):
         """记录恢复尝试"""
         self.total_recoveries += 1
 
@@ -298,9 +294,7 @@ class IntelligentRecoverySystem:
         if success and context.execution_time_ms > 0:
             # 更新平均恢复时间
             current_avg = self.performance_stats["avg_recovery_time_ms"]
-            new_avg = (
-                current_avg * self.total_recoveries + context.execution_time_ms
-            ) / (self.total_recoveries + 1)
+            new_avg = (current_avg * self.total_recoveries + context.execution_time_ms) / (self.total_recoveries + 1)
             self.performance_stats["avg_recovery_time_ms"] = new_avg
 
         # 严重错误记录到文件
@@ -315,9 +309,7 @@ class IntelligentRecoverySystem:
             "timestamp": context.timestamp,
             "reason": reason,
             "context_summary": {
-                "domain_entities": len(context.domain_config.entities)
-                if context.domain_config
-                else 0,
+                "domain_entities": len(context.domain_config.entities) if context.domain_config else 0,
                 "execution_time_ms": context.execution_time_ms,
                 "environment": context.metadata.get("environment", "unknown"),
             },
@@ -351,9 +343,7 @@ class IntelligentRecoverySystem:
             "total_recoveries": self.total_recoveries,
             "successful_recoveries": self.successful_recoveries,
             "failed_recoveries": self.failed_recoveries,
-            "success_rate": self.successful_recoveries / self.total_recoveries
-            if self.total_recoveries > 0
-            else 0,
+            "success_rate": self.successful_recoveries / self.total_recoveries if self.total_recoveries > 0 else 0,
             "performance_stats": self.performance_stats,
             "available_patterns": len(self.patterns),
             "timestamp": datetime.now().isoformat(),

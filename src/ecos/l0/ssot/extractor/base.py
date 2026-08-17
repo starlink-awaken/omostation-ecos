@@ -278,9 +278,7 @@ class YamlWriter:
 
             filepath = dd / filename
             if filepath.exists():
-                existing: dict[str, Any] = (
-                    yaml.safe_load(filepath.read_text("utf-8")) or {}
-                )
+                existing: dict[str, Any] = yaml.safe_load(filepath.read_text("utf-8")) or {}
             else:
                 existing = {}
 

@@ -150,9 +150,7 @@ def watch_fswatch():
                     if not filepath:
                         continue
                     # 过滤感兴趣的文件
-                    if any(
-                        p in filepath for p in ["CLAUDE.md", "claude.md", "STATE.md"]
-                    ):
+                    if any(p in filepath for p in ["CLAUDE.md", "claude.md", "STATE.md"]):
                         trigger_freshness(filepath)
             except (IOError, OSError):
                 break

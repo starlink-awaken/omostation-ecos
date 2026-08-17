@@ -29,9 +29,7 @@ from pathlib import Path
 
 # ── 路径 ──
 DOCS = Path.home() / "Documents"
-CONSTRAINTS_FILE = (
-    DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
-)
+CONSTRAINTS_FILE = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
 DEFAULT_OUTPUT = Path("/tmp") / "ecos-compiled-constraints.py"
 STATE_FILE = Path.home() / ".ecos" / "compiler-state.json"
 
@@ -94,9 +92,7 @@ def compile_constraints(data: dict) -> str:
     lines.append('        "half_life_days": half,')
     lines.append('        "decay": round(decay, 4),')
     lines.append('        "remaining_value": round(remaining, 1),')
-    lines.append(
-        '        "status": "expired" if decay >= 1.0 else ("aging" if decay >= 0.5 else "fresh"),'
-    )
+    lines.append('        "status": "expired" if decay >= 1.0 else ("aging" if decay >= 0.5 else "fresh"),')
     lines.append("    }")
     lines.append("")
 
@@ -125,26 +121,18 @@ def compile_constraints(data: dict) -> str:
         lines.append('    detail = ""')
 
         if rule == "protocol.registered == true":
-            lines.append(
-                '    passed = state.get("protocol", {}).get("registered", False)'
-            )
+            lines.append('    passed = state.get("protocol", {}).get("registered", False)')
             lines.append('    detail = "协议已注册" if passed else "协议未注册"')
         elif rule == "layer.cross_call.route == 'I0/Agora'":
-            lines.append(
-                '    passed = state.get("layer", {}).get("cross_call", {}).get("route", "") == "I0/Agora"'
-            )
-            lines.append(
-                '    detail = f\'路由: {state.get("layer",{}).get("cross_call",{}).get("route","?")}\''
-            )
+            lines.append('    passed = state.get("layer", {}).get("cross_call", {}).get("route", "") == "I0/Agora"')
+            lines.append('    detail = f\'路由: {state.get("layer",{}).get("cross_call",{}).get("route","?")}\'')
         elif rule == "claude_md.age_days <= 60":
             lines.append('    age = state.get("claude_md", {}).get("age_days", 0)')
             lines.append("    passed = age <= 60")
             lines.append('    detail = f"最旧 CLAUDE.md: {age} 天"')
         elif "value_tier" in rule:
             lines.append('    domains = state.get("domain", {})')
-            lines.append(
-                '    missing = [d for d, v in domains.items() if v.get("value_tier") is None]'
-            )
+            lines.append('    missing = [d for d, v in domains.items() if v.get("value_tier") is None]')
             lines.append("    passed = len(missing) == 0")
             lines.append('    detail = f"缺失: {missing}" if missing else "全部已声明"')
         else:
@@ -236,14 +224,9 @@ def format_report(result: dict) -> str:
         remaining = d["remaining_value"]
         bar = "█" * int(remaining / 10) + "░" * (10 - int(remaining / 10))
         icon = "🟢" if remaining > 50 else ("🟡" if remaining > 10 else "🔴")
-        lines.append(
-            f"  {icon} {d['protocol']:10s} v{d['version']:10s}  "
-            f"剩余 {remaining:.0f}% {bar}"
-        )
+        lines.append(f"  {icon} {d['protocol']:10s} v{d['version']:10s}  剩余 {remaining:.0f}% {bar}")
         if d["status"] == "expired":
-            lines.append(
-                f"      已超半衰期 ({d['age_days']}d > {d['half_life_days']}d)"
-            )
+            lines.append(f"      已超半衰期 ({d['age_days']}d > {d['half_life_days']}d)")
 
     # 约束结果
     passed = sum(1 for c in constraints if c["passed"])
@@ -267,9 +250,7 @@ def watch_and_compile(output_path: Path, interval: int = 60):
 
     while True:
         try:
-            current_mtime = (
-                CONSTRAINTS_FILE.stat().st_mtime if CONSTRAINTS_FILE.exists() else 0
-            )
+            current_mtime = CONSTRAINTS_FILE.stat().st_mtime if CONSTRAINTS_FILE.exists() else 0
             if current_mtime != last_mtime:
                 print(f"  🔄 文件变更 ({datetime.now().strftime('%H:%M:%S')})")
                 data = load_yaml(CONSTRAINTS_FILE)
@@ -292,9 +273,7 @@ def watch_and_compile(output_path: Path, interval: int = 60):
 
 def main():
     parser = argparse.ArgumentParser(description="eCOS v6 L0 协议编译器")
-    parser.add_argument(
-        "--output", type=str, default=str(DEFAULT_OUTPUT), help="输出路径"
-    )
+    parser.add_argument("--output", type=str, default=str(DEFAULT_OUTPUT), help="输出路径")
     parser.add_argument("--watch", action="store_true", help="监听模式")
     parser.add_argument("--json", action="store_true", help="JSON 输出")
     parser.add_argument("--interval", type=int, default=60, help="监听间隔(秒)")

@@ -22,21 +22,15 @@ class BaseTrigger(BaseModel):
 
     name: str = Field(..., description="Unique name of the trigger")
     trigger_type: TriggerType = Field(..., description="Type of the trigger")
-    target_bos_uri: str = Field(
-        ..., description="Target BOS URI to invoke when triggered"
-    )
-    payload_template: Optional[Dict[str, Any]] = Field(
-        default=None, description="Static payload or template to send"
-    )
+    target_bos_uri: str = Field(..., description="Target BOS URI to invoke when triggered")
+    payload_template: Optional[Dict[str, Any]] = Field(default=None, description="Static payload or template to send")
 
 
 class CronTrigger(BaseTrigger):
     """Cron-based trigger."""
 
     trigger_type: TriggerType = TriggerType.CRON
-    expression: str = Field(
-        ..., description="Standard cron expression (e.g. '0 * * * *')"
-    )
+    expression: str = Field(..., description="Standard cron expression (e.g. '0 * * * *')")
     timezone: str = Field(default="UTC", description="Timezone for the cron expression")
 
 

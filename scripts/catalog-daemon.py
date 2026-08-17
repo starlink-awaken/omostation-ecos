@@ -199,9 +199,7 @@ def scan(volume: str, full: bool = False, max_depth: int = 20) -> dict:
         "INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)",
         ("total_files", str(total)),
     )
-    conn.execute(
-        "INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)", ("last_scan", now)
-    )
+    conn.execute("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)", ("last_scan", now))
     conn.execute(
         "INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)",
         ("scan_type", "full" if full else "incremental"),
@@ -232,10 +230,7 @@ def ls(volume: str, subpath: str = "/") -> list[dict]:
             "SELECT path, name, size, type, ext FROM files WHERE depth = 1 ORDER BY type, name"
         ).fetchall()
     conn.close()
-    return [
-        {"path": r[0], "name": r[1], "size": r[2], "type": r[3], "ext": r[4]}
-        for r in rows
-    ]
+    return [{"path": r[0], "name": r[1], "size": r[2], "type": r[3], "ext": r[4]} for r in rows]
 
 
 def search(volume: str, query: str, limit: int = 20) -> list[dict]:
@@ -243,8 +238,7 @@ def search(volume: str, query: str, limit: int = 20) -> list[dict]:
     conn = _init_db(volume)
     like = f"%{query}%"
     rows = conn.execute(
-        "SELECT path, name, size, type, ext, mtime FROM files WHERE name LIKE ? "
-        "ORDER BY size DESC LIMIT ?",
+        "SELECT path, name, size, type, ext, mtime FROM files WHERE name LIKE ? ORDER BY size DESC LIMIT ?",
         (like, limit),
     ).fetchall()
     conn.close()
@@ -269,9 +263,7 @@ def stats(volume: str) -> dict:
 
     conn = _init_db(volume)
     total = conn.execute("SELECT COUNT(*) FROM files").fetchone()[0]
-    total_size = conn.execute(
-        "SELECT COALESCE(SUM(size), 0) FROM files WHERE type='file'"
-    ).fetchone()[0]
+    total_size = conn.execute("SELECT COALESCE(SUM(size), 0) FROM files WHERE type='file'").fetchone()[0]
     by_ext = conn.execute(
         "SELECT ext, COUNT(*) FROM files WHERE type='file' GROUP BY ext ORDER BY COUNT(*) DESC LIMIT 15"
     ).fetchall()
@@ -307,15 +299,11 @@ def stats(volume: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(description="文件目录引擎")
-    parser.add_argument(
-        "--scan", metavar="VOLUME", help="全量扫描卷 (bos://catalog/xxx)"
-    )
+    parser.add_argument("--scan", metavar="VOLUME", help="全量扫描卷 (bos://catalog/xxx)")
     parser.add_argument("--update", metavar="VOLUME", help="增量扫描卷")
     parser.add_argument("--ls", metavar="BOS_URI", help="列出目录")
     parser.add_argument("--search", metavar="QUERY", help="搜索文件")
-    parser.add_argument(
-        "--volume", default="shareddisk", help="搜索的卷 (默认 shareddisk)"
-    )
+    parser.add_argument("--volume", default="shareddisk", help="搜索的卷 (默认 shareddisk)")
     parser.add_argument("--stats", metavar="VOLUME", help="卷统计")
     parser.add_argument("--limit", type=int, default=20, help="结果限制")
     parser.add_argument("--max-depth", type=int, default=15, help="最大扫描深度")

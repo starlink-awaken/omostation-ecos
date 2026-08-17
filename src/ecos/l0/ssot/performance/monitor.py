@@ -153,9 +153,7 @@ class ResourceMonitor:
                 memory_usage_mb=memory_info.rss / 1024 / 1024,
                 memory_percent=self.process.memory_percent(),
                 thread_count=self.process.num_threads(),
-                open_files=len(self.process.open_files())
-                if hasattr(self.process, "open_files")
-                else 0,
+                open_files=len(self.process.open_files()) if hasattr(self.process, "open_files") else 0,
                 io_read_bytes=io_counters.read_bytes if io_counters else 0,
                 io_write_bytes=io_counters.write_bytes if io_counters else 0,
             )
@@ -205,14 +203,10 @@ class ResourceMonitor:
             return None
 
         return {
-            "cpu_percent": sum(s.cpu_percent for s in recent_snapshots)
-            / len(recent_snapshots),
-            "memory_usage_mb": sum(s.memory_usage_mb for s in recent_snapshots)
-            / len(recent_snapshots),
-            "memory_percent": sum(s.memory_percent for s in recent_snapshots)
-            / len(recent_snapshots),
-            "thread_count": sum(s.thread_count for s in recent_snapshots)
-            / len(recent_snapshots),
+            "cpu_percent": sum(s.cpu_percent for s in recent_snapshots) / len(recent_snapshots),
+            "memory_usage_mb": sum(s.memory_usage_mb for s in recent_snapshots) / len(recent_snapshots),
+            "memory_percent": sum(s.memory_percent for s in recent_snapshots) / len(recent_snapshots),
+            "thread_count": sum(s.thread_count for s in recent_snapshots) / len(recent_snapshots),
         }
 
     def get_peak_usage(self, window: int = 60) -> dict[str, float] | None:
@@ -269,9 +263,7 @@ class MetricsCollector:
             }
         }
 
-    def collect_execution_metrics(
-        self, report: DerivationReport, execution_time_ms: float
-    ) -> ExecutionMetrics:
+    def collect_execution_metrics(self, report: DerivationReport, execution_time_ms: float) -> ExecutionMetrics:
         """收集执行指标"""
         return ExecutionMetrics(
             timestamp=datetime.now().isoformat(),
@@ -301,22 +293,14 @@ class MetricsCollector:
 
     def collect_quality_metrics(self, report: DerivationReport) -> dict[str, Any]:
         """收集质量指标"""
-        success_rate = (
-            report.passed / report.total_rules if report.total_rules > 0 else 0
-        )
-        failure_rate = (
-            (report.error + report.blocker) / report.total_rules
-            if report.total_rules > 0
-            else 0
-        )
+        success_rate = report.passed / report.total_rules if report.total_rules > 0 else 0
+        failure_rate = (report.error + report.blocker) / report.total_rules if report.total_rules > 0 else 0
 
         return {
             "quality": {
                 "success_rate": success_rate,
                 "failure_rate": failure_rate,
-                "warning_rate": report.warn / report.total_rules
-                if report.total_rules > 0
-                else 0,
+                "warning_rate": report.warn / report.total_rules if report.total_rules > 0 else 0,
                 "has_blockers": report.blocker > 0,
                 "has_errors": report.error > 0,
                 "has_warnings": report.warn > 0,
@@ -407,9 +391,7 @@ class PerformanceMonitor:
             # 收集执行指标
             execution_metrics = None
             if isinstance(result, DerivationReport):
-                execution_metrics = self.metrics_collector.collect_execution_metrics(
-                    result, execution_time_ms
-                )
+                execution_metrics = self.metrics_collector.collect_execution_metrics(result, execution_time_ms)
                 self.execution_history.append(execution_metrics)
 
                 # 检查告警条件
@@ -421,9 +403,7 @@ class PerformanceMonitor:
             return {
                 "result": result,
                 "execution_metrics": execution_metrics,
-                "resource_usage": self.resource_monitor.get_average_usage()
-                if self.resource_monitor
-                else None,
+                "resource_usage": self.resource_monitor.get_average_usage() if self.resource_monitor else None,
             }
 
         finally:
@@ -436,20 +416,12 @@ class PerformanceMonitor:
         if metrics.duration_ms > self.alert_thresholds["execution_time_ms"]:
             alerts.append(f"执行时间过长: {metrics.duration_ms / 1000:.1f}s")
 
-        resource_usage = (
-            self.resource_monitor.get_average_usage() if self.resource_monitor else None
-        )
-        if (
-            resource_usage
-            and resource_usage.get("memory_usage_mb", 0)
-            > self.alert_thresholds["memory_usage_mb"]
-        ):
+        resource_usage = self.resource_monitor.get_average_usage() if self.resource_monitor else None
+        if resource_usage and resource_usage.get("memory_usage_mb", 0) > self.alert_thresholds["memory_usage_mb"]:
             alerts.append(f"内存使用过高: {resource_usage['memory_usage_mb']:.1f}MB")
 
         if metrics.rule_count > 0:
-            failure_rate = (
-                metrics.failed_rules + metrics.blocked_rules
-            ) / metrics.rule_count
+            failure_rate = (metrics.failed_rules + metrics.blocked_rules) / metrics.rule_count
             if failure_rate > self.alert_thresholds["failure_rate"]:
                 alerts.append(f"失败率过高: {failure_rate * 100:.1f}%")
 
@@ -475,10 +447,7 @@ class PerformanceMonitor:
 
         # 计算统计指标
         durations = [m.duration_ms for m in self.execution_history]
-        success_rates = [
-            m.passed_rules / m.rule_count if m.rule_count > 0 else 0
-            for m in self.execution_history
-        ]
+        success_rates = [m.passed_rules / m.rule_count if m.rule_count > 0 else 0 for m in self.execution_history]
 
         return {
             "total_executions": len(self.execution_history),
@@ -486,9 +455,7 @@ class PerformanceMonitor:
             "min_duration_ms": min(durations),
             "max_duration_ms": max(durations),
             "average_success_rate": sum(success_rates) / len(success_rates),
-            "resource_usage": self.resource_monitor.get_average_usage()
-            if self.resource_monitor
-            else None,
+            "resource_usage": self.resource_monitor.get_average_usage() if self.resource_monitor else None,
         }
 
     def export_metrics(self, filepath: str = "performance_metrics.json"):

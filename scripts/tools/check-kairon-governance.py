@@ -112,9 +112,7 @@ def format_report(packages: list[dict], audit: dict, max_age: int) -> str:
     lines.append("  ── X1 审计: Minerva Audit Log ──")
     if audit["exists"]:
         lines.append(f"  ✅ 审计日志存在: {audit['path']}")
-        lines.append(
-            f"     最近更新: {audit['last_updated']} ({audit.get('age_days', '?')}d 前)"
-        )
+        lines.append(f"     最近更新: {audit['last_updated']} ({audit.get('age_days', '?')}d 前)")
         if audit.get("files"):
             lines.append(f"     文件数: {audit['files']}")
         x1_status = "✅"
@@ -135,8 +133,7 @@ def format_report(packages: list[dict], audit: dict, max_age: int) -> str:
         lines.append("  ⚠️  过期包:")
         for p in sorted(stale, key=lambda x: x["age_days"], reverse=True):
             lines.append(
-                f"  [{p['age_days']:4d}d] {p['name']:25s}  {p['files']:4d} 文件  "
-                f"最后更新 {p['latest_update']}"
+                f"  [{p['age_days']:4d}d] {p['name']:25s}  {p['files']:4d} 文件  最后更新 {p['latest_update']}"
             )
 
     lines.append("")

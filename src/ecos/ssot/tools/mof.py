@@ -22,13 +22,9 @@ from pathlib import Path
 import yaml
 
 HOME = Path.home()
-SSOT_TOOLS = (
-    HOME / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "ssot" / "tools"
-)
+SSOT_TOOLS = HOME / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "ssot" / "tools"
 OMO_CHANGE = HOME / "Workspace" / ".omo" / "change-log"
-L0_M1 = (
-    HOME / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m1"
-)
+L0_M1 = HOME / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "ssot" / "mof" / "m1"
 
 
 def run_tool(name, args=None):
@@ -62,9 +58,7 @@ def cmd_pipeline():
         if not tool_path.exists():
             print(f"  ⏭️  [{layer_id}] {name}: 工具不存在")
             continue
-        rc = subprocess.run(
-            ["python3", str(tool_path)] + args, capture_output=True, timeout=30
-        ).returncode
+        rc = subprocess.run(["python3", str(tool_path)] + args, capture_output=True, timeout=30).returncode
         icon = "✅" if rc == 0 else "❌"
         if rc != 0:
             failed += 1
@@ -118,15 +112,11 @@ def cmd_status():
 
     daemon = m0.get("daemon", {})
     if daemon:
-        print(
-            f"  Daemon:  {'🟢' if daemon.get('healthy') else '🟡'} {daemon.get('cycles', 0)} 周期"
-        )
+        print(f"  Daemon:  {'🟢' if daemon.get('healthy') else '🟡'} {daemon.get('cycles', 0)} 周期")
 
     protocols = m0.get("protocols", {})
     if protocols:
-        aging = [
-            p for p, s in protocols.items() if s.get("status") in ("aging", "expired")
-        ]
+        aging = [p for p, s in protocols.items() if s.get("status") in ("aging", "expired")]
         if aging:
             print(f"  协议:    ⚠️ {', '.join(aging)} 需关注")
         else:
@@ -187,9 +177,7 @@ def cmd_adr(args):
         fp.parent.mkdir(parents=True, exist_ok=True)
         with open(fp, "w") as f:
             f.write(f"# ADR: {did}\n# Created: {now_str}\n\n")
-            yaml.dump(
-                node, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-            )
+            yaml.dump(node, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
         print(f"✅ ADR 已创建: {did}")
         print(f"   文件: {fp}")

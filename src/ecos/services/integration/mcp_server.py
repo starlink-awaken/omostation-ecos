@@ -153,9 +153,7 @@ TOOLS = [
         "description": "查看指定工作流完整定义·步骤/关系/SLA/跨层映射·bos://ecos/workflow/{name}",
         "inputSchema": {
             "type": "object",
-            "properties": {
-                "name": {"type": "string", "description": "工作流名称或 WORKFLOW-ID"}
-            },
+            "properties": {"name": {"type": "string", "description": "工作流名称或 WORKFLOW-ID"}},
             "required": ["name"],
         },
     },
@@ -164,9 +162,7 @@ TOOLS = [
         "description": "工作流关系图·上下游依赖/触发链·支持全局或指定工作流",
         "inputSchema": {
             "type": "object",
-            "properties": {
-                "name": {"type": "string", "description": "可选·不传返回全局关系图"}
-            },
+            "properties": {"name": {"type": "string", "description": "可选·不传返回全局关系图"}},
         },
     },
 ]
@@ -209,9 +205,7 @@ def handle_domain_validate(args):
     p = dm.resolve_path(d)
     if not p.exists():
         return {"error": f"路径不存在: {p}"}
-    results = dm.validate_domain(
-        p, d.get("domain_type", "document"), d.get("governance_tier", 1)
-    )
+    results = dm.validate_domain(p, d.get("domain_type", "document"), d.get("governance_tier", 1))
     return {
         "domain": d.get("name", d["id"]),
         "path": str(p),
@@ -235,11 +229,7 @@ def handle_domain_tree(args):
         if depth > 3:
             return []
         items = sorted(
-            [
-                i
-                for i in dir_path.iterdir()
-                if not i.name.startswith(".") and not i.name.startswith("__")
-            ],
+            [i for i in dir_path.iterdir() if not i.name.startswith(".") and not i.name.startswith("__")],
             key=lambda x: (not x.is_dir(), x.name),
         )
         result = []
@@ -364,22 +354,15 @@ def handle_workflow_relations(args):
         nodes = _load_workflow_nodes()
         node = None
         for n in nodes:
-            if (
-                name.lower() in n.get("id", "").lower()
-                or name.lower() in n.get("name", "").lower()
-            ):
+            if name.lower() in n.get("id", "").lower() or name.lower() in n.get("name", "").lower():
                 node = n
                 break
         if not node:
             return {"error": f"工作流未找到: {name}"}
         nid = node.get("id")
         upstream = [t for t in global_rels.get("triggers", []) if t.get("to") == nid]
-        downstream = [
-            t for t in global_rels.get("triggers", []) if t.get("from") == nid
-        ]
-        deps = [
-            d for d in global_rels.get("dependencies", []) if d.get("dependent") == nid
-        ]
+        downstream = [t for t in global_rels.get("triggers", []) if t.get("from") == nid]
+        deps = [d for d in global_rels.get("dependencies", []) if d.get("dependent") == nid]
         return {
             "workflow": nid,
             "upstream_triggers": upstream,
@@ -470,9 +453,7 @@ def handle_search(args):  # type: ignore[reportRedeclaration]
                             rel = str(Path(line).relative_to(p))
                         except ValueError:
                             rel = line
-                        results.append(
-                            {"uri": f"bos://{did}/{rel}", "domain": did, "file": rel}
-                        )
+                        results.append({"uri": f"bos://{did}/{rel}", "domain": did, "file": rel})
             except Exception:  # defensive fallback
                 pass
     return {"results": results, "total": len(results)}
@@ -571,9 +552,7 @@ def handle_search(args):
                             rel = str(Path(line).relative_to(p))
                         except ValueError:
                             rel = line
-                        results.append(
-                            {"uri": f"bos://{did}/{rel}", "domain": did, "file": rel}
-                        )
+                        results.append({"uri": f"bos://{did}/{rel}", "domain": did, "file": rel})
             except Exception:  # defensive fallback
                 pass
     return {"results": results, "total": len(results)}

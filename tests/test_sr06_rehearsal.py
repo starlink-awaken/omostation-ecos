@@ -25,6 +25,7 @@ from ecos.ssot.tools.work_packet_compiler import (
 
 # ── State Machine ──────────────────────────────────────────────────────────────
 
+
 class TestStateMachine:
     def test_initial_state_is_draft(self):
         sm = StateMachine()
@@ -99,6 +100,7 @@ class TestStateMachine:
 
 
 # ── Sandbox ────────────────────────────────────────────────────────────────────
+
 
 class TestSandbox:
     def test_creates_temp_directory(self):
@@ -177,6 +179,7 @@ class TestSandbox:
 
 # ── R1 Packet ──────────────────────────────────────────────────────────────────
 
+
 class TestR1Packet:
     def test_packet_has_required_fields(self):
         packet = make_r1_packet()
@@ -216,6 +219,7 @@ class TestR1Packet:
 
 
 # ── Dispatch ───────────────────────────────────────────────────────────────────
+
 
 class TestDispatch:
     def test_dispatch_returns_hash_and_envelopes(self):
@@ -300,6 +304,7 @@ class TestDispatch:
 
 # ── Verify ─────────────────────────────────────────────────────────────────────
 
+
 class TestVerify:
     def test_accept_verdict_produces_receipt(self):
         packet = make_r1_packet()
@@ -354,12 +359,8 @@ class TestVerify:
         try:
             accept_dispatch = run_dispatch(packet, accept_sandbox)
             reject_dispatch = run_dispatch(packet, reject_sandbox)
-            accept = run_verify(
-                packet, accept_dispatch["packet_hash"], "accept", accept_sandbox
-            )
-            reject = run_verify(
-                packet, reject_dispatch["packet_hash"], "reject", reject_sandbox
-            )
+            accept = run_verify(packet, accept_dispatch["packet_hash"], "accept", accept_sandbox)
+            reject = run_verify(packet, reject_dispatch["packet_hash"], "reject", reject_sandbox)
             assert accept["receipt_hash"] != reject["receipt_hash"]
         finally:
             accept_sandbox.cleanup()
@@ -385,12 +386,8 @@ class TestVerify:
         sandbox = Sandbox()
         try:
             dispatch = run_dispatch(packet, sandbox)
-            tampered = run_verify(
-                packet, dispatch["packet_hash"], "accept", sandbox, tamper=True
-            )
-            corrected = run_verify(
-                packet, dispatch["packet_hash"], "accept", sandbox, tamper=False
-            )
+            tampered = run_verify(packet, dispatch["packet_hash"], "accept", sandbox, tamper=True)
+            corrected = run_verify(packet, dispatch["packet_hash"], "accept", sandbox, tamper=False)
             assert corrected["receipt_hash"] != tampered["receipt_hash"]
         finally:
             sandbox.cleanup()
@@ -439,6 +436,7 @@ class TestVerify:
 
 
 # ── Rollback ───────────────────────────────────────────────────────────────────
+
 
 class TestRollback:
     def test_rollback_requires_a_live_session(self):
@@ -492,6 +490,7 @@ class TestRollback:
 
 # ── State Machine Bypass Prevention ───────────────────────────────────────────
 
+
 class TestStateMachineBypass:
     def test_dispatched_cannot_skip_to_completed(self):
         sm = StateMachine()
@@ -539,6 +538,7 @@ class TestStateMachineBypass:
 
 
 # ── Full Chain ─────────────────────────────────────────────────────────────────
+
 
 class TestFullChain:
     def test_full_chain_runs(self):

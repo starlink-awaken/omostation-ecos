@@ -245,9 +245,7 @@ class SwarmManager(SwarmPrimitive):
 
         behaviors = []
         for cluster in clusters:
-            avg_weight = sum(state.agent_weights.get(a, 1.0) for a in cluster) / len(
-                cluster
-            )
+            avg_weight = sum(state.agent_weights.get(a, 1.0) for a in cluster) / len(cluster)
             confidence = min(0.5 + len(cluster) * 0.1, 0.95)
             level = EmergenceLevel.HIGH if len(cluster) >= 4 else EmergenceLevel.MEDIUM
             behaviors.append(
@@ -276,24 +274,14 @@ class SwarmManager(SwarmPrimitive):
         unique_roles = [r for r, agents in role_groups.items() if len(agents) >= 1]
         if len(unique_roles) >= 2:
             total_agents = len(state.agents)
-            specialized_agents = [
-                a for r, agents in role_groups.items() for a in agents if r != "general"
-            ]
-            specialization_ratio = (
-                len(specialized_agents) / total_agents if total_agents > 0 else 0
-            )
+            specialized_agents = [a for r, agents in role_groups.items() for a in agents if r != "general"]
+            specialization_ratio = len(specialized_agents) / total_agents if total_agents > 0 else 0
             confidence = min(specialization_ratio + 0.3, 0.95)
-            level = (
-                EmergenceLevel.HIGH
-                if specialization_ratio > 0.6
-                else EmergenceLevel.MEDIUM
-            )
+            level = EmergenceLevel.HIGH if specialization_ratio > 0.6 else EmergenceLevel.MEDIUM
             behaviors.append(
                 EmergentBehavior(
                     pattern=EmergencePattern.SPECIALIZATION,
-                    agents=specialized_agents
-                    if specialized_agents
-                    else state.agents[:2],
+                    agents=specialized_agents if specialized_agents else state.agents[:2],
                     confidence=confidence,
                     level=level,
                     metadata={
@@ -327,12 +315,8 @@ class SwarmManager(SwarmPrimitive):
             for j in range(1, len(values)):
                 if values[j - 1] * values[j] < 0:
                     sign_changes += 1
-                elif (
-                    abs(values[j] - values[j - 1]) > abs(values[j - 1]) * 0.5 and j >= 2
-                ):
-                    if (values[j] - values[j - 1]) * (
-                        values[j - 1] - values[j - 2]
-                    ) < 0:
+                elif abs(values[j] - values[j - 1]) > abs(values[j - 1]) * 0.5 and j >= 2:
+                    if (values[j] - values[j - 1]) * (values[j - 1] - values[j - 2]) < 0:
                         sign_changes += 1
 
             if sign_changes >= 3:
@@ -340,11 +324,7 @@ class SwarmManager(SwarmPrimitive):
 
         if oscillations:
             confidence = min(0.5 + sign_changes * 0.05, 0.9)  # type: ignore[reportPossiblyUnboundVariable]
-            level = (
-                EmergenceLevel.CRITICAL
-                if len(oscillations) > len(state.agents) * 0.5
-                else EmergenceLevel.HIGH
-            )
+            level = EmergenceLevel.CRITICAL if len(oscillations) > len(state.agents) * 0.5 else EmergenceLevel.HIGH
             return [
                 EmergentBehavior(
                     pattern=EmergencePattern.OSCILLATION,
@@ -383,11 +363,7 @@ class SwarmManager(SwarmPrimitive):
         if cascade_triggers:
             involved = set(cascade_triggers)
             confidence = min(0.6 + len(cascade_triggers) * 0.1, 0.95)
-            level = (
-                EmergenceLevel.CRITICAL
-                if len(cascade_triggers) >= 3
-                else EmergenceLevel.HIGH
-            )
+            level = EmergenceLevel.CRITICAL if len(cascade_triggers) >= 3 else EmergenceLevel.HIGH
             return [
                 EmergentBehavior(
                     pattern=EmergencePattern.CASCADE,
@@ -412,9 +388,7 @@ class SwarmManager(SwarmPrimitive):
                         agents=state.agents[:2] if state.agents else [],
                         confidence=0.6,
                         level=EmergenceLevel.MEDIUM,
-                        metadata={
-                            "prediction": "clustering may lead to specialization"
-                        },
+                        metadata={"prediction": "clustering may lead to specialization"},
                     )
                 )
 
@@ -456,14 +430,10 @@ class SwarmManager(SwarmPrimitive):
         if action == "suppress":
             for agent_id in behavior.agents:
                 self.agent_states.setdefault(agent_id, {})["controlled"] = True
-                self.agent_states[agent_id]["suppressed_at"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
+                self.agent_states[agent_id]["suppressed_at"] = datetime.now(timezone.utc).isoformat()
         elif action == "amplify":
             for agent_id in behavior.agents:
-                self.agent_weights[agent_id] = (
-                    self.agent_weights.get(agent_id, 1.0) * 1.5
-                )
+                self.agent_weights[agent_id] = self.agent_weights.get(agent_id, 1.0) * 1.5
                 self.agent_states.setdefault(agent_id, {})["amplified"] = True
         elif action == "redirect":
             for agent_id in behavior.agents:
@@ -477,9 +447,7 @@ class SwarmManager(SwarmPrimitive):
             if len(behavior.agents) >= 2:
                 primary = behavior.agents[0]
                 for agent_id in behavior.agents[1:]:
-                    self.agent_states.setdefault(primary, {}).setdefault(
-                        "merged_agents", []
-                    )
+                    self.agent_states.setdefault(primary, {}).setdefault("merged_agents", [])
                     self.agent_states[primary]["merged_agents"].append(agent_id)
 
         return True
@@ -500,11 +468,7 @@ class SwarmManager(SwarmPrimitive):
         for b in self.behaviors:
             pattern_counts[b.pattern.value] += 1
 
-        avg_weight = (
-            sum(self.agent_weights.values()) / len(self.agent_weights)
-            if self.agent_weights
-            else 0
-        )
+        avg_weight = sum(self.agent_weights.values()) / len(self.agent_weights) if self.agent_weights else 0
 
         return {
             "agent_count": len(self.agents),
@@ -516,9 +480,7 @@ class SwarmManager(SwarmPrimitive):
             "control_actions": len(self._control_log),
         }
 
-    def _compute_similarity(
-        self, state_a: dict[str, Any], state_b: dict[str, Any]
-    ) -> float:
+    def _compute_similarity(self, state_a: dict[str, Any], state_b: dict[str, Any]) -> float:
         """计算两个 Agent 状态的相似度"""
         if not state_a and not state_b:
             return 1.0
@@ -600,9 +562,7 @@ class EmergenceDetector:
         self.history.extend(filtered)
         return filtered
 
-    def get_history(
-        self, pattern: EmergencePattern | None = None
-    ) -> list[EmergentBehavior]:
+    def get_history(self, pattern: EmergencePattern | None = None) -> list[EmergentBehavior]:
         """获取历史，可按模式过滤"""
         if pattern:
             return [b for b in self.history if b.pattern == pattern]

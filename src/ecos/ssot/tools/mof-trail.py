@@ -35,9 +35,7 @@ def trail_cards(since: datetime | None = None) -> list[dict]:
     conn = sqlite3.connect(str(CARDS_DB))
 
     # Check if card_history table exists
-    tables = [
-        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    ]
+    tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")]
 
     events = []
 
@@ -112,9 +110,7 @@ def trail_daemon(since: datetime | None = None) -> list[dict]:
 
     # Also check alerts
     try:
-        cur = conn.execute(
-            "SELECT id, alert_type, message, created_at FROM alerts ORDER BY id DESC LIMIT 10"
-        )
+        cur = conn.execute("SELECT id, alert_type, message, created_at FROM alerts ORDER BY id DESC LIMIT 10")
         for row in cur.fetchall():
             events.append(
                 {
@@ -240,11 +236,7 @@ def main():
         events.extend(get_mof_events(since))
 
     if args.json:
-        print(
-            json.dumps(
-                {"events": len(events), "items": events}, ensure_ascii=False, indent=2
-            )
-        )
+        print(json.dumps({"events": len(events), "items": events}, ensure_ascii=False, indent=2))
     else:
         print(format_trail(events))
 

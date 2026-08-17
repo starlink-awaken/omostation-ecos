@@ -123,15 +123,11 @@ def test_governance_schemas_non_empty(compiler: MofCompiler) -> None:
 
 def test_governance_event_result_is_model_reference(compiler: MofCompiler) -> None:
     by_name = {s.name: s for s in compiler.load()}
-    result = next(
-        p for p in by_name["GovernanceEvent"].properties if p.name == "result"
-    )
+    result = next(p for p in by_name["GovernanceEvent"].properties if p.name == "result")
     assert result.type == "ref"
     assert result.ref_target == "GovernanceCheck"
     doc = json.loads(compiler.compile()["json-schema"])
-    assert doc["$defs"]["GovernanceEvent"]["properties"]["result"] == {
-        "$ref": "#/$defs/GovernanceCheck"
-    }
+    assert doc["$defs"]["GovernanceEvent"]["properties"]["result"] == {"$ref": "#/$defs/GovernanceCheck"}
 
 
 def test_missing_body_raises(tmp_path: Path) -> None:
@@ -277,14 +273,8 @@ def test_required_semantics_json_schema(compiler: MofCompiler) -> None:
 
 def test_pattern_preserved_json_schema(compiler: MofCompiler) -> None:
     doc = json.loads(compiler.compile()["json-schema"])
-    assert (
-        doc["$defs"]["EventEnvelope"]["properties"]["schema_version"]["pattern"]
-        == "^event-envelope/v[0-9]+$"
-    )
-    assert (
-        doc["$defs"]["Signal"]["properties"]["signal_id"]["pattern"]
-        == "^[A-Za-z0-9_-]{8,}$"
-    )
+    assert doc["$defs"]["EventEnvelope"]["properties"]["schema_version"]["pattern"] == "^event-envelope/v[0-9]+$"
+    assert doc["$defs"]["Signal"]["properties"]["signal_id"]["pattern"] == "^[A-Za-z0-9_-]{8,}$"
 
 
 def test_explicit_reference_semantics_json_schema(compiler: MofCompiler) -> None:
@@ -293,9 +283,7 @@ def test_explicit_reference_semantics_json_schema(compiler: MofCompiler) -> None
     assert ee_props["episode_ref"] == {"$ref": "#/$defs/Episode"}
     assert ee_props["signal_ref"] == {"$ref": "#/$defs/Signal"}
     episode_props = doc["$defs"]["Episode"]["properties"]
-    assert episode_props["contains_event_refs"]["items"] == {
-        "$ref": "#/$defs/EventEnvelope"
-    }
+    assert episode_props["contains_event_refs"]["items"] == {"$ref": "#/$defs/EventEnvelope"}
     outcome_props = doc["$defs"]["Outcome"]["properties"]
     assert outcome_props["from_commitment_ref"] == {"$ref": "#/$defs/Commitment"}
 
@@ -351,9 +339,7 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
     artifacts = compiler.compile()
     doc = json.loads(artifacts["json-schema"])
     work_packet = doc["$defs"]["WorkPacket"]
-    assert work_packet["properties"]["spec_binding"] == {
-        "$ref": "#/$defs/SpecificationBinding"
-    }
+    assert work_packet["properties"]["spec_binding"] == {"$ref": "#/$defs/SpecificationBinding"}
     assert work_packet["allOf"] == [
         {
             "if": {
@@ -370,9 +356,7 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
         "content_digest",
         "decision_ref",
     }
-    assert binding["properties"]["content_digest"]["pattern"] == (
-        "^sha256:[a-f0-9]{64}$"
-    )
+    assert binding["properties"]["content_digest"]["pattern"] == ("^sha256:[a-f0-9]{64}$")
 
     with tempfile.TemporaryDirectory() as td:
         mod_path = Path(td) / "mof_control_models.py"
@@ -412,23 +396,16 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
     assert 'value.schema_version === "work-packet/v2"' in zod
     assert 'path: ["spec_binding"]' in zod
     sqlite_ddl = artifacts["sqlite"]
-    assert (
-        'CHECK ("schema_version" <> \'work-packet/v2\' OR "spec_binding" IS NOT NULL)'
-        in sqlite_ddl
-    )
+    assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "spec_binding" IS NOT NULL)' in sqlite_ddl
 
 
 def test_sqlite_ddl_executes(compiler: MofCompiler) -> None:
     conn = sqlite3.connect(":memory:")
     conn.executescript(compiler.compile()["sqlite"])
-    tables = {
-        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    }
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert "event_envelope" in tables
     assert "episode" in tables
-    fks = {
-        (f[2], f[3]) for f in conn.execute("PRAGMA foreign_key_list(event_envelope)")
-    }
+    fks = {(f[2], f[3]) for f in conn.execute("PRAGMA foreign_key_list(event_envelope)")}
     assert ("signal", "signal_ref") in fks
     assert ("episode", "episode_ref") in fks
 
@@ -442,10 +419,7 @@ def test_zod_emits_object_and_lazy_refs(compiler: MofCompiler) -> None:
 
 def test_zod_enforces_w1_patterns(compiler: MofCompiler) -> None:
     content = compiler.compile()["zod"]
-    assert (
-        'schema_version: z.string().regex(new RegExp("^event-envelope/v[0-9]+$"))'
-        in content
-    )
+    assert 'schema_version: z.string().regex(new RegExp("^event-envelope/v[0-9]+$"))' in content
     assert 'signal_id: z.string().regex(new RegExp("^[A-Za-z0-9_-]{8,}$"))' in content
 
 
@@ -487,12 +461,8 @@ def test_adversarial_invalid_fk_rejected(compiler: MofCompiler) -> None:
 def test_adversarial_invalid_enum_rejected(compiler: MofCompiler) -> None:
     conn = _ddl_connection(compiler)
     with pytest.raises(sqlite3.IntegrityError):
-        conn.execute(
-            "INSERT INTO action (action, intent, priority) VALUES ('a', 'i', 'P9')"
-        )
-    conn.execute(
-        "INSERT INTO action (action, intent, priority) VALUES ('a', 'i', 'P0')"
-    )
+        conn.execute("INSERT INTO action (action, intent, priority) VALUES ('a', 'i', 'P9')")
+    conn.execute("INSERT INTO action (action, intent, priority) VALUES ('a', 'i', 'P0')")
 
 
 def test_adversarial_junction_fk_enforced(compiler: MofCompiler) -> None:
@@ -506,13 +476,11 @@ def test_adversarial_junction_fk_enforced(compiler: MofCompiler) -> None:
         "VALUES ('epi_a1234567', 'episode/v1', '2026-08-10T00:00:00Z')"
     )
     conn.execute(
-        "INSERT INTO episode_contains_event_refs (episode_id, event_id) "
-        "VALUES ('epi_a1234567', 'evt_a1234567')"
+        "INSERT INTO episode_contains_event_refs (episode_id, event_id) VALUES ('epi_a1234567', 'evt_a1234567')"
     )
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute(
-            "INSERT INTO episode_contains_event_refs (episode_id, event_id) "
-            "VALUES ('epi_a1234567', 'no-such-event')"
+            "INSERT INTO episode_contains_event_refs (episode_id, event_id) VALUES ('epi_a1234567', 'no-such-event')"
         )
 
 
@@ -554,16 +522,12 @@ def test_check_detects_missing_manifest(compiler: MofCompiler, tmp_path: Path) -
     assert compiler.check(out_dir=tmp_path)
 
 
-def test_check_detects_manifest_hash_tampering(
-    compiler: MofCompiler, tmp_path: Path
-) -> None:
+def test_check_detects_manifest_hash_tampering(compiler: MofCompiler, tmp_path: Path) -> None:
     compiler.write(out_dir=tmp_path)
     manifest = tmp_path / "mof-control.manifest.json"
     data = json.loads(manifest.read_text(encoding="utf-8"))
     data["artifacts"]["json-schema"] = "0" * 64
-    manifest.write_text(
-        json.dumps(data, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
+    manifest.write_text(json.dumps(data, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     problems = compiler.check(out_dir=tmp_path)
     assert any("manifest" in p and "json-schema" in p for p in problems)
 
@@ -588,14 +552,10 @@ def test_identity_precedence(compiler: MofCompiler) -> None:
 def test_ir_reference_targets(compiler: MofCompiler) -> None:
     by_name = {s.name: s for s in load_m2_dir(M2_DIR)}
     assert "EventEnvelope" in by_name
-    episode_ref = next(
-        p for p in by_name["EventEnvelope"].properties if p.name == "episode_ref"
-    )
+    episode_ref = next(p for p in by_name["EventEnvelope"].properties if p.name == "episode_ref")
     assert episode_ref.type == "ref"
     assert episode_ref.ref_target == "Episode"
-    contains = next(
-        p for p in by_name["Episode"].properties if p.name == "contains_event_refs"
-    )
+    contains = next(p for p in by_name["Episode"].properties if p.name == "contains_event_refs")
     assert contains.type == "list"
     assert contains.items_type == "ref"
     assert contains.ref_target == "EventEnvelope"

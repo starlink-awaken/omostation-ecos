@@ -178,9 +178,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
             results["passed"] += 1
         else:
             results["failed"] += 1
-            on_failure = (
-                step.get("on_failure") or execution.get("on_failure") or "continue"
-            )
+            on_failure = step.get("on_failure") or execution.get("on_failure") or "continue"
             if on_failure == "abort":
                 break
 

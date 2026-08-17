@@ -155,9 +155,7 @@ def reason_state(node_id: str, target_state: str = None) -> dict:  # type: ignor
         if current_status in sm:
             legal_transitions = sm[current_status].get("transitions", [])
             result["legal_transitions"] = legal_transitions
-            result["is_legal"] = (
-                target_state in legal_transitions if target_state else None
-            )
+            result["is_legal"] = target_state in legal_transitions if target_state else None
         else:
             result["legal_transitions"] = []
             result["is_legal"] = False
@@ -174,9 +172,7 @@ def reason_value(node_id: str) -> dict:
     return {
         "value_metrics": node.get("value_metrics", {}),
         "cost_model": node.get("cost_model", {}),
-        "strategic_importance": node.get("value_metrics", {}).get(
-            "strategic_importance", "unknown"
-        ),
+        "strategic_importance": node.get("value_metrics", {}).get("strategic_importance", "unknown"),
     }
 
 

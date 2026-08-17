@@ -124,11 +124,7 @@ def main():
             }
             for t in load_nodes("mcptool")
         ]
-        print(
-            json.dumps(
-                {"skills": skills, "mcptools": tools}, ensure_ascii=False, indent=2
-            )
-        )
+        print(json.dumps({"skills": skills, "mcptools": tools}, ensure_ascii=False, indent=2))
         return
 
     md = generate_skills_md()

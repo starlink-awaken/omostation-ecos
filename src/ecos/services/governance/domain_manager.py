@@ -93,9 +93,7 @@ from .domain_manager_search import cmd_search  # P110-C 治本续: 拆 cmd_searc
 H = Path.home()
 DOCS = H / "Documents"
 L0_CONSTRAINTS = Path(__file__).parent.parent / "l0" / "constraints.yaml"  # L0 SSOT
-L0_CONSTRAINTS_L4 = (
-    DOCS / "@学习进化/_knowledge/10-systems/基建架构/L0-constraints.yaml"
-)  # L4缓存
+L0_CONSTRAINTS_L4 = DOCS / "@学习进化/_knowledge/10-systems/基建架构/L0-constraints.yaml"  # L4缓存
 M1_NODES_DIR = DOCS / "@驾驶舱/_meta/nodes"
 DOMAIN_INDEX = DOCS / "@驾驶舱/_control/DOMAIN-INDEX.md"
 
@@ -110,9 +108,7 @@ TYPE_ICONS = {
     "model": "🧠",
     "view": "👁️",
 }
-KEMS_PLANES = {
-    "document": ["_control", "_entities", "_knowledge", "_storage", "_archive"]
-}
+KEMS_PLANES = {"document": ["_control", "_entities", "_knowledge", "_storage", "_archive"]}
 REQUIRED_TIER1 = [
     "CLAUDE.md",
     "_control/STATE.md",
@@ -149,11 +145,7 @@ L2_TTL = 300  # seconds (5 min)
 
 def find_domain(registry, name):
     for d in registry:
-        if (
-            d["id"] == name
-            or d.get("name") == name
-            or d.get("name", "").replace("@", "") == name
-        ):
+        if d["id"] == name or d.get("name") == name or d.get("name", "").replace("@", "") == name:
             return d
     return None
 
@@ -197,9 +189,7 @@ def scan_filesystem():
                 if item.is_symlink() or item.is_dir():
                     if item.name.startswith("."):
                         continue
-                    if (item / "CLAUDE.md").exists() or any(
-                        (item / p).exists() for p in ["_control", "_knowledge"]
-                    ):
+                    if (item / "CLAUDE.md").exists() or any((item / p).exists() for p in ["_control", "_knowledge"]):
                         found.append(item)
         except PermissionError:
             continue
@@ -211,11 +201,7 @@ def _count_files(dir_path: Path, suffix: str = ".md") -> int:
     """Count files recursively in a directory (skip hidden)."""
     if not dir_path.is_dir():
         return 0
-    return sum(
-        1
-        for f in dir_path.rglob(f"*{suffix}")
-        if not f.name.startswith(".") and ".git" not in f.parts
-    )
+    return sum(1 for f in dir_path.rglob(f"*{suffix}") if not f.name.startswith(".") and ".git" not in f.parts)
 
 
 def _check_frontmatter(file_path: Path) -> bool:
@@ -258,9 +244,7 @@ def validate_domain(path, dtype="document", tier=1):
                     if kf.exists():
                         has_fm = _check_frontmatter(kf)
                         if not has_fm:
-                            results.append(
-                                (f"quality/{p}/{key_file}", False, "缺 frontmatter")
-                            )
+                            results.append((f"quality/{p}/{key_file}", False, "缺 frontmatter"))
                 results.append(
                     (
                         f"size/{p}/",
@@ -278,9 +262,7 @@ def validate_domain(path, dtype="document", tier=1):
     # BOS connectivity (check if domain has BOSRoute M1 node)
     m1_bos = Path(__file__).resolve().parent.parent / "ssot" / "mof" / "m1" / "bosroute"
     if m1_bos.exists():
-        has_bos = any(
-            f.name.startswith("BOSROUTE-") for f in m1_bos.iterdir() if f.is_file()
-        )
+        has_bos = any(f.name.startswith("BOSROUTE-") for f in m1_bos.iterdir() if f.is_file())
         results.append(
             (
                 "BOSRoute M1",
@@ -491,9 +473,7 @@ def cmd_cache_status(args):
             l2_size = len([k for k in data if not k.startswith("_")])
             updated = data.get("_updated", "")
             if updated:
-                l2_age = int(
-                    (datetime.now() - datetime.fromisoformat(updated)).total_seconds()
-                )
+                l2_age = int((datetime.now() - datetime.fromisoformat(updated)).total_seconds())
     except Exception:  # defensive fallback
         pass
 
@@ -575,9 +555,7 @@ def cmd_audit_unified(args):
         print("\n  ⚠️  audit_unified 模块不可用\n")
         return
 
-    result = query_events(
-        hours=hours, source=source, domain=domain, event_type=event_type
-    )
+    result = query_events(hours=hours, source=source, domain=domain, event_type=event_type)
     print_audit_report(result)
 
 
@@ -637,19 +615,13 @@ def cmd_audit_log(args):
 def cmd_capabilities(args):
     """查询域提供的能力清单"""
 
-    M1_DOMAIN = (
-        Path(__file__).resolve().parent.parent / "ssot" / "mof" / "m1" / "domain"
-    )
+    M1_DOMAIN = Path(__file__).resolve().parent.parent / "ssot" / "mof" / "m1" / "domain"
     if not M1_DOMAIN.exists():
         print("⚠️  M1 Domain 节点目录不存在")
         return
     if args:
         target = args[0]
-        targets = (
-            [target]
-            if not target.startswith("bos://")
-            else [target.replace("bos://", "").split("/")[0]]
-        )
+        targets = [target] if not target.startswith("bos://") else [target.replace("bos://", "").split("/")[0]]
     else:
         targets = None
 

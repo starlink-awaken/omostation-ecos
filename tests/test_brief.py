@@ -377,12 +377,8 @@ class TestMain:
     @patch("ecos.services.core.brief.Path")
     def test_skip_if_fresh(self, mock_path, mock_freshness, mock_args):
         mock_freshness.return_value = True
-        mock_args.return_value = MagicMock(
-            output="/fake/brief.md", json=False, force=False
-        )
-        mock_path.return_value.stat.return_value = MagicMock(
-            st_mtime=datetime.now().timestamp()
-        )
+        mock_args.return_value = MagicMock(output="/fake/brief.md", json=False, force=False)
+        mock_path.return_value.stat.return_value = MagicMock(st_mtime=datetime.now().timestamp())
         main()  # should not raise
 
     @patch("ecos.services.core.brief.argparse.ArgumentParser.parse_args")
@@ -407,9 +403,7 @@ class TestMain:
         mock_args,
     ):
         mock_freshness.return_value = False
-        mock_args.return_value = MagicMock(
-            output="/fake/brief.md", json=False, force=False
-        )
+        mock_args.return_value = MagicMock(output="/fake/brief.md", json=False, force=False)
         mock_claude.return_value = {
             "total": 0,
             "fresh": 0,
@@ -446,9 +440,7 @@ class TestMain:
         mock_args,
     ):
         mock_freshness.return_value = False
-        mock_args.return_value = MagicMock(
-            output="/fake/brief.md", json=True, force=False
-        )
+        mock_args.return_value = MagicMock(output="/fake/brief.md", json=True, force=False)
         mock_claude.return_value = {
             "total": 0,
             "fresh": 0,

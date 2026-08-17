@@ -53,8 +53,7 @@ class TestCheckDrift:
         alerts = check_drift(7327 + 879, BASELINE["zones"])
         assert len([a for a in alerts if a["level"] == "critical"]) >= 1
         assert all(
-            a.get("action") == "NO_AUTO_REINDEX"
-            or "HUMAN_INVESTIGATE" in a.get("action", "")
+            a.get("action") == "NO_AUTO_REINDEX" or "HUMAN_INVESTIGATE" in a.get("action", "")
             for a in alerts
             if a["level"] == "critical"
         )
@@ -72,9 +71,7 @@ class TestCheckDrift:
             },
         )
         for a in alerts:
-            assert a.get("action") not in ("REINDEX", "AUTO_REINDEX"), (
-                f"AUTO_REINDEX found: {a}"
-            )
+            assert a.get("action") not in ("REINDEX", "AUTO_REINDEX"), f"AUTO_REINDEX found: {a}"
             # "NO_AUTO_REINDEX" contains 'reindex' but is the correct action — it's explicitly preventing it
 
     def test_missing_zone_raises_critical(self):

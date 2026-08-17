@@ -114,13 +114,9 @@ class CollaborationEngine:
         try:
             self._registry.register(agent_id, agent_id, capabilities)
             self._role_manager.define_role(
-                __import__(
-                    "ecos.l0.governance", fromlist=["RoleDefinition"]
-                ).RoleDefinition(
+                __import__("ecos.l0.governance", fromlist=["RoleDefinition"]).RoleDefinition(
                     role_id=f"role-{agent_id}",
-                    role_type=__import__(
-                        "ecos.l0.governance", fromlist=["RoleType"]
-                    ).RoleType.WORKER,
+                    role_type=__import__("ecos.l0.governance", fromlist=["RoleType"]).RoleType.WORKER,
                     capabilities=capabilities,
                     constraints={},
                 )
@@ -161,9 +157,7 @@ class CollaborationEngine:
     def set_dependency(self, task_id: str, depends_on: str) -> None:
         self._task_dependencies.setdefault(task_id, set()).add(depends_on)
 
-    def on_complete(
-        self, task_id: str, handler: Callable[[OrchestrationTask], None]
-    ) -> None:
+    def on_complete(self, task_id: str, handler: Callable[[OrchestrationTask], None]) -> None:
         self._completion_handlers[task_id] = handler
 
     def auto_assign(self) -> list[tuple[str, str]]:
@@ -215,9 +209,7 @@ class CollaborationEngine:
 
         handler = self._completion_handlers.get(task_id)
         if handler:
-            task = OrchestrationTask(
-                task_id=task_id, name="", stage=TaskStage.DONE, result=result
-            )
+            task = OrchestrationTask(task_id=task_id, name="", stage=TaskStage.DONE, result=result)
             handler(task)
         return True
 
@@ -229,9 +221,7 @@ class CollaborationEngine:
         task_info.metadata["retry_count"] = task_info.metadata.get("retry_count", 0) + 1
         if task_info.metadata["retry_count"] <= self.config.retry_count:
             self._task_stages[task_id] = TaskStage.PENDING
-            self._log_event(
-                "task_retry", task_id=task_id, retry=task_info.metadata["retry_count"]
-            )
+            self._log_event("task_retry", task_id=task_id, retry=task_info.metadata["retry_count"])
             return True
 
         self._scheduler.fail_task(task_id)
@@ -306,9 +296,7 @@ class SwarmEngine:
         self._log_event("swarm_stopped")
         return True
 
-    def register_agent(
-        self, agent_id: str, metadata: dict[str, Any] | None = None
-    ) -> bool:
+    def register_agent(self, agent_id: str, metadata: dict[str, Any] | None = None) -> bool:
         self._swarm.add_agent(agent_id, initial_state=metadata)
         self._log_event("agent_registered", agent_id=agent_id)
         return True
@@ -456,10 +444,7 @@ class PersonalEngine:
 
     def query_knowledge(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
         nodes = self._km.query_knowledge(query, limit)
-        return [
-            {"key": n.node_id, "score": 1.0, "content": n.content, "tags": n.tags}
-            for n in nodes
-        ]
+        return [{"key": n.node_id, "score": 1.0, "content": n.content, "tags": n.tags} for n in nodes]
 
     def get_related_knowledge(self, key: str) -> list[str]:
         return self._km.get_related(key, depth=1)  # type: ignore[reportReturnType]

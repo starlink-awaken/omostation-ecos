@@ -87,9 +87,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
             # nested event loop
             loop = asyncio.new_event_loop()
             try:
-                loop.run_until_complete(
-                    workflow.run(task_description=wf_name, dag_dict=m1_node)
-                )
+                loop.run_until_complete(workflow.run(task_description=wf_name, dag_dict=m1_node))
             finally:
                 loop.close()
         return _collect_from_workflow(workflow)
@@ -118,9 +116,7 @@ def _execute_sync_layers(workflow: Any, engine: Any) -> dict[str, Any]:
                 for n in pending:
                     n.status = "failed"
                     n.output = "unresolved_dependency"
-                    results["steps"].append(
-                        {"name": n.node_id, "status": "failed", "error": n.output}
-                    )
+                    results["steps"].append({"name": n.node_id, "status": "failed", "error": n.output})
                     results["failed"] += 1
             break
         for node in executable:
@@ -128,20 +124,14 @@ def _execute_sync_layers(workflow: Any, engine: Any) -> dict[str, Any]:
             try:
                 task = Task(input=node.input_prompt, task_type=node.task_type)
                 out = engine.process(task)
-                node.output = (
-                    str(out.get("output", out)) if isinstance(out, dict) else str(out)
-                )
+                node.output = str(out.get("output", out)) if isinstance(out, dict) else str(out)
                 node.status = "completed"
-                results["steps"].append(
-                    {"name": node.node_id, "status": "ok", "result": out}
-                )
+                results["steps"].append({"name": node.node_id, "status": "ok", "result": out})
                 results["passed"] += 1
             except Exception as e:
                 node.status = "failed"
                 node.output = str(e)
-                results["steps"].append(
-                    {"name": node.node_id, "status": "error", "error": str(e)}
-                )
+                results["steps"].append({"name": node.node_id, "status": "error", "error": str(e)})
                 results["failed"] += 1
                 workflow._cascade_fail(node.node_id)
     return results

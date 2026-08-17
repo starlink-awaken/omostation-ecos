@@ -85,10 +85,7 @@ def resolve_action(action: str) -> ActionHandler | None:
 
 def list_actions() -> list[dict[str, str]]:
     _ensure_builtins_registered()
-    return [
-        {"name": name, "description": info["description"]}
-        for name, info in _registry.items()
-    ]
+    return [{"name": name, "description": info["description"]} for name, info in _registry.items()]
 
 
 def get_action(name: str) -> dict[str, Any] | None:
@@ -156,9 +153,7 @@ def _register_builtins() -> None:
         description="健康检查: 所有核心服务健康状态",
     )
 
-    register_action(
-        "domain_validate_all", _action_domain_validate_all, description="域全量校验"
-    )
+    register_action("domain_validate_all", _action_domain_validate_all, description="域全量校验")
 
     register_action(
         "domain_audit",
@@ -232,10 +227,7 @@ def _action_workflow_run(params: dict) -> dict:
 
         result = execute_m1_workflow(sub_name)
         ok = result.get("failed", 0) == 0
-        summary = (
-            result.get("error")
-            or f"子工作流 {sub_name}: {result.get('passed', 0)}✅ {result.get('failed', 0)}❌"
-        )
+        summary = result.get("error") or f"子工作流 {sub_name}: {result.get('passed', 0)}✅ {result.get('failed', 0)}❌"
         return {
             "passed": ok,
             "summary": summary,
@@ -250,9 +242,7 @@ def _action_workflow_run(params: dict) -> dict:
 
 
 def _action_health_check(params: dict) -> dict:
-    r = _run(
-        ["python3", str(H / ".ecos" / "scripts" / "ecos-health-check.py"), "--json"]
-    )
+    r = _run(["python3", str(H / ".ecos" / "scripts" / "ecos-health-check.py"), "--json"])
     if r is None:
         script_path = H / ".ecos" / "scripts" / "ecos-health-check.py"
         return _fail(
@@ -283,9 +273,7 @@ def _action_domain_check_refs(params: dict) -> dict:
 
 
 def _action_domain_sync(params: dict) -> dict:
-    return _check_run(
-        ["python3", str(H / "bin" / "ecos"), "domain", "sync"], timeout=10
-    )
+    return _check_run(["python3", str(H / "bin" / "ecos"), "domain", "sync"], timeout=10)
 
 
 def _action_bos_validate(params: dict) -> dict:
@@ -293,9 +281,7 @@ def _action_bos_validate(params: dict) -> dict:
 
 
 def _action_domain_routes(params: dict) -> dict:
-    return _check_run(
-        ["python3", str(H / "bin" / "ecos"), "domain", "routes"], timeout=10
-    )
+    return _check_run(["python3", str(H / "bin" / "ecos"), "domain", "routes"], timeout=10)
 
 
 def _action_complete_quest(params: dict) -> dict:

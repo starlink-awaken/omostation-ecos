@@ -119,13 +119,7 @@ def _cmd_list(args: list[str]) -> None:
         if with_status:
             wf_key = wf.get("id", wf.get("name", ""))
             status_icon = latest_status.get(wf_key, "—")
-            status_char = (
-                "✅"
-                if status_icon == "ok"
-                else "❌"
-                if status_icon == "failed"
-                else "➖"
-            )
+            status_char = "✅" if status_icon == "ok" else "❌" if status_icon == "failed" else "➖"
             print(f"  {status_char} {src}  {display:30s}  [{name}]{extra}")
         else:
             print(f"  {src}  {display:30s}  [{name}]{extra}")
@@ -271,9 +265,7 @@ def _cmd_actions(_args: list[str]) -> None:
         desc = a.get("description", "")
         print(f"  {a['name']:30s}  {desc}")
     print(f"{'=' * 60}")
-    print(
-        "💡 action 在工作流定义的 step.action 字段中使用。外部模块可通过 register_action() 扩展。"
-    )
+    print("💡 action 在工作流定义的 step.action 字段中使用。外部模块可通过 register_action() 扩展。")
 
 
 def _cmd_status(_args: list[str]) -> None:
@@ -359,9 +351,7 @@ def _cmd_create(args: list[str]) -> None:
 
     name = rest[0]
     safe_name = name.upper().replace(" ", "-").replace("_", "-")
-    wf_id = (
-        f"WORKFLOW-{safe_name}" if not safe_name.startswith("WORKFLOW-") else safe_name
-    )
+    wf_id = f"WORKFLOW-{safe_name}" if not safe_name.startswith("WORKFLOW-") else safe_name
 
     if m1:
         # M1 格式模板（含完整元数据）
@@ -388,9 +378,7 @@ def _cmd_create(args: list[str]) -> None:
             return
 
     with open(out_path, "w") as f:
-        yaml.dump(
-            template, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-        )
+        yaml.dump(template, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
     print(f"✅ 工作流模板已创建: {out_path}")
     print(f"   类型: {'M1' if m1 else 'definition'}")
@@ -552,9 +540,7 @@ def _cmd_edit(args: list[str]) -> None:
     if not file_path.exists():
         print(f"❌ 文件不存在: {file_path}")
         # 尝试模糊搜索
-        candidates = list(WF_DIR.glob("*.yaml")) + list(
-            M1_WF_DIR.glob("WORKFLOW-*.yaml")
-        )
+        candidates = list(WF_DIR.glob("*.yaml")) + list(M1_WF_DIR.glob("WORKFLOW-*.yaml"))
         for c in candidates:
             if name.lower() in c.stem.lower():
                 file_path = c
@@ -741,11 +727,7 @@ def _cmd_fork(args: list[str]) -> None:
         new_wf = yaml.safe_load(f)
 
     safe_new = new_name.upper().replace(" ", "-").replace("_", "-")
-    new_wf_id = (
-        f"WORKFLOW-{safe_new}"
-        if is_m1 and not safe_new.startswith("WORKFLOW-")
-        else safe_new
-    )
+    new_wf_id = f"WORKFLOW-{safe_new}" if is_m1 and not safe_new.startswith("WORKFLOW-") else safe_new
     new_wf["id"] = new_wf_id
     new_wf["name"] = new_name
     new_wf["description"] = f"从 {wf.get('name', name)} 派生: {new_name}"
@@ -768,9 +750,7 @@ def _cmd_fork(args: list[str]) -> None:
             return
 
     with open(dest, "w") as f:
-        yaml.dump(
-            new_wf, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-        )
+        yaml.dump(new_wf, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
     print(f"✅ 工作流已派生: {wf.get('name', name)} → {new_name}")
     print(f"   源: {src_path}")
@@ -815,11 +795,7 @@ def _cmd_stats(_args: list[str]) -> None:
     # 时间范围
     timestamps = [r.get("generated_at", "")[:10] for r in runs if r.get("generated_at")]
     date_range = (
-        f"{timestamps[-1]} ~ {timestamps[0]}"
-        if len(timestamps) >= 2
-        else timestamps[0]
-        if timestamps
-        else "N/A"
+        f"{timestamps[-1]} ~ {timestamps[0]}" if len(timestamps) >= 2 else timestamps[0] if timestamps else "N/A"
     )
 
     print("📊 工作流运行统计")
@@ -834,11 +810,7 @@ def _cmd_stats(_args: list[str]) -> None:
     if top_workflows:
         print(f"  最活跃工作流 (Top {len(top_workflows)}):")
         for wf_id, count in top_workflows:
-            wf_ok = sum(
-                1
-                for r in runs
-                if r.get("workflow_id") == wf_id and r.get("status") == "ok"
-            )
+            wf_ok = sum(1 for r in runs if r.get("workflow_id") == wf_id and r.get("status") == "ok")
             wf_total = count
             pct = wf_ok / wf_total * 100
             bar = "█" * int(pct / 10) + "░" * (10 - int(pct / 10))
@@ -880,9 +852,7 @@ def _cmd_help(_args: list[str] | None = None) -> None:
     print("  ecos workflow list")
     print("  ecos workflow run WORKFLOW-ECOS-DAILY-HEALTH")
     print("  ecos workflow run WORKFLOW-ECOS-DAILY-HEALTH --dry-run")
-    print(
-        "  ecos workflow run WORKFLOW-ECOS-DAILY-HEALTH -p mode=quick -p verbose=true"
-    )
+    print("  ecos workflow run WORKFLOW-ECOS-DAILY-HEALTH -p mode=quick -p verbose=true")
     print("  ecos workflow describe WORKFLOW-ECOS-DAILY-HEALTH")
     print("  ecos workflow backends")
     print("  ecos workflow logs --recent 5")
@@ -908,9 +878,7 @@ def _print_result(result: dict[str, Any]) -> None:
     print()
     for step in steps:
         status = step.get("status", "?")
-        icon = (
-            "✅" if status == "ok" else "❌" if status in ("failed", "error") else "➖"
-        )
+        icon = "✅" if status == "ok" else "❌" if status in ("failed", "error") else "➖"
         name = step.get("name", "?")
         res_obj = step.get("result", {})
         if isinstance(res_obj, str):

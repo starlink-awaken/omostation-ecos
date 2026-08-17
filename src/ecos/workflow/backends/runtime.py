@@ -129,9 +129,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
                 results["mode"] = "unavailable"
                 results["error_code"] = "BACKEND_UNAVAILABLE"
                 results["error"] = result.get("error", "Runtime backend unavailable")
-            on_failure = (
-                step.get("on_failure") or execution.get("on_failure") or "continue"
-            )
+            on_failure = step.get("on_failure") or execution.get("on_failure") or "continue"
             if on_failure == "abort":
                 break
 
@@ -174,14 +172,10 @@ def _execute_step_runtime(
 
                     child_admission = derive_admission_grant(
                         admission,
-                        step_run_ids=[
-                            f"{workflow_run_id or admission['workflow_run_id']}:runtime"
-                        ],
+                        step_run_ids=[f"{workflow_run_id or admission['workflow_run_id']}:runtime"],
                         backend="runtime",
                     )
-                    env["WORKFLOW_ADMISSION"] = json.dumps(
-                        child_admission, ensure_ascii=False, sort_keys=True
-                    )
+                    env["WORKFLOW_ADMISSION"] = json.dumps(child_admission, ensure_ascii=False, sort_keys=True)
                 logger.debug("Runtime subprocess: %s", " ".join(cmd))
 
                 r = subprocess.run(

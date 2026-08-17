@@ -160,9 +160,7 @@ class TestCompileConstraints:
         assert results[0]["protocol"] == "SSB"
 
     def test_empty_data(self):
-        code = compile_constraints(
-            {"protocol_registry": [], "constraints": [], "version": "0.0.0"}
-        )
+        code = compile_constraints({"protocol_registry": [], "constraints": [], "version": "0.0.0"})
         namespace: dict = {}
         exec(code, namespace)
         result = namespace["run"]()
@@ -183,17 +181,13 @@ class TestWriteCompiled:
 
 
 class TestLoadCompiled:
-    @patch(
-        "ecos.services.governance.constraint_compiler.importlib.util.spec_from_file_location"
-    )
+    @patch("ecos.services.governance.constraint_compiler.importlib.util.spec_from_file_location")
     def test_load_nonexistent(self, mock_spec):
         mock_spec.return_value = None
         result = load_compiled(Path("/fake.py"))
         assert result is None
 
-    @patch(
-        "ecos.services.governance.constraint_compiler.importlib.util.spec_from_file_location"
-    )
+    @patch("ecos.services.governance.constraint_compiler.importlib.util.spec_from_file_location")
     def test_spec_none(self, mock_spec):
         mock_spec.return_value = None
         result = load_compiled(Path("/fake.py"))
@@ -283,9 +277,7 @@ class TestWatchAndCompile:
     @patch("ecos.services.governance.constraint_compiler.compile_constraints")
     @patch("ecos.services.governance.constraint_compiler.write_compiled")
     @patch("ecos.services.governance.constraint_compiler.run_compiled")
-    def test_watch_detects_change(
-        self, mock_run, mock_write, mock_compile, mock_load, mock_sleep, mock_file
-    ):
+    def test_watch_detects_change(self, mock_run, mock_write, mock_compile, mock_load, mock_sleep, mock_file):
         mock_file.exists.return_value = True
         # Return different mtime on each call to simulate change
         stat_results = [MagicMock(st_mtime=100.0), MagicMock(st_mtime=200.0)]
@@ -324,32 +316,22 @@ class TestWatchAndCompile:
 
 class TestMain:
     @patch("ecos.services.governance.constraint_compiler.CONSTRAINTS_FILE")
-    @patch(
-        "ecos.services.governance.constraint_compiler.argparse.ArgumentParser.parse_args"
-    )
+    @patch("ecos.services.governance.constraint_compiler.argparse.ArgumentParser.parse_args")
     def test_main_file_not_exists(self, mock_args, mock_file):
         mock_file.exists.return_value = False
-        mock_args.return_value = MagicMock(
-            output="/tmp/test.py", watch=False, json=False, interval=60
-        )
+        mock_args.return_value = MagicMock(output="/tmp/test.py", watch=False, json=False, interval=60)
         with pytest.raises(SystemExit):
             main()
 
     @patch("ecos.services.governance.constraint_compiler.CONSTRAINTS_FILE")
-    @patch(
-        "ecos.services.governance.constraint_compiler.argparse.ArgumentParser.parse_args"
-    )
+    @patch("ecos.services.governance.constraint_compiler.argparse.ArgumentParser.parse_args")
     @patch("ecos.services.governance.constraint_compiler.load_yaml")
     @patch("ecos.services.governance.constraint_compiler.compile_constraints")
     @patch("ecos.services.governance.constraint_compiler.write_compiled")
     @patch("ecos.services.governance.constraint_compiler.run_compiled")
-    def test_main_single_run(
-        self, mock_run, mock_write, mock_compile, mock_load, mock_args, mock_file
-    ):
+    def test_main_single_run(self, mock_run, mock_write, mock_compile, mock_load, mock_args, mock_file):
         mock_file.exists.return_value = True
-        mock_args.return_value = MagicMock(
-            output="/tmp/test.py", watch=False, json=False, interval=60
-        )
+        mock_args.return_value = MagicMock(output="/tmp/test.py", watch=False, json=False, interval=60)
         mock_load.return_value = SAMPLE_DATA
         mock_compile.return_value = "code"
         mock_write.return_value = {"hash": "abc"}
@@ -357,20 +339,14 @@ class TestMain:
         main()  # should not raise
 
     @patch("ecos.services.governance.constraint_compiler.CONSTRAINTS_FILE")
-    @patch(
-        "ecos.services.governance.constraint_compiler.argparse.ArgumentParser.parse_args"
-    )
+    @patch("ecos.services.governance.constraint_compiler.argparse.ArgumentParser.parse_args")
     @patch("ecos.services.governance.constraint_compiler.load_yaml")
     @patch("ecos.services.governance.constraint_compiler.compile_constraints")
     @patch("ecos.services.governance.constraint_compiler.write_compiled")
     @patch("ecos.services.governance.constraint_compiler.run_compiled")
-    def test_main_json_output(
-        self, mock_run, mock_write, mock_compile, mock_load, mock_args, mock_file
-    ):
+    def test_main_json_output(self, mock_run, mock_write, mock_compile, mock_load, mock_args, mock_file):
         mock_file.exists.return_value = True
-        mock_args.return_value = MagicMock(
-            output="/tmp/test.py", watch=False, json=True, interval=60
-        )
+        mock_args.return_value = MagicMock(output="/tmp/test.py", watch=False, json=True, interval=60)
         mock_load.return_value = SAMPLE_DATA
         mock_compile.return_value = "code"
         mock_write.return_value = {"hash": "abc"}

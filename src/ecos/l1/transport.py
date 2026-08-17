@@ -233,9 +233,7 @@ class TCPNode:
             "log_count": len(self._message_log),
         }
 
-    def _handle_connection(
-        self, transport: asyncio.Transport, protocol: MessageProtocol
-    ) -> None:
+    def _handle_connection(self, transport: asyncio.Transport, protocol: MessageProtocol) -> None:
         peer = transport.get_extra_info("peername")
         peer_id = f"{peer[0]}:{peer[1]}" if peer else "unknown"
         self._peers[peer_id] = transport

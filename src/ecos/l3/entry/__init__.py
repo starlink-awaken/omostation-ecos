@@ -137,14 +137,10 @@ class GovernanceCLI:
 
         if dimension == "all":
             for dim, result in checks.items():
-                self._output.append(
-                    f"  [{result['status'].upper()}] {dim}: {result['message']}"
-                )
+                self._output.append(f"  [{result['status'].upper()}] {dim}: {result['message']}")
         elif dimension in checks:
             result = checks[dimension]
-            self._output.append(
-                f"  [{result['status'].upper()}] {dimension}: {result['message']}"
-            )
+            self._output.append(f"  [{result['status'].upper()}] {dimension}: {result['message']}")
         else:
             self._output.append(f"  未知维度: {dimension}")
             return 1
@@ -183,9 +179,7 @@ class GovernanceCLI:
                 self._output.append("用法: cluster add <node-id>")
                 return 1
             node = self._node_manager.register(args[1])  # type: ignore[reportOptionalMemberAccess]
-            self._output.append(
-                f"✅ 节点 {args[1]} 已添加到集群 (status: {node.status.value})"
-            )
+            self._output.append(f"✅ 节点 {args[1]} 已添加到集群 (status: {node.status.value})")
             return 0
 
         elif subcmd == "remove":
@@ -201,14 +195,10 @@ class GovernanceCLI:
 
         elif subcmd == "health":
             health = self._node_manager.check_health()  # type: ignore[reportOptionalMemberAccess]
-            healthy = sum(
-                1 for s in health.values() if s.value in ("online", "healthy")
-            )
+            healthy = sum(1 for s in health.values() if s.value in ("online", "healthy"))
             self._output.append("集群健康检查:")
             self._output.append(f"  在线节点: {healthy}/{len(health)}")
-            self._output.append(
-                f"  整体状态: {'healthy' if healthy == len(health) else 'degraded'}"
-            )
+            self._output.append(f"  整体状态: {'healthy' if healthy == len(health) else 'degraded'}")
             return 0
 
         self._output.append(f"未知子命令: {subcmd}")

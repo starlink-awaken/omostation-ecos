@@ -94,9 +94,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
 
             handler = resolve_action(action_name)
             if handler is None:
-                logger.warning(
-                    "Unknown action '%s' at step %d", action_name, step_count
-                )
+                logger.warning("Unknown action '%s' at step %d", action_name, step_count)
                 results["steps"].append(
                     {
                         "name": step_name,
@@ -133,9 +131,7 @@ def execute(m1_node: dict, params: dict | None = None) -> dict:
             else:
                 results["failed"] += 1
 
-            context["results"].append(
-                {"step": step_name, "ok": ok, "summary": step_result.get("summary", "")}
-            )
+            context["results"].append({"step": step_name, "ok": ok, "summary": step_result.get("summary", "")})
 
         except Exception as e:  # defensive fallback
             logger.error("Dynamic step %d failed: %s", step_count, e)
@@ -205,9 +201,7 @@ class DynamicPlanner:
                 ),
             )
         except ImportError:
-            logger.warning(
-                "openai not installed, dynamic mode falls back to linear execution"
-            )
+            logger.warning("openai not installed, dynamic mode falls back to linear execution")
             return None
 
     def decide(self, context: dict[str, Any]) -> dict[str, Any]:
@@ -237,8 +231,7 @@ class DynamicPlanner:
         # 找到第一个未执行的动作
         for action in self.available_actions:
             if not any(
-                r.get("summary", "").startswith(action)
-                or r.get("step", "").startswith(action[:5])
+                r.get("summary", "").startswith(action) or r.get("step", "").startswith(action[:5])
                 for r in context.get("results", [])
             ):
                 return {
@@ -301,9 +294,7 @@ class DynamicPlanner:
 
     def _build_prompt(self, context: dict[str, Any]) -> str:
         """构建 LLM prompt"""
-        step_history = json.dumps(
-            context.get("results", []), ensure_ascii=False, indent=2
-        )
+        step_history = json.dumps(context.get("results", []), ensure_ascii=False, indent=2)
         return (
             f"目标: {self.objective}\n\n"
             f"可用动作: {', '.join(self.available_actions)}\n\n"

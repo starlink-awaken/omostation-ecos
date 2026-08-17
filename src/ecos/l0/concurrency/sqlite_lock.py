@@ -41,9 +41,7 @@ class SQLiteLock(DistributedLock):
                 now = time.time()
                 with sqlite3.connect(self.db_path, timeout=timeout) as conn:
                     # Try to acquire or steal expired lock
-                    cursor = conn.execute(
-                        "SELECT expires_at FROM locks WHERE name = ?", (self.name,)
-                    )
+                    cursor = conn.execute("SELECT expires_at FROM locks WHERE name = ?", (self.name,))
                     row = cursor.fetchone()
 
                     if row is None:
@@ -68,9 +66,7 @@ class SQLiteLock(DistributedLock):
                 pass  # Database is locked by another connection
 
             if time.time() - start > timeout:
-                raise LockAcquireError(
-                    f"Failed to acquire SQLiteLock({self.name}) within {timeout}s"
-                )
+                raise LockAcquireError(f"Failed to acquire SQLiteLock({self.name}) within {timeout}s")
 
             time.sleep(0.1)
 
@@ -96,9 +92,7 @@ class SQLiteLock(DistributedLock):
                 conn.commit()
                 return True
 
-            cursor = conn.execute(
-                "SELECT version FROM locks WHERE name = ?", (self.name,)
-            )
+            cursor = conn.execute("SELECT version FROM locks WHERE name = ?", (self.name,))
             row = cursor.fetchone()
             current_version = row[0] if row else 0
 

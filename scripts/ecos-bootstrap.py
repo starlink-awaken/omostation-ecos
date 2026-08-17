@@ -31,17 +31,13 @@ N = "\033[0m"  # noqa: E702
 
 
 def ask(prompt: str, default: str = "") -> str:
-    val = input(
-        f"  {C}?{N} {prompt}" + (f" [{Y}{default}{N}]" if default else "") + ": "
-    ).strip()
+    val = input(f"  {C}?{N} {prompt}" + (f" [{Y}{default}{N}]" if default else "") + ": ").strip()
     return val if val else default
 
 
 def progress(current: int, total: int, label: str):
     filled = int(current / total * 20)
-    sys.stdout.write(
-        f"\r  {G}{'█' * filled}{'░' * (20 - filled)}{N} {current}/{total}  {label}{' ' * 20}"
-    )
+    sys.stdout.write(f"\r  {G}{'█' * filled}{'░' * (20 - filled)}{N} {current}/{total}  {label}{' ' * 20}")
     sys.stdout.flush()
 
 
@@ -330,8 +326,7 @@ def main():
                 f"# {docpath.split('/')[-1]}\n\n> ecos-bootstrap 生成 | {datetime.now().strftime('%Y-%m-%d')}\n\n{doc_content}"
             )
     (target / "驾驶舱/DASHBOARD.md").write_text(
-        f"# DASHBOARD — {name} 的全局状态\n\n"
-        f"> ecos-bootstrap 生成 | {datetime.now().strftime('%Y-%m-%d')}\n"
+        f"# DASHBOARD — {name} 的全局状态\n\n> ecos-bootstrap 生成 | {datetime.now().strftime('%Y-%m-%d')}\n"
     )
     time.sleep(0.2)
     progress(4, total, "✅ 入口文档")
@@ -340,9 +335,7 @@ def main():
     ecos_dir = Path.home() / ".ecos"
     for sub in ["runtime", "events", "sla", "sessions"]:
         (ecos_dir / sub).mkdir(parents=True, exist_ok=True)
-    (ecos_dir / "runtime/registry.json").write_text(
-        '{"services":[],"updated_at":"' + datetime.now().isoformat() + '"}'
-    )
+    (ecos_dir / "runtime/registry.json").write_text('{"services":[],"updated_at":"' + datetime.now().isoformat() + '"}')
     time.sleep(0.2)
     progress(5, total, "✅ 运行时目录")
     print()
@@ -360,9 +353,7 @@ def main():
 
     print(f"\n  {C}扩展脚本 (按需安装):{N}")
     print("    从 eCOS 源安装全部治理脚本:")
-    print(
-        "    python3 ecos-bootstrap.py --from /path/to/full/ecos/scripts --target ~/Documents"
-    )
+    print("    python3 ecos-bootstrap.py --from /path/to/full/ecos/scripts --target ~/Documents")
     print(f"    或: 从 {src} 逐个复制需要的脚本到 ~/Documents/驾驶舱/scripts/")
 
     print(f"\n  {Y}💡 骨架只包含基础治理。需要更高级的功能时，再安装扩展。{N}")

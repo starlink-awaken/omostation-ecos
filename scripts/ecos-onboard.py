@@ -123,9 +123,7 @@ def main():
         ):
             l1_pass += 1
 
-    if check_cmd(
-        ["python3", str(SCRIPTS / "x3-coverage-report.py")], "覆盖率报告可执行"
-    ):
+    if check_cmd(["python3", str(SCRIPTS / "x3-coverage-report.py")], "覆盖率报告可执行"):
         l1_pass += 1
 
     if check_cmd(
@@ -231,22 +229,16 @@ def main():
 
     # Register
     if check_file(ECOS / "ecos-register.py", "L1 注册脚本"):
-        if check_cmd(
-            ["python3", str(ECOS / "ecos-register.py"), "--health"], "L1 注册服务健康"
-        ):
+        if check_cmd(["python3", str(ECOS / "ecos-register.py"), "--health"], "L1 注册服务健康"):
             l4_pass += 1
 
     # Event
     if check_file(ECOS / "ecos-event.py", "I0 事件脚本"):
-        if check_cmd(
-            ["python3", str(ECOS / "ecos-event.py"), "--tail", "1"], "事件流可读"
-        ):
+        if check_cmd(["python3", str(ECOS / "ecos-event.py"), "--tail", "1"], "事件流可读"):
             l4_pass += 1
 
     # L0 constraint validator
-    constraint_path = (
-        DOCS / "学习进化" / "2-knowledge" / "基建架构" / "ecos-constraint-validator.py"
-    )
+    constraint_path = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "ecos-constraint-validator.py"
     if constraint_path.exists():
         if check_cmd(["python3", str(constraint_path)], "L0 约束校验"):
             l4_pass += 1
@@ -267,22 +259,11 @@ def main():
     print(f"\n  {BOLD}{'=' * 56}{RESET}")
     print(f"  {BOLD}  接入汇总{RESET}")
     print(f"  {BOLD}{'=' * 56}{RESET}")
-    print(
-        f"\n  Level 1 (只读)  : {l1_pass}/{l1_total}  {'✅' if l1_pass == l1_total else '⚠️'}"
-    )
-    print(
-        f"  Level 2 (域级)  : {l2_pass}/{l2_total}  {'✅' if l2_pass == l2_total else '⚠️'}"
-    )
-    print(
-        f"  Level 3 (全栈)  : {l3_pass}/{l3_total}  {'✅' if l3_pass == l3_total else '⚠️'}"
-    )
-    print(
-        f"  Level 4 (运行时) : {l4_pass}/{l4_total}  {'✅' if l4_pass == l4_total else '⚠️'}"
-    )
-    print(
-        f"\n  综合: {overall_pass}/{overall_total} 通过  "
-        f"({overall_pass / overall_total * 100:.0f}%)"
-    )
+    print(f"\n  Level 1 (只读)  : {l1_pass}/{l1_total}  {'✅' if l1_pass == l1_total else '⚠️'}")
+    print(f"  Level 2 (域级)  : {l2_pass}/{l2_total}  {'✅' if l2_pass == l2_total else '⚠️'}")
+    print(f"  Level 3 (全栈)  : {l3_pass}/{l3_total}  {'✅' if l3_pass == l3_total else '⚠️'}")
+    print(f"  Level 4 (运行时) : {l4_pass}/{l4_total}  {'✅' if l4_pass == l4_total else '⚠️'}")
+    print(f"\n  综合: {overall_pass}/{overall_total} 通过  ({overall_pass / overall_total * 100:.0f}%)")
     print()
 
     if overall_pass == overall_total:
@@ -307,9 +288,7 @@ def main():
             "summary": {
                 "pass": overall_pass,
                 "total": overall_total,
-                "ratio": round(overall_pass / overall_total, 4)
-                if overall_total > 0
-                else 0,
+                "ratio": round(overall_pass / overall_total, 4) if overall_total > 0 else 0,
             },
         }
         print(json.dumps(result_data, ensure_ascii=False, indent=2))

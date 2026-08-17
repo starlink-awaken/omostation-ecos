@@ -237,12 +237,8 @@ def format_report(checks: list[dict]) -> str:
 
     lines.append("  ── 统计 ──")
     lines.append(f"  节点总数: {total}")
-    lines.append(
-        f"  完全完整 (0 issue): {full_count} ({full_count * 100 / max(total, 1):.1f}%)"
-    )
-    lines.append(
-        f"  error: {error_count} | warning: {warning_count} | info: {info_count}"
-    )
+    lines.append(f"  完全完整 (0 issue): {full_count} ({full_count * 100 / max(total, 1):.1f}%)")
+    lines.append(f"  error: {error_count} | warning: {warning_count} | info: {info_count}")
     lines.append("")
     lines.append(f"  按 subtype: {dict(by_subtype)}")
     lines.append(f"  按 status: {dict(by_status)}")
@@ -278,14 +274,10 @@ def format_report(checks: list[dict]) -> str:
         lines.append("  ✅ 全部节点字段完整 (0 error + 0 warning)")
     elif error_count == 0:
         lines.append("  ── 状态 ──")
-        lines.append(
-            f"  🟡 字段完整, 仅 info/warning 缺失 (error=0, warning={warning_count})"
-        )
+        lines.append(f"  🟡 字段完整, 仅 info/warning 缺失 (error=0, warning={warning_count})")
     else:
         lines.append("  ── 状态 ──")
-        lines.append(
-            f"  ⚠️  {error_count} 个 error (gate_status=passed 缺 evidence 等硬约束违反)"
-        )
+        lines.append(f"  ⚠️  {error_count} 个 error (gate_status=passed 缺 evidence 等硬约束违反)")
 
     lines.append("=" * 72)
     return "\n".join(lines)
@@ -297,9 +289,7 @@ def format_report(checks: list[dict]) -> str:
 def main():
     parser = argparse.ArgumentParser(description="OMOTask 字段完整性校验")
     parser.add_argument("--strict", action="store_true", help="有 error 时退出码 1")
-    parser.add_argument(
-        "--json", dest="json_output", action="store_true", help="JSON 输出"
-    )
+    parser.add_argument("--json", dest="json_output", action="store_true", help="JSON 输出")
     parser.add_argument("--subtype", help="仅校验某 subtype (e.g. RoadmapPhase)")
     args = parser.parse_args()
 

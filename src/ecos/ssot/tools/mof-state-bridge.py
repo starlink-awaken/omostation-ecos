@@ -37,12 +37,8 @@ import yaml
 
 # ── 路径 SSOT ──────────────────────────────────────────────
 TOOL_PATH = Path(__file__).resolve()
-REPO_ROOT = (
-    TOOL_PATH.parent.parent.parent.parent.parent
-)  # 5 层 = ~/Workspace/projects/ecos
-WORKSPACE_ROOT = (
-    TOOL_PATH.parent.parent.parent.parent.parent.parent.parent
-)  # 7 层 = ~/Workspace
+REPO_ROOT = TOOL_PATH.parent.parent.parent.parent.parent  # 5 层 = ~/Workspace/projects/ecos
+WORKSPACE_ROOT = TOOL_PATH.parent.parent.parent.parent.parent.parent.parent  # 7 层 = ~/Workspace
 
 # 通过桥接接口加载 omo (L0→L2 依赖, 仅在 --omo-to-m1 方向需要)
 from ecos.ssot.tools.omo_bridge_interface import (
@@ -361,9 +357,7 @@ def omo_to_m1_yaml(omo_data: dict, m1_id: str) -> dict:
         if k in omo_data:
             props[k] = omo_data[k]
     props["m3_parent"] = "ManagementElement.OMOTask"
-    props["model_driven_ref"] = [
-        f".omo/tasks/{omo_data.get('_dir', 'planned')}/{m1_id.replace('OMOTASK-', '')}.yaml"
-    ]
+    props["model_driven_ref"] = [f".omo/tasks/{omo_data.get('_dir', 'planned')}/{m1_id.replace('OMOTASK-', '')}.yaml"]
     out["properties"] = props
     return out
 
@@ -411,9 +405,7 @@ def _broker_import_m1_to_omo_candidates(
         m1_status = str(m1_data.get("status") or "")  # type: ignore[reportAttributeAccessIssue]
         m1_id = str(m1_data["id"])  # type: ignore[reportIndexIssue]
         source_doc = str(Path(m1_id.replace("OMOTASK-", "")).with_suffix(".yaml"))
-        source_doc = str(
-            Path("projects/ecos/src/ecos/ssot/mof/m1/omo_layer") / f"{m1_id}.yaml"
-        )
+        source_doc = str(Path("projects/ecos/src/ecos/ssot/mof/m1/omo_layer") / f"{m1_id}.yaml")
         if m1_status not in {"proposed", "planned"}:
             blocked.append(
                 {
@@ -478,9 +470,7 @@ def format_report(diff) -> str:
     if diff["drifts"]:
         lines.append(f"  ── 字段漂移 ({len(diff['drifts'])}) ──")
         for d in diff["drifts"][:10]:
-            lines.append(
-                f"    {d['m1_id']}/{d['omo_id']}.{d['field']}: m1={d['m1']!r} omo={d['omo']!r}"
-            )
+            lines.append(f"    {d['m1_id']}/{d['omo_id']}.{d['field']}: m1={d['m1']!r} omo={d['omo']!r}")
         if len(diff["drifts"]) > 10:
             lines.append(f"    ... ({len(diff['drifts']) - 10} more)")
         lines.append("")
@@ -495,9 +485,7 @@ def format_report(diff) -> str:
         lines.append("  🟡 字段值漂移 (status/title 等同义差异, 非失同步)")
     else:
         lines.append("  ✅ M1 ↔ .omo 双向同步 (3 OPC 任务配对成功, m1_only=0)")
-        lines.append(
-            f"  ℹ️  omo_only={len(diff['omo_only'])} (历史任务, 未建模成 M1 OMOTask, 预期)"
-        )
+        lines.append(f"  ℹ️  omo_only={len(diff['omo_only'])} (历史任务, 未建模成 M1 OMOTask, 预期)")
     lines.append("=" * 72)
     return "\n".join(lines)
 
@@ -513,12 +501,8 @@ def main() -> int:
         action="store_true",
         help="M1 proposed/planned → brokered .omo/tasks/planned/ 导入",
     )
-    parser.add_argument(
-        "--omo-to-m1", action="store_true", help=".omo/tasks/ → M1 OMOTask 写盘"
-    )
-    parser.add_argument(
-        "--json", dest="json_output", action="store_true", help="JSON 输出"
-    )
+    parser.add_argument("--omo-to-m1", action="store_true", help=".omo/tasks/ → M1 OMOTask 写盘")
+    parser.add_argument("--json", dest="json_output", action="store_true", help="JSON 输出")
     parser.add_argument("--strict", action="store_true", help="失同步退出码 1")
     args = parser.parse_args()
 
@@ -532,9 +516,7 @@ def main() -> int:
     pending_m1_to_omo = []
     broker_imported = []
     if args.m1_to_omo:
-        broker_result = _broker_import_m1_to_omo_candidates(
-            diff, omo_dir=WORKSPACE_ROOT / ".omo"
-        )
+        broker_result = _broker_import_m1_to_omo_candidates(diff, omo_dir=WORKSPACE_ROOT / ".omo")
         broker_imported = broker_result["imported"]
         pending_m1_to_omo = broker_result["blocked"]
         if broker_imported:

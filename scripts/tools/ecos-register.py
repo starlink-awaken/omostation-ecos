@@ -34,14 +34,10 @@ HEALTH_FILE = REGISTRY_DIR / "health.json"
 def init_registry():
     REGISTRY_DIR.mkdir(parents=True, exist_ok=True)
     if not REGISTRY_FILE.exists():
-        REGISTRY_FILE.write_text(
-            json.dumps({"services": [], "updated_at": None}, indent=2)
-        )
+        REGISTRY_FILE.write_text(json.dumps({"services": [], "updated_at": None}, indent=2))
 
 
-def register_service(
-    name: str, service_type: str, command: str = "", interval: str = ""
-) -> dict:
+def register_service(name: str, service_type: str, command: str = "", interval: str = "") -> dict:
     """注册服务到 Runtime Matrix"""
     init_registry()
     registry = json.loads(REGISTRY_FILE.read_text())
@@ -104,8 +100,7 @@ def health_check() -> dict:
         "services": len(services),
         "last_check": datetime.now(timezone.utc).isoformat(),
         "services_detail": [
-            {"name": s["name"], "type": s["type"], "status": s.get("status", "unknown")}
-            for s in services
+            {"name": s["name"], "type": s["type"], "status": s.get("status", "unknown")} for s in services
         ],
     }
 
@@ -115,9 +110,7 @@ def main():
     parser.add_argument("--register", action="store_true", help="注册服务")
     parser.add_argument("--name", type=str, default="ecos-daemon", help="服务名")
     parser.add_argument("--type", type=str, default="daemon", help="服务类型")
-    parser.add_argument(
-        "--command", type=str, default="ecos-daemon.sh --once", help="启动命令"
-    )
+    parser.add_argument("--command", type=str, default="ecos-daemon.sh --once", help="启动命令")
     parser.add_argument("--interval", type=str, default="6h", help="调度间隔")
     parser.add_argument("--status", action="store_true", help="查看注册状态")
     parser.add_argument("--health", action="store_true", help="健康检查端点")

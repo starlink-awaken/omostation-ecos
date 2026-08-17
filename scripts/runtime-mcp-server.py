@@ -85,9 +85,7 @@ def handle_health() -> dict:
     script = Path.home() / "Documents" / "驾驶舱" / "scripts" / "ecos-health-check.py"
     if not script.exists():
         return {"status": "error", "detail": "health-check 脚本不存在"}
-    r = subprocess.run(
-        ["python3", str(script), "--json"], capture_output=True, text=True, timeout=30
-    )
+    r = subprocess.run(["python3", str(script), "--json"], capture_output=True, text=True, timeout=30)
     try:
         return json.loads(r.stdout)
     except json.JSONDecodeError:
@@ -121,14 +119,7 @@ def handle_protocol_list() -> dict:
     """runtime_protocol_list: L0 协议注册表"""
     import yaml
 
-    constraint_file = (
-        Path.home()
-        / "Documents"
-        / "学习进化"
-        / "2-knowledge"
-        / "基建架构"
-        / "L0-constraints.yaml"
-    )
+    constraint_file = Path.home() / "Documents" / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
     if constraint_file.exists():
         data = yaml.safe_load(constraint_file.read_text())
         return {
@@ -142,14 +133,7 @@ def handle_protocol_get(protocol_id: str) -> dict:
     """runtime_protocol_get: 单个协议详情"""
     import yaml
 
-    constraint_file = (
-        Path.home()
-        / "Documents"
-        / "学习进化"
-        / "2-knowledge"
-        / "基建架构"
-        / "L0-constraints.yaml"
-    )
+    constraint_file = Path.home() / "Documents" / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
     if not constraint_file.exists():
         return {"error": "constraints 文件不存在"}
 
@@ -159,19 +143,13 @@ def handle_protocol_get(protocol_id: str) -> dict:
             now = datetime.now()
             intro = datetime.strptime(p["introduced"], "%Y-%m-%d")
             age_days = (now - intro).days
-            decay = (
-                min(1.0, age_days / p["half_life_days"])
-                if p["half_life_days"] > 0
-                else 1.0
-            )
+            decay = min(1.0, age_days / p["half_life_days"]) if p["half_life_days"] > 0 else 1.0
             return {
                 "protocol": p,
                 "age_days": age_days,
                 "decay": round(decay, 2),
                 "remaining_value": max(0, (1 - decay) * 100),
-                "status": "fresh"
-                if decay < 0.5
-                else ("aging" if decay < 1.0 else "expired"),
+                "status": "fresh" if decay < 0.5 else ("aging" if decay < 1.0 else "expired"),
             }
     return {"error": f"协议 {protocol_id} 未找到"}
 
@@ -193,9 +171,7 @@ def handle_brief() -> dict:
     script = Path.home() / "Documents" / "驾驶舱" / "scripts" / "ecos-brief.py"
     if not script.exists():
         return {"error": "ecos-brief.py 不存在"}
-    r = subprocess.run(
-        ["python3", str(script), "--json"], capture_output=True, text=True, timeout=45
-    )
+    r = subprocess.run(["python3", str(script), "--json"], capture_output=True, text=True, timeout=45)
     try:
         return json.loads(r.stdout)
     except json.JSONDecodeError:
@@ -228,9 +204,7 @@ def handle_kv_get(key: str) -> dict:
         if result.get("total", 0) > 0:
             result["uptime"] = round(result["passes"] / result["total"] * 100, 1)
     elif key == "health":
-        cursor = conn.execute(
-            "SELECT alert_type, message, created_at FROM alerts ORDER BY created_at DESC LIMIT 10"
-        )
+        cursor = conn.execute("SELECT alert_type, message, created_at FROM alerts ORDER BY created_at DESC LIMIT 10")
         result = {"alerts": [dict(r) for r in cursor.fetchall()]}
     elif key == "protocols":
         result = handle_protocol_list()
@@ -288,9 +262,7 @@ def main():
                 "runtime_health": lambda: handle_health(),
                 "runtime_matrix_list": lambda: handle_matrix_list(),
                 "runtime_protocol_list": lambda: handle_protocol_list(),
-                "runtime_protocol_get": lambda: handle_protocol_get(
-                    arguments.get("protocol_id", "")
-                ),
+                "runtime_protocol_get": lambda: handle_protocol_get(arguments.get("protocol_id", "")),
                 "runtime_ontology_get": lambda: handle_ontology(),
                 "runtime_brief": lambda: handle_brief(),
                 "runtime_kv_get": lambda: handle_kv_get(arguments.get("key", "")),

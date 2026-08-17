@@ -112,9 +112,7 @@ def compiler() -> MofCompiler:
 
 def _import_generated_models(models_path: Path):
     """Import the generated Pydantic models module from a directory."""
-    spec = importlib.util.spec_from_file_location(
-        "mof_control_models_under_test", models_path
-    )
+    spec = importlib.util.spec_from_file_location("mof_control_models_under_test", models_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -188,9 +186,7 @@ def _valid_receipt_kwargs(overrides: dict | None = None) -> dict:
 
 def _terminal_receipt_kwargs(status: str, overrides: dict | None = None) -> dict:
     now = datetime.now(timezone.utc)
-    kwargs = _valid_receipt_kwargs(
-        {"status": status, "completed_at": now.isoformat()}
-    )
+    kwargs = _valid_receipt_kwargs({"status": status, "completed_at": now.isoformat()})
     if status == "failed":
         kwargs["reason"] = "provider_failed"
     if overrides:
@@ -378,9 +374,7 @@ def test_w2_03_artifacts_contain_models(compiler: MofCompiler) -> None:
 # ── missing / tampered / drift detection ────────────────────────────
 
 
-def test_w2_03_check_detects_missing_artifact(
-    compiler: MofCompiler, tmp_path: Path
-) -> None:
+def test_w2_03_check_detects_missing_artifact(compiler: MofCompiler, tmp_path: Path) -> None:
     compiler.write(tmp_path)
     (tmp_path / "mof_control_models.py").unlink()
     problems = compiler.check(tmp_path)
@@ -388,15 +382,11 @@ def test_w2_03_check_detects_missing_artifact(
     assert any("missing artifact" in p for p in problems)
 
 
-def test_w2_03_check_detects_tampered_artifact(
-    compiler: MofCompiler, tmp_path: Path
-) -> None:
+def test_w2_03_check_detects_tampered_artifact(compiler: MofCompiler, tmp_path: Path) -> None:
     compiler.write(tmp_path)
     target = tmp_path / "mof-control.schema.json"
     target.write_text(
-        target.read_text(encoding="utf-8").replace(
-            '"PolicyDecision"', '"PolicyDecisionX"'
-        ),
+        target.read_text(encoding="utf-8").replace('"PolicyDecision"', '"PolicyDecisionX"'),
         encoding="utf-8",
     )
     problems = compiler.check(tmp_path)
@@ -404,9 +394,7 @@ def test_w2_03_check_detects_tampered_artifact(
     assert any("tampered artifact" in p for p in problems)
 
 
-def test_w2_03_check_detects_manifest_tamper(
-    compiler: MofCompiler, tmp_path: Path
-) -> None:
+def test_w2_03_check_detects_manifest_tamper(compiler: MofCompiler, tmp_path: Path) -> None:
     compiler.write(tmp_path)
     manifest = tmp_path / "mof-control.manifest.json"
     data = json.loads(manifest.read_text(encoding="utf-8"))
@@ -424,9 +412,7 @@ def test_w2_03_check_detects_drift_from_model_truth(
     artifacts must fail compiler.check."""
     drift_dir = tmp_path_factory.mktemp("m2-drift")
     for src in sorted(M2_DIR.glob("*.yaml")):
-        (drift_dir / src.name).write_text(
-            src.read_text(encoding="utf-8"), encoding="utf-8"
-        )
+        (drift_dir / src.name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
     drift_compiler = MofCompiler(m2_dir=drift_dir)
     out_dir = drift_dir / "out"
     drift_compiler.write(out_dir)
@@ -446,9 +432,7 @@ def test_w2_03_check_detects_drift_from_model_truth(
 
 def test_generated_control_dir_is_clean(compiler: MofCompiler) -> None:
     """The checked-in generated/control directory must pass the compiler check."""
-    assert GENERATED_CONTROL_DIR.is_dir(), (
-        "run mof-compile.py compile --out-dir src/ecos/ssot/mof/generated/control"
-    )
+    assert GENERATED_CONTROL_DIR.is_dir(), "run mof-compile.py compile --out-dir src/ecos/ssot/mof/generated/control"
     problems = compiler.check(GENERATED_CONTROL_DIR)
     assert problems == [], f"checked-in control artifacts drifted: {problems}"
 
@@ -469,11 +453,7 @@ def test_pydantic_policy_decision_validates_allow(generated_models) -> None:
 
 def test_pydantic_policy_decision_validates_deny(generated_models) -> None:
     model_cls = _model(generated_models, DECISION_MODEL_NAME)
-    instance = model_cls(
-        **_valid_decision_kwargs(
-            {"decision": "deny", "reason": "policy_denied"}
-        )
-    )
+    instance = model_cls(**_valid_decision_kwargs({"decision": "deny", "reason": "policy_denied"}))
     assert instance.decision == "deny"
     assert instance.reason == "policy_denied"
 
@@ -570,9 +550,7 @@ def test_pydantic_action_receipt_rejects_invalid_status(generated_models) -> Non
 def test_pydantic_action_receipt_rejects_invalid_reason(generated_models) -> None:
     model_cls = _model(generated_models, RECEIPT_MODEL_NAME)
     with pytest.raises(Exception):
-        model_cls(
-            **_terminal_receipt_kwargs("failed", {"reason": "crash_everything"})
-        )
+        model_cls(**_terminal_receipt_kwargs("failed", {"reason": "crash_everything"}))
 
 
 def test_pydantic_action_receipt_rejects_bad_decision_pattern(
@@ -603,11 +581,7 @@ def test_pydantic_action_receipt_rejects_bad_date(generated_models) -> None:
 
 def test_pydantic_action_receipt_keeps_result_map(generated_models) -> None:
     model_cls = _model(generated_models, RECEIPT_MODEL_NAME)
-    instance = model_cls(
-        **_terminal_receipt_kwargs(
-            "succeeded", {"result": {"draft_id": "mail-draft-9"}}
-        )
-    )
+    instance = model_cls(**_terminal_receipt_kwargs("succeeded", {"result": {"draft_id": "mail-draft-9"}}))
     assert instance.result == {"draft_id": "mail-draft-9"}
 
 
@@ -638,9 +612,7 @@ def test_generated_json_schema_matches_contract() -> None:
     assert d["properties"]["server_risk"]["enum"] == list(SERVER_RISKS)
     assert d["properties"]["schema_version"]["pattern"] == "^policy-decision/v1$"
     assert d["properties"]["issued_at"]["format"] == "date-time"
-    assert "x-mof-state-machine" not in d, (
-        "PolicyDecision is an immutable decision record, not a state machine"
-    )
+    assert "x-mof-state-machine" not in d, "PolicyDecision is an immutable decision record, not a state machine"
 
     r = schema["$defs"][RECEIPT_MODEL_NAME]
     assert set(r["required"]) == ACTION_RECEIPT_REQUIRED_FIELDS

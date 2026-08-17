@@ -22,9 +22,7 @@ class ConsistencyPattern(BasePattern):
     def pattern_name(self) -> str:
         return "consistency"
 
-    def evaluate(
-        self, rule: Rule, domain: DomainConfig, context: dict | None = None
-    ) -> CheckResult:
+    def evaluate(self, rule: Rule, domain: DomainConfig, context: dict | None = None) -> CheckResult:
         rule_id = rule.id
         rule_name = rule.name or rule_id
 
@@ -59,9 +57,7 @@ class ConsistencyPattern(BasePattern):
         if impacted:
             details = [f"⚠️ {rule_name}: {len(impacted)} 条依赖关系受影响"]
             for item in impacted[:10]:
-                details.append(
-                    f"  ├─ {item['inference']} → {item['missing_dep']}: {item['issue']}"
-                )
+                details.append(f"  ├─ {item['inference']} → {item['missing_dep']}: {item['issue']}")
             return CheckResult(
                 protocol_id=rule_id,
                 name=rule_name,

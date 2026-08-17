@@ -31,11 +31,13 @@ class MOFContextSynthesizer:
 
         if not selected_rules:
             # Fallback essential defaults
-            lines.extend([
-                "- [E-L0-002: REQUIRED] 禁止跨层直接 import 私有或底层未暴露模块，跨域必须通过 agora.client 统一路由。",
-                "- [E-CMD-001: REQUIRED] 禁止在主环境执行全局安装命令 (如 pip install --user/-g)，依赖需使用 uv 管理。",
-                "- [E-PATH-001: REQUIRED] 文件写入操作仅限在当前 domain 目录或公开临时产物路径内。",
-            ])
+            lines.extend(
+                [
+                    "- [E-L0-002: REQUIRED] 禁止跨层直接 import 私有或底层未暴露模块，跨域必须通过 agora.client 统一路由。",
+                    "- [E-CMD-001: REQUIRED] 禁止在主环境执行全局安装命令 (如 pip install --user/-g)，依赖需使用 uv 管理。",
+                    "- [E-PATH-001: REQUIRED] 文件写入操作仅限在当前 domain 目录或公开临时产物路径内。",
+                ]
+            )
         else:
             for rule in selected_rules:
                 sev = rule.severity.value.upper()

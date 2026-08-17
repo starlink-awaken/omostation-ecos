@@ -84,9 +84,7 @@ def cmd_bos_validate(args):
 
             if not path_exists:
                 print(f"      ❌ X4-C12: 路径不存在 → {full}")
-                all_violations.append(
-                    (uri, "required", "E-L0-013", f"路径不存在: {full}")
-                )
+                all_violations.append((uri, "required", "E-L0-013", f"路径不存在: {full}"))
                 total_violations += 1
 
             for v in violations:

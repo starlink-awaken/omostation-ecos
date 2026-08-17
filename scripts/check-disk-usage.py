@@ -77,16 +77,12 @@ def main():
         # Not mounted — not an error, just skip
         return 0
 
-    print(
-        f"  SharedDisk: {usage['used_pct']}% ({usage['free_gb']}GiB free / {usage['total_gb']}GiB total)"
-    )
+    print(f"  SharedDisk: {usage['used_pct']}% ({usage['free_gb']}GiB free / {usage['total_gb']}GiB total)")
 
     if usage["used_pct"] >= THRESHOLD:
         created = create_debt_card(usage)
         status = "🔴 ALERT" if created else "⚠️  (card exists)"
-        print(
-            f"  {status}: {usage['used_pct']}% >= {THRESHOLD}%, {usage['free_gb']}GiB remaining"
-        )
+        print(f"  {status}: {usage['used_pct']}% >= {THRESHOLD}%, {usage['free_gb']}GiB remaining")
         return 1
 
     print(f"  ✅ 正常 ({THRESHOLD - usage['used_pct']}% headroom)")

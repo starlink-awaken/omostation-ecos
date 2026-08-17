@@ -73,9 +73,7 @@ class FailoverManager:
 
     def get_rules_for_node(self, node_id: str) -> list[FailoverRule]:
         """获取节点的故障转移规则"""
-        return [
-            r for r in self.rules.values() if r.source_node == node_id and r.enabled
-        ]
+        return [r for r in self.rules.values() if r.source_node == node_id and r.enabled]
 
     def select_target(self, rule: FailoverRule) -> Optional[str]:
         """选择故障转移目标"""

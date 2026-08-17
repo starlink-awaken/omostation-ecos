@@ -35,9 +35,7 @@ _DEFAULT_PORT = 7432
 # =========================================================================
 
 
-def make_event(
-    bos_uri: str, data: dict | None = None, source: str = "ecos.services.events_sse"
-) -> dict[str, Any]:
+def make_event(bos_uri: str, data: dict | None = None, source: str = "ecos.services.events_sse") -> dict[str, Any]:
     """构建标准事件 dict （兼容 event_listener.match_event）"""
     return {
         "bos_uri": bos_uri,
@@ -53,9 +51,7 @@ def make_event(
 # =========================================================================
 
 
-def write_event(
-    bos_uri: str, data: dict | None = None, source: str = "ecos.services.events_sse"
-) -> dict[str, Any]:
+def write_event(bos_uri: str, data: dict | None = None, source: str = "ecos.services.events_sse") -> dict[str, Any]:
     """写入事件到 events.jsonl"""
     event = make_event(bos_uri, data, source)
     _EVENTS_FILE.parent.mkdir(parents=True, exist_ok=True)

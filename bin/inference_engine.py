@@ -35,14 +35,21 @@ def run_inference(derived: dict, ontology: dict) -> list[dict]:
     for dim, cs in dims.items():
         for c in cs:
             if c.get("severity") == "critical" and len(cs) < 2:
-                findings.append({"rule": "DR-01", "constraint_id": c["id"],
-                                 "violation": f"{dim} 维度 critical 约束无同维守护（仅 {len(cs)} 条）"})
+                findings.append(
+                    {
+                        "rule": "DR-01",
+                        "constraint_id": c["id"],
+                        "violation": f"{dim} 维度 critical 约束无同维守护（仅 {len(cs)} 条）",
+                    }
+                )
     return findings
 
 
 def main() -> int:
     if not DERIVED.exists():
-        print("[WARN] 派生面未生成，先跑: cd projects/ecos && uv run python3 bin/gen-l0-constraints.py", file=sys.stderr)
+        print(
+            "[WARN] 派生面未生成，先跑: cd projects/ecos && uv run python3 bin/gen-l0-constraints.py", file=sys.stderr
+        )
         return 1
     derived = yaml.safe_load(DERIVED.read_text(encoding="utf-8"))
     ontology = yaml.safe_load(ONTOLOGY.read_text(encoding="utf-8"))

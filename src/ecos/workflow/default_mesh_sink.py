@@ -46,11 +46,7 @@ def _try_entry_point() -> MeshStoreProtocol | None:
     """Try loading Mesh store via Python entry point (production)."""
     try:
         eps = importlib.metadata.entry_points()  # type: ignore[reportAttributeAccessIssue]
-        group = (
-            eps.select(group="ecos.mesh_sink")
-            if hasattr(eps, "select")
-            else eps.get("ecos.mesh_sink", [])
-        )
+        group = eps.select(group="ecos.mesh_sink") if hasattr(eps, "select") else eps.get("ecos.mesh_sink", [])
         for ep in group:
             try:
                 factory = ep.load()
@@ -134,9 +130,7 @@ def default_mesh_sink(event: dict[str, Any]) -> None:
     try:
         store = _get_workflow_mesh_store()
         if store is None:
-            logger.debug(
-                "Mesh sink unavailable, dropping event: %s", event.get("event_type")
-            )
+            logger.debug("Mesh sink unavailable, dropping event: %s", event.get("event_type"))
             return
         store.append(event)
     except Exception as exc:

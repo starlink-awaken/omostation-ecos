@@ -29,15 +29,11 @@ def check_disks() -> list[dict]:
         try:
             r = subprocess.run(["df", m], capture_output=True, text=True, timeout=5)
             if r.returncode != 0:
-                results.append(
-                    {"name": f"mount:{m}", "pass": False, "reason": "df failed"}
-                )
+                results.append({"name": f"mount:{m}", "pass": False, "reason": "df failed"})
                 continue
             parts = r.stdout.strip().split("\n")
             if len(parts) < 2:
-                results.append(
-                    {"name": f"mount:{m}", "pass": False, "reason": "no data"}
-                )
+                results.append({"name": f"mount:{m}", "pass": False, "reason": "no data"})
                 continue
             cols = parts[1].split()
             if len(cols) >= 5:

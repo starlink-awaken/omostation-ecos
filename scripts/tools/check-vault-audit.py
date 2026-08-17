@@ -189,9 +189,7 @@ def main():
     parser.add_argument("--since", default="7 days ago", help="审计区间")
     parser.add_argument("--json", action="store_true", help="JSON 输出")
     parser.add_argument("--max-entries", type=int, default=50)
-    parser.add_argument(
-        "--card-db", type=str, help="cards.db 路径（可选，用于写入 card_history）"
-    )
+    parser.add_argument("--card-db", type=str, help="cards.db 路径（可选，用于写入 card_history）")
     args = parser.parse_args()
 
     vault_path = Path(args.vault)

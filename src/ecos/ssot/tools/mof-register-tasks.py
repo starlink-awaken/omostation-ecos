@@ -58,9 +58,7 @@ def scan_scheduled_tasks() -> list[dict]:
         name = d.name
         if "daily" in name:
             freq = "daily"
-        elif "weekly" in name or any(
-            k in name for k in ["monday", "friday", "wednesday"]
-        ):
+        elif "weekly" in name or any(k in name for k in ["monday", "friday", "wednesday"]):
             freq = "weekly"
         elif "monthly" in name or "quarterly" in name:
             freq = "monthly"
@@ -181,9 +179,7 @@ def scan_launchd() -> list[dict]:
                 "description": f"launchd 守护进程: {plist.stem}",
                 "status": "active",
                 "domain": "infra",
-                "created": datetime.fromtimestamp(plist.stat().st_ctime).isoformat()[
-                    :10
-                ],
+                "created": datetime.fromtimestamp(plist.stat().st_ctime).isoformat()[:10],
                 "version": "1.0.0",
                 "layer": "L1",
                 "properties": {
@@ -201,12 +197,8 @@ def save_nodes(nodes: list[dict], prefix: str):
     for n in nodes:
         fp = L0_NODES / f"{n['id']}.yaml"
         with open(fp, "w") as f:
-            f.write(
-                f"# M1 Node: {n['id']}\n# Type: {n['type']}\n# Registered by mof-register-tasks\n\n"
-            )
-            yaml.dump(
-                n, f, allow_unicode=True, default_flow_style=False, sort_keys=False
-            )
+            f.write(f"# M1 Node: {n['id']}\n# Type: {n['type']}\n# Registered by mof-register-tasks\n\n")
+            yaml.dump(n, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
 
 def main():

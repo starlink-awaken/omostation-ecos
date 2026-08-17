@@ -96,9 +96,7 @@ def collect_events() -> list[dict]:
                 events.append(
                     {
                         "type": "l0.protocol.decay",
-                        "severity": "high"
-                        if state["status"] == "expired"
-                        else "medium",
+                        "severity": "high" if state["status"] == "expired" else "medium",
                         "source": "mof-sla",
                         "detail": f"{pid}: {state.get('remaining_pct', 0):.0f}% remaining ({state.get('age_days', 0)}d)",
                         "protocol": pid,
@@ -138,9 +136,7 @@ def publish_events(events: list[dict]):
             if isinstance(existing, list):
                 existing.extend(events)
                 with open(agora_events, "w") as f:
-                    json.dump(
-                        existing[-100:], f, ensure_ascii=False, indent=2
-                    )  # Keep last 100
+                    json.dump(existing[-100:], f, ensure_ascii=False, indent=2)  # Keep last 100
                 print(f"  ✅ 已发布到 Agora event bus ({len(events)} events)")
         except Exception:  # defensive fallback
             pass
@@ -164,9 +160,7 @@ def format_events(events: list[dict]) -> str:
 
     for etype in sorted(by_type.keys()):
         evts = by_type[etype]
-        icon = {"critical": "🔴", "high": "🟡", "medium": "🟢", "low": "⚪"}.get(
-            evts[0].get("severity", ""), "❓"
-        )
+        icon = {"critical": "🔴", "high": "🟡", "medium": "🟢", "low": "⚪"}.get(evts[0].get("severity", ""), "❓")
         lines.append(f"  {icon} {etype} ({len(evts)} 条)")
         for e in evts[:3]:
             lines.append(f"     {e['detail'][:80]}")
@@ -190,11 +184,7 @@ def main():
         published = publish_events(events)
         print(f"✅ 已发布 {published} 个事件")
     elif args.json:
-        print(
-            json.dumps(
-                {"events": len(events), "items": events}, ensure_ascii=False, indent=2
-            )
-        )
+        print(json.dumps({"events": len(events), "items": events}, ensure_ascii=False, indent=2))
     else:
         print(format_events(events))
 

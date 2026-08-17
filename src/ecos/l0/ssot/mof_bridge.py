@@ -115,12 +115,8 @@ class M3MetaLoader:
             self._relation_matrix: dict[str, list[str]] = {}
         else:
             self._meta_types = {m.name: m.value for m in self._meta["MetaType"]}
-            self._meta_relations = {
-                m.name: m.value for m in self._meta["MetaRelationType"]
-            }
-            self._meta_constraints = {
-                m.name: m.value for m in self._meta["MetaConstraint"]
-            }
+            self._meta_relations = {m.name: m.value for m in self._meta["MetaRelationType"]}
+            self._meta_constraints = {m.name: m.value for m in self._meta["MetaConstraint"]}
             self._confidences = {m.name: m.value for m in self._meta["Confidence"]}
             self._layer_names = dict(self._meta["LAYER_NAMES"])
             self._relation_matrix = {}
@@ -293,9 +289,7 @@ class M3MetaLoader:
                 # 抽象类本身不直接当映射, 等子类
                 continue
         # 第二轮: 同时扫 m3.yaml 和 m3-meta.yaml
-        for elem in list(self._m3_elements.values()) + list(
-            self._m3_meta_elements.values()
-        ):
+        for elem in list(self._m3_elements.values()) + list(self._m3_meta_elements.values()):
             if elem.m3_implements:
                 last = elem.m3_implements.split(".")[-1]
                 candidates.setdefault(last, []).append(elem.id)
@@ -336,15 +330,9 @@ class M3MetaLoader:
                 for eid in ids:
                     elem = self._get_element_anywhere(eid)
                     if elem and elem.m3_implements:
-                        middle = (
-                            elem.m3_implements.split(".")[-2]
-                            if "." in elem.m3_implements
-                            else ""
-                        )
+                        middle = elem.m3_implements.split(".")[-2] if "." in elem.m3_implements else ""
                         if middle in priority_prefixes:
-                            if middle == "MetaType" or (
-                                middle == "Confidence" and chosen is None
-                            ):
+                            if middle == "MetaType" or (middle == "Confidence" and chosen is None):
                                 chosen = eid
             if chosen is None:
                 chosen = ids[0]

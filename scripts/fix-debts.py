@@ -27,9 +27,7 @@ ECOS = Path.home() / ".ecos"
 
 def fix_constraint_engine() -> dict:
     """DEBT-L0-001: 升级约束规则引擎（增加规则表达式扩展能力）"""
-    file = (
-        DOCS / "学习进化" / "2-knowledge" / "基建架构" / "ecos-constraint-validator.py"
-    )
+    file = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "ecos-constraint-validator.py"
     upgrades = [
         "简化规则评估已升级为表达式模式",
         "新增协议衰减实时计算",
@@ -125,9 +123,7 @@ def fix_dashboard_trigger() -> dict:
 
 def fix_mcp_half_life() -> dict:
     """DEBT-L0-003: MCP 超半衰期 — 更新约束文件标注"""
-    constraint_file = (
-        DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
-    )
+    constraint_file = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
     if constraint_file.exists():
         # 读取并更新 MCP 的注释
         content = constraint_file.read_text()
@@ -190,12 +186,7 @@ def main():
         print(f"{'=' * 56}\n")
         for r in results:
             status = "✅" if r.get("status") in ("fixed", "tracked") else "⚠️"
-            note = (
-                r.get("detail")
-                or r.get("message")
-                or r.get("action")
-                or r.get("file", "")
-            )
+            note = r.get("detail") or r.get("message") or r.get("action") or r.get("file", "")
             print(f"  {status} {r['debt']}: {note}")
         print(f"\n{'=' * 56}")
 

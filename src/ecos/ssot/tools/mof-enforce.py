@@ -33,16 +33,7 @@ import yaml
 HOME = Path.home()
 DOCS = HOME / "Documents"
 WS = HOME / "Workspace"
-BOUNDARY_FILE = (
-    WS
-    / "projects"
-    / "ecos"
-    / "src"
-    / "ecos"
-    / "ssot"
-    / "registry"
-    / "layer-boundary.yaml"
-)
+BOUNDARY_FILE = WS / "projects" / "ecos" / "src" / "ecos" / "ssot" / "registry" / "layer-boundary.yaml"
 CARDS_DB = WS / "data" / "cards" / "cards.db"
 
 
@@ -159,15 +150,11 @@ def check_violation(asset: dict, boundary: dict) -> dict | None:
                 continue
             return {
                 "asset": name,
-                "path": str(Path(path).relative_to(HOME))
-                if str(path).startswith(str(HOME))
-                else path,
+                "path": str(Path(path).relative_to(HOME)) if str(path).startswith(str(HOME)) else path,
                 "current_layer": layer,
                 "violation": f"禁止在 {layer} 中存放: {note}",
                 "suggested_layer": suggest_layer(name, path),
-                "severity": "high"
-                if layer == "L4" and name.endswith(".py")
-                else "medium",
+                "severity": "high" if layer == "L4" and name.endswith(".py") else "medium",
             }
 
     # Check if L4 Python script is on the exclusion list
@@ -184,9 +171,7 @@ def check_violation(asset: dict, boundary: dict) -> dict | None:
         if not is_allowed:
             return {
                 "asset": name,
-                "path": str(Path(path).relative_to(HOME))
-                if str(path).startswith(str(HOME))
-                else path,
+                "path": str(Path(path).relative_to(HOME)) if str(path).startswith(str(HOME)) else path,
                 "current_layer": layer,
                 "violation": "L4 Python 脚本不在允许列表中——应下沉到 L0/L1/L3",
                 "suggested_layer": suggest_layer(name, path),
@@ -198,10 +183,7 @@ def check_violation(asset: dict, boundary: dict) -> dict | None:
 
 def suggest_layer(name: str, path: str) -> str:
     """根据文件名推断正确层级"""
-    if any(
-        k in name
-        for k in ["mof-", "constraint", "compiler", "protocol", "topology", "pattern"]
-    ):
+    if any(k in name for k in ["mof-", "constraint", "compiler", "protocol", "topology", "pattern"]):
         return "L0"
     if any(k in name for k in ["daemon", "healer", "sla", "runtime", "matrix"]):
         return "L1"
@@ -227,7 +209,9 @@ def create_debt_card(violation: dict) -> bool:
             conn.close()
             return False  # Already exists
 
-        title = f"层违规: {violation['asset']} 在 {violation['current_layer']} → 应下沉到 {violation['suggested_layer']}"
+        title = (
+            f"层违规: {violation['asset']} 在 {violation['current_layer']} → 应下沉到 {violation['suggested_layer']}"
+        )
         conn.execute(
             """
             INSERT INTO cards (id, type, status, title, domain, priority, summary, content, created_at, updated_at)
@@ -270,9 +254,7 @@ def format_report(violations: list[dict]) -> str:
         for layer in sorted(by_layer):
             lines.append(f"  [{layer}] {len(by_layer[layer])} 项:")
             for v in by_layer[layer]:
-                icon = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(
-                    v["severity"], "⚪"
-                )
+                icon = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(v["severity"], "⚪")
                 lines.append(f"    {icon} {v['asset']:30s} → {v['suggested_layer']}")
                 lines.append(f"       {v['violation'][:70]}")
 

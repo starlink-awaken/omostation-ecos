@@ -66,18 +66,26 @@ def cmd_audit(args: argparse.Namespace) -> int:
         files_scanned += 1
         reports = ast_inspector.inspect_code(content, caller_layer=args.layer)
         for r in reports:
-            violations_found.append({
-                "file": str(py_file),
-                **r.to_dict(),
-            })
+            violations_found.append(
+                {
+                    "file": str(py_file),
+                    **r.to_dict(),
+                }
+            )
 
     if args.json:
-        print(json.dumps({
-            "target": str(target_path),
-            "files_scanned": files_scanned,
-            "violations_count": len(violations_found),
-            "violations": violations_found,
-        }, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "target": str(target_path),
+                    "files_scanned": files_scanned,
+                    "violations_count": len(violations_found),
+                    "violations": violations_found,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 1 if violations_found and args.strict else 0
 
     print(f"\n🔍 MOF 架构静态审计: 扫描 {files_scanned} 个文件，发现 {len(violations_found)} 处违规")
@@ -189,16 +197,22 @@ def cmd_list(args: argparse.Namespace) -> int:
         rules = [r for r in rules if r.dimension.lower() == args.dimension.lower()]
 
     if args.json:
-        print(json.dumps([
-            {
-                "id": r.id,
-                "violation_code": r.violation_code,
-                "severity": r.severity.value,
-                "dimension": r.dimension,
-                "summary": r.description,
-            }
-            for r in rules
-        ], ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                [
+                    {
+                        "id": r.id,
+                        "violation_code": r.violation_code,
+                        "severity": r.severity.value,
+                        "dimension": r.dimension,
+                        "summary": r.description,
+                    }
+                    for r in rules
+                ],
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
 
     print(f"\n📋 MOF 编译规则清单 (共 {len(rules)} 条):")
@@ -235,12 +249,18 @@ def cmd_documents(args: argparse.Namespace) -> int:
                             violations.append({"path": str(p), **v.to_dict()})
 
         if args.json:
-            print(json.dumps({
-                "target": str(target_path),
-                "files_scanned": files_scanned,
-                "violations_count": len(violations),
-                "violations": violations,
-            }, ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "target": str(target_path),
+                        "files_scanned": files_scanned,
+                        "violations_count": len(violations),
+                        "violations": violations,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 1 if violations and args.strict else 0
 
         print(f"\n📑 Documents 双平面纯净度审计: 扫描 {files_scanned} 个文件，发现 {len(violations)} 处违规")
@@ -277,11 +297,13 @@ def cmd_documents(args: argparse.Namespace) -> int:
             else:
                 try:
                     res = subprocess.run([sys.executable, str(p)], capture_output=True, text=True, timeout=10)
-                    results.append({
-                        "script": script,
-                        "status": "OK" if res.returncode == 0 else "FAILED",
-                        "output": res.stdout.strip()[:100],
-                    })
+                    results.append(
+                        {
+                            "script": script,
+                            "status": "OK" if res.returncode == 0 else "FAILED",
+                            "output": res.stdout.strip()[:100],
+                        }
+                    )
                 except Exception as e:
                     results.append({"script": script, "status": "ERROR", "detail": str(e)})
 

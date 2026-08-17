@@ -34,6 +34,7 @@ from ecos.ssot.tools.work_packet_compiler import (
 # Only transitions through verifying → accepted → completed are valid.
 # Direct dispatched → completed is rejected.
 
+
 class StateMachineError(Exception):
     pass
 
@@ -57,10 +58,7 @@ class StateMachine:
     def transition(self, new_state: str) -> None:
         valid = self.VALID_TRANSITIONS.get(self.state, set())
         if new_state not in valid:
-            raise StateMachineError(
-                f"Invalid transition: '{self.state}' -> '{new_state}'. "
-                f"Valid: {sorted(valid)}"
-            )
+            raise StateMachineError(f"Invalid transition: '{self.state}' -> '{new_state}'. Valid: {sorted(valid)}")
         self.history.append((self.state, new_state))
         self.state = new_state
 
@@ -81,6 +79,7 @@ class StateMachine:
 
 
 # ── Sandbox ────────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class Sandbox:
@@ -119,11 +118,7 @@ class Sandbox:
 
     def save_snapshot(self) -> dict[str, bytes]:
         root = Path(self.path)
-        self._snapshot = {
-            str(path.relative_to(root)): path.read_bytes()
-            for path in root.rglob("*")
-            if path.is_file()
-        }
+        self._snapshot = {str(path.relative_to(root)): path.read_bytes() for path in root.rglob("*") if path.is_file()}
         return dict(self._snapshot)
 
     def restore_snapshot(self) -> None:
@@ -150,6 +145,7 @@ class Sandbox:
 
 
 # ── Packet Factory ─────────────────────────────────────────────────────────────
+
 
 def make_r1_packet() -> dict:
     return {
@@ -199,6 +195,7 @@ def make_r1_packet() -> dict:
 
 # ── Chain Steps ────────────────────────────────────────────────────────────────
 
+
 def run_dispatch(packet: dict, sandbox: Sandbox) -> dict:
     sm = sandbox.state_machine
     sm.transition("dispatched")
@@ -210,9 +207,7 @@ def run_dispatch(packet: dict, sandbox: Sandbox) -> dict:
 
     canonical = canonicalize(packet)
     packet_hash = compute_packet_hash(canonical)
-    check = build_command_check(
-        ["python3", "candidate.py"], 0, "hello\n"
-    )
+    check = build_command_check(["python3", "candidate.py"], 0, "hello\n")
     manifest = build_completion_manifest(
         packet,
         packet_hash,
@@ -250,14 +245,9 @@ def run_dispatch(packet: dict, sandbox: Sandbox) -> dict:
     }
     sandbox.write_file(manifest_file, json.dumps(manifest_payload, sort_keys=True))
     sandbox._candidate_files = [main_file, manifest_file]
-    sandbox._expected_measured_hash = sandbox.compute_measured_hash(
-        sandbox._candidate_files
-    )
+    sandbox._expected_measured_hash = sandbox.compute_measured_hash(sandbox._candidate_files)
     sandbox._expected_packet_hash = packet_hash
-    envelopes = {
-        p: render_platform_envelope(packet, p, packet_hash)
-        for p in ("opencode", "kilocode", "claude-code")
-    }
+    envelopes = {p: render_platform_envelope(packet, p, packet_hash) for p in ("opencode", "kilocode", "claude-code")}
 
     return {
         "step": "dispatch",
@@ -287,9 +277,7 @@ def run_verify(
         # A corrected candidate is a new dispatch after rejection.
         sm.transition("dispatched")
     elif sm.state != "dispatched":
-        raise StateMachineError(
-            f"verification requires dispatched state, got '{sm.state}'"
-        )
+        raise StateMachineError(f"verification requires dispatched state, got '{sm.state}'")
 
     if tamper:
         sandbox.write_file("tampered.py", "# TAMPERED\nimport os; os.system('echo pwned')\n")
@@ -306,9 +294,7 @@ def run_verify(
     packet_binding_matches = packet_hash == sandbox._expected_packet_hash
     try:
         manifest = json.loads(sandbox.read_file("manifest.json"))
-        packet_binding_matches = packet_binding_matches and (
-            manifest.get("packet_hash") == packet_hash
-        )
+        packet_binding_matches = packet_binding_matches and (manifest.get("packet_hash") == packet_hash)
     except (FileNotFoundError, json.JSONDecodeError):
         packet_binding_matches = False
     actual_verdict = verdict
@@ -373,11 +359,7 @@ def run_rollback(packet: dict, sandbox: Sandbox, snapshot: dict[str, bytes]) -> 
     sandbox.restore_snapshot()
 
     root = Path(sandbox.path)
-    current = {
-        str(path.relative_to(root)): path.read_bytes()
-        for path in root.rglob("*")
-        if path.is_file()
-    }
+    current = {str(path.relative_to(root)): path.read_bytes() for path in root.rglob("*") if path.is_file()}
     restored = [rel for rel, content in snapshot.items() if current.get(rel) == content]
 
     return {
@@ -396,6 +378,7 @@ def run_rollback(packet: dict, sandbox: Sandbox, snapshot: dict[str, bytes]) -> 
 
 # ── CLI ────────────────────────────────────────────────────────────────────────
 
+
 def main() -> int:
     packet = make_r1_packet()
     sandbox = Sandbox()
@@ -411,24 +394,26 @@ def main() -> int:
             }
         )
 
-        chain.append(
-            run_verify(packet, dispatch["packet_hash"], "accept", sandbox, tamper=True)
-        )
+        chain.append(run_verify(packet, dispatch["packet_hash"], "accept", sandbox, tamper=True))
         chain.append(run_verify(packet, dispatch["packet_hash"], "accept", sandbox))
 
         rollback = run_rollback(packet, sandbox, dispatch["snapshot"])
         chain.append(rollback)
 
-        print(json.dumps({
-            "packet_id": packet["packet_id"],
-            "chain": chain,
-            "all_verdicts_valid": all(
-                item.get("verdict") in VALID_VERDICTS
-                for item in chain
-                if "verdict" in item
-            ),
-            "rollback_verified": rollback["rollback_verified"],
-        }, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "packet_id": packet["packet_id"],
+                    "chain": chain,
+                    "all_verdicts_valid": all(
+                        item.get("verdict") in VALID_VERDICTS for item in chain if "verdict" in item
+                    ),
+                    "rollback_verified": rollback["rollback_verified"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
     finally:
         sandbox.cleanup()
 

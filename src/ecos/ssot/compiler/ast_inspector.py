@@ -53,7 +53,9 @@ class AstDependencyInspector:
                     module_name = node.module
                     for alias in node.names:
                         full_symbol = f"{module_name}.{alias.name}" if module_name else alias.name
-                        if self._matches_disallowed(module_name, disallowed) or self._matches_disallowed(full_symbol, disallowed):
+                        if self._matches_disallowed(module_name, disallowed) or self._matches_disallowed(
+                            full_symbol, disallowed
+                        ):
                             violations.append(
                                 ViolationReport(
                                     rule_id="X1-C02",

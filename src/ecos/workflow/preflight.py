@@ -28,9 +28,7 @@ def require_preflight_enabled() -> bool:
     return os.environ.get("ECOS_WF_REQUIRE_PREFLIGHT", "1").strip() != "0"
 
 
-def issue_preflight(
-    workflow: str, *, extra: dict[str, Any] | None = None
-) -> dict[str, Any]:
+def issue_preflight(workflow: str, *, extra: dict[str, Any] | None = None) -> dict[str, Any]:
     """签发 preflight 上下文（附在 params 上）。"""
     ts = int(time.time())
     msg = f"{workflow}:{ts}".encode()
@@ -46,9 +44,7 @@ def issue_preflight(
     return ctx
 
 
-def inject_preflight(
-    params: dict[str, Any] | None, workflow: str, **extra: Any
-) -> dict[str, Any]:
+def inject_preflight(params: dict[str, Any] | None, workflow: str, **extra: Any) -> dict[str, Any]:
     """返回带 preflight 的 params 副本。"""
     out = dict(params or {})
     out[PREFLIGHT_KEY] = issue_preflight(workflow, extra=extra or None)
@@ -90,18 +86,14 @@ def verify_preflight(
     if workflow and ctx.get("workflow") and str(ctx.get("workflow")) != str(workflow):
         return False, "preflight_workflow_mismatch"
 
-    expected = hmac.new(_secret(), f"{wf}:{ts}".encode(), hashlib.sha256).hexdigest()[
-        :32
-    ]
+    expected = hmac.new(_secret(), f"{wf}:{ts}".encode(), hashlib.sha256).hexdigest()[:32]
     if not hmac.compare_digest(expected, sig):
         return False, "preflight_signature_invalid"
 
     return True, "ok"
 
 
-def assert_preflight(
-    params: dict[str, Any] | None, *, workflow: str | None = None
-) -> dict[str, Any] | None:
+def assert_preflight(params: dict[str, Any] | None, *, workflow: str | None = None) -> dict[str, Any] | None:
     """若校验失败返回 error 结果 dict；成功返回 None。"""
     ok, reason = verify_preflight(params, workflow=workflow)
     if ok:

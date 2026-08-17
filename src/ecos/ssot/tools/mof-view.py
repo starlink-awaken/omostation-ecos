@@ -134,9 +134,7 @@ def view_protocols() -> str:
 
         icon = "🟢" if m0status == "fresh" else ("🟡" if m0status == "aging" else "🔴")
         decay_str = f"{decay:.0f}" if isinstance(decay, (int, float)) else str(decay)
-        lines.append(
-            f"| {icon} {pid:20s} | {str(ver):10s} | {status:8s} | {decay_str:>5s}% | {tier} |"
-        )
+        lines.append(f"| {icon} {pid:20s} | {str(ver):10s} | {status:8s} | {decay_str:>5s}% | {tier} |")
 
     lines.append("")
     return "\n".join(lines)
@@ -258,10 +256,7 @@ def main():
     if args.json:
         all_nodes = load_all()
         summary = {
-            t: [
-                {"id": n.get("id"), "name": n.get("name"), "status": n.get("status")}
-                for n in nodes[:5]
-            ]
+            t: [{"id": n.get("id"), "name": n.get("name"), "status": n.get("status")} for n in nodes[:5]]
             for t, nodes in all_nodes.items()
             if nodes
         }

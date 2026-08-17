@@ -72,7 +72,15 @@ def test_cli_list(capsys):
 
 
 def test_cli_eval_pass(capsys):
-    ret = cli_main(["eval", "--tool", "replace_file_content", "--args", '{"TargetFile": "/foo/bar.py", "ReplacementContent": "a = 1"}'])
+    ret = cli_main(
+        [
+            "eval",
+            "--tool",
+            "replace_file_content",
+            "--args",
+            '{"TargetFile": "/foo/bar.py", "ReplacementContent": "a = 1"}',
+        ]
+    )
     assert ret == 0
     captured = capsys.readouterr().out
     data = json.loads(captured)

@@ -32,9 +32,7 @@ class SymphonyStateMachine:
     and formal verification to ensure transition correctness.
     """
 
-    TRANSITION_MATRIX: dict[
-        tuple[SymphonyStage | None, SymphonyStage], list[TransitionCondition]
-    ] = {
+    TRANSITION_MATRIX: dict[tuple[SymphonyStage | None, SymphonyStage], list[TransitionCondition]] = {
         (None, SymphonyStage.ANCHORING): [
             TransitionCondition(
                 name="task_defined",

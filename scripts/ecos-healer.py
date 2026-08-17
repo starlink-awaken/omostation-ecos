@@ -97,9 +97,7 @@ def heal_freshness(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
         return {"rule": "freshness", "status": "skipped", "reason": "脚本不存在"}
 
     start = time.time()
-    code, out = run_script(
-        script, ["--root", str(DOCS), "--max-age-days", "60", "--json"]
-    )
+    code, out = run_script(script, ["--root", str(DOCS), "--max-age-days", "60", "--json"])
 
     try:
         data = json.loads(out)
@@ -121,9 +119,7 @@ def heal_freshness(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
             f"```\n{out[:500]}\n```\n"
         )
         duration = int((time.time() - start) * 1000)
-        record_heal(
-            conn, "freshness", f"{stale} 过期文件", "生成告警报告", "pass", duration
-        )
+        record_heal(conn, "freshness", f"{stale} 过期文件", "生成告警报告", "pass", duration)
         return {
             "rule": "freshness",
             "status": "healed",
@@ -155,10 +151,7 @@ def heal_consistency(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
     # 不一致: 生成 diff
     if not dry_run:
         diff_path = ECOS / "consistency-diff.md"
-        diff_path.write_text(
-            f"# 一致性 DIFF — {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
-            f"```\n{out[:500]}\n```\n"
-        )
+        diff_path.write_text(f"# 一致性 DIFF — {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n```\n{out[:500]}\n```\n")
         record_heal(conn, "consistency", "不一致", "生成 DIFF 报告", "pass", duration)
         return {
             "rule": "consistency",
@@ -199,9 +192,7 @@ def heal_protocol(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
             f"以下协议已超半衰期: {', '.join(expired_names)}\n"
             f"建议审查协议版本或更新 half_life 配置。\n"
         )
-        record_heal(
-            conn, "protocol", f"超期: {expired_names}", "生成审查标记", "pass", duration
-        )
+        record_heal(conn, "protocol", f"超期: {expired_names}", "生成审查标记", "pass", duration)
         return {
             "rule": "protocol",
             "status": "healed",
@@ -275,9 +266,7 @@ def show_status(conn: sqlite3.Connection):
 
 def main():
     parser = argparse.ArgumentParser(description="eCOS v6 自治愈框架")
-    parser.add_argument(
-        "--check-health", action="store_true", help="检查所有项目并自愈"
-    )
+    parser.add_argument("--check-health", action="store_true", help="检查所有项目并自愈")
     parser.add_argument("--dry-run", action="store_true", help="仅预览，不执行恢复")
     parser.add_argument("--status", action="store_true", help="查看自愈历史")
     parser.add_argument("--json", action="store_true")

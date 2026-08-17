@@ -78,14 +78,8 @@ def load_m2(m2_path: Path) -> dict:
             if isinstance(m2_type_value, str):
                 # m2_type 不在 top-level key 中，找 schema body
                 for k, v in data.items():
-                    if k not in ("m2_type", "version", "created") and isinstance(
-                        v, dict
-                    ):
-                        if (
-                            "m3_parent" in v
-                            or "requiredProperties" in v
-                            or "stateMachine" in v
-                        ):
+                    if k not in ("m2_type", "version", "created") and isinstance(v, dict):
+                        if "m3_parent" in v or "requiredProperties" in v or "stateMachine" in v:
                             schema_body = v
                             break
                 if schema_body is not None:

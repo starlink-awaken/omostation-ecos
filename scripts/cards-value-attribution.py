@@ -106,12 +106,8 @@ def compute_attribution(cards: list[dict]) -> dict:
         # 周期计算（仅对已关闭的卡片）
         if card["created_at"] and card["updated_at"] and d["closed"] > 0:
             try:
-                created = datetime.fromisoformat(
-                    card["created_at"].replace("Z", "+00:00")
-                )
-                updated = datetime.fromisoformat(
-                    card["updated_at"].replace("Z", "+00:00")
-                )
+                created = datetime.fromisoformat(card["created_at"].replace("Z", "+00:00"))
+                updated = datetime.fromisoformat(card["updated_at"].replace("Z", "+00:00"))
                 cycle_days = (updated - created).days
                 if cycle_days >= 0:
                     d["cycle_days_sum"] += cycle_days
@@ -131,9 +127,7 @@ def compute_attribution(cards: list[dict]) -> dict:
         close_rate = closed / total if total > 0 else 0
 
         # 平均周期
-        avg_cycle = (
-            d["cycle_days_sum"] / d["cycle_count"] if d["cycle_count"] > 0 else None
-        )
+        avg_cycle = d["cycle_days_sum"] / d["cycle_count"] if d["cycle_count"] > 0 else None
 
         # 价值得分 (0-100):
         #   关闭率 40% + 活跃度 30% + 时效性 30%
@@ -159,9 +153,7 @@ def compute_attribution(cards: list[dict]) -> dict:
         "global": {
             "active": total_active,
             "closed": total_closed,
-            "avg_cycle_days": round(total_cycle_days / cards_with_dates, 1)
-            if cards_with_dates > 0
-            else None,
+            "avg_cycle_days": round(total_cycle_days / cards_with_dates, 1) if cards_with_dates > 0 else None,
         },
     }
 
@@ -174,9 +166,7 @@ def format_report(result: dict) -> str:
     lines.append("=" * 64)
     lines.append(f"  生成时间: {result['generated_at'][:19]}")
     lines.append(f"  总卡片数: {result['total_cards']}")
-    lines.append(
-        f"  活跃: {result['global']['active']}  关闭: {result['global']['closed']}"
-    )
+    lines.append(f"  活跃: {result['global']['active']}  关闭: {result['global']['closed']}")
     if result["global"]["avg_cycle_days"]:
         lines.append(f"  全局平均周期: {result['global']['avg_cycle_days']} 天")
     lines.append("")
@@ -184,9 +174,7 @@ def format_report(result: dict) -> str:
     # 按域汇总
     lines.append("  按域价值归因:")
     lines.append("  " + "-" * 60)
-    lines.append(
-        f"  {'域':12s} {'总数':>4s} {'活跃':>4s} {'关闭率':>6s} {'均周期':>6s} {'价值分':>6s}"
-    )
+    lines.append(f"  {'域':12s} {'总数':>4s} {'活跃':>4s} {'关闭率':>6s} {'均周期':>6s} {'价值分':>6s}")
     lines.append("  " + "-" * 60)
 
     sorted_domains = sorted(
@@ -198,9 +186,7 @@ def format_report(result: dict) -> str:
     for domain, d in sorted_domains:
         m = d["metrics"]
         cycle_str = f"{m['avg_cycle_days']}d" if m["avg_cycle_days"] else "—"
-        score_bar = "█" * int(m["value_score"] / 10) + "░" * (
-            10 - int(m["value_score"] / 10)
-        )
+        score_bar = "█" * int(m["value_score"] / 10) + "░" * (10 - int(m["value_score"] / 10))
         lines.append(
             f"  {domain:12s} {d['total']:4d} {d['active']:4d} "
             f"{m['close_rate']:5.0%}  {cycle_str:>6s}  "

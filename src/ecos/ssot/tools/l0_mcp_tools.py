@@ -50,13 +50,8 @@ def l0_status() -> str:
     _run_tool(MOF, ["status"]) if False else {}
 
     # Direct status computation (bypass subprocess for speed)
-    m1_count = sum(
-        1
-        for _ in (Path(__file__).resolve().parent.parent / "mof" / "m1").rglob("*.yaml")
-    )
-    m2_count = len(
-        list((Path(__file__).resolve().parent.parent / "mof" / "m2").glob("*.yaml"))
-    )
+    m1_count = sum(1 for _ in (Path(__file__).resolve().parent.parent / "mof" / "m1").rglob("*.yaml"))
+    m2_count = len(list((Path(__file__).resolve().parent.parent / "mof" / "m2").glob("*.yaml")))
 
     # Get protocol health
     sla_result = _run_tool(
@@ -135,9 +130,7 @@ def l0_adr_list() -> str:
             d = yaml.safe_load(open(f))
             status = d.get("status", "?")
             name = d.get("name", f.stem)[:60]
-            icon = {"accepted": "✅", "proposed": "📋", "rejected": "❌"}.get(
-                status, "❓"
-            )
+            icon = {"accepted": "✅", "proposed": "📋", "rejected": "❌"}.get(status, "❓")
             lines.append(f"  {icon} {name}")
         except Exception:  # defensive fallback
             pass
@@ -156,9 +149,7 @@ def l0_entity_resolve(query: str) -> str:
 
     lines = [f"实体 '{query}' ({len(entities)} 处):"]
     for e in entities:
-        lines.append(
-            f"  📍 {e.get('name', '?')} — {e.get('domain', '?')} [{e.get('entity_type', '?')}]"
-        )
+        lines.append(f"  📍 {e.get('name', '?')} — {e.get('domain', '?')} [{e.get('entity_type', '?')}]")
     return "\n".join(lines)
 
 

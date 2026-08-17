@@ -142,9 +142,7 @@ class TestX2StalenessChecker:
         # 创建 system.yaml
         omo_dir = tmp_path / ".omo" / "state"
         omo_dir.mkdir(parents=True)
-        (omo_dir / "system.yaml").write_text(
-            "debt_weight: 1.0\ndebt_metrics:\n  debt_health: 100.0\n"
-        )
+        (omo_dir / "system.yaml").write_text("debt_weight: 1.0\ndebt_metrics:\n  debt_health: 100.0\n")
 
         checker = X2StalenessChecker(tmp_path)
         result = checker.execute()
@@ -563,9 +561,7 @@ class TestDistributedPrimitive:
         healthy = manager.get_healthy_nodes()
         assert [n.node_id for n in healthy] == ["node-1"]
 
-        manager.nodes["node-1"].last_heartbeat = datetime.now(timezone.utc) - timedelta(
-            seconds=10
-        )
+        manager.nodes["node-1"].last_heartbeat = datetime.now(timezone.utc) - timedelta(seconds=10)
         removed = manager.remove_offline_nodes()
         assert removed == ["node-1"]
         assert manager.get_node("node-1") is None
@@ -580,9 +576,7 @@ class TestDistributedPrimitive:
         assert snapshot.node_id == "node-1"
         assert snapshot.checksum
 
-        remote_snapshot = StateSnapshot(
-            node_id="node-2", version=2, data={"key1": "remote", "key2": "new"}
-        )
+        remote_snapshot = StateSnapshot(node_id="node-2", version=2, data={"key1": "remote", "key2": "new"})
         result = service.sync_from_snapshot(remote_snapshot)
 
         assert result.success is True
@@ -612,9 +606,7 @@ class TestDistributedPrimitive:
         assert protocol.send("node-2", message) is True
 
         captured = []
-        protocol.register_handler(
-            MessageType.SYNC, lambda msg: captured.append(msg.payload) or "done"
-        )
+        protocol.register_handler(MessageType.SYNC, lambda msg: captured.append(msg.payload) or "done")
         assert protocol.dispatch(message) == "done"
         assert captured == [{"ok": True}]
 
@@ -674,9 +666,7 @@ class TestTaskScheduler:
         scheduler = TaskScheduler()
 
         # 提交任务
-        task = scheduler.submit_task(
-            "task-1", "测试任务", required_capabilities=["task"]
-        )
+        task = scheduler.submit_task("task-1", "测试任务", required_capabilities=["task"])
         assert task.task_id == "task-1"
         assert task.status == TaskStatus.PENDING
 
@@ -888,9 +878,7 @@ class TestRolePrimitive:
         evaluator = RoleEvaluator()
 
         # 评估
-        eval1 = evaluator.evaluate(
-            "agent-1", "worker", 85.0, {"speed": 0.9, "quality": 0.8}
-        )
+        eval1 = evaluator.evaluate("agent-1", "worker", 85.0, {"speed": 0.9, "quality": 0.8})
         assert eval1.score == 85.0
 
         evaluator.evaluate("agent-2", "worker", 92.0, {"speed": 0.95, "quality": 0.9})
@@ -1425,9 +1413,7 @@ class TestSwarmManagerDeepIntegration:
         state = SwarmState(agents=["a1", "a2"], behaviors=[])
         behaviors = manager.detect_emergence(state)
 
-        oscillation = [
-            b for b in behaviors if b.pattern == EmergencePattern.OSCILLATION
-        ]
+        oscillation = [b for b in behaviors if b.pattern == EmergencePattern.OSCILLATION]
         assert len(oscillation) == 1
         assert "a1" in oscillation[0].agents
 
@@ -1525,9 +1511,7 @@ class TestSwarmManagerDeepIntegration:
 
         engine = CollectiveDecision()
         weights = {"a1": 3.0, "a2": 2.0, "a3": 1.0}
-        engine.create_proposal(
-            "p1", "信息素", ["X", "Y"], DecisionMethod.PHEROMONE, agent_weights=weights
-        )
+        engine.create_proposal("p1", "信息素", ["X", "Y"], DecisionMethod.PHEROMONE, agent_weights=weights)
         engine.vote("p1", "a1", "X")
         engine.vote("p1", "a2", "X")
         engine.vote("p1", "a3", "Y")
@@ -1637,11 +1621,7 @@ class TestRoleSwitcherIntegration:
         )
 
         rm = RoleManager()
-        rm.define_role(
-            RoleDefinition(
-                role_id="r1", role_type=RoleType.WORKER, capabilities=[], constraints={}
-            )
-        )
+        rm.define_role(RoleDefinition(role_id="r1", role_type=RoleType.WORKER, capabilities=[], constraints={}))
         rm.define_role(
             RoleDefinition(
                 role_id="r2",
@@ -1748,11 +1728,7 @@ class TestRoleSwitcherIntegration:
         )
 
         rm = RoleManager()
-        rm.define_role(
-            RoleDefinition(
-                role_id="r1", role_type=RoleType.WORKER, capabilities=[], constraints={}
-            )
-        )
+        rm.define_role(RoleDefinition(role_id="r1", role_type=RoleType.WORKER, capabilities=[], constraints={}))
         rm.define_role(
             RoleDefinition(
                 role_id="r2",
@@ -1781,11 +1757,7 @@ class TestRoleSwitcherIntegration:
         )
 
         rm = RoleManager()
-        rm.define_role(
-            RoleDefinition(
-                role_id="r1", role_type=RoleType.WORKER, capabilities=[], constraints={}
-            )
-        )
+        rm.define_role(RoleDefinition(role_id="r1", role_type=RoleType.WORKER, capabilities=[], constraints={}))
         rm.define_role(
             RoleDefinition(
                 role_id="r2",
@@ -1925,9 +1897,7 @@ class TestRecommendationEngineDeepIntegration:
             KnowledgeNode(
                 node_id="k1",
                 knowledge_type=KnowledgeType.FACT,
-                content={
-                    "text": "artificial intelligence machine learning deep learning"
-                },
+                content={"text": "artificial intelligence machine learning deep learning"},
             )
         )
         km.add_knowledge(
@@ -2170,9 +2140,7 @@ class TestPhase2Acceptance:
         success_count = 0
 
         for i in range(total_tasks):
-            scheduler.submit_task(
-                f"task-{i}", f"任务{i}", required_capabilities=["task"]
-            )
+            scheduler.submit_task(f"task-{i}", f"任务{i}", required_capabilities=["task"])
             idle = registry.get_idle_agents()
             if idle:
                 scheduler.assign_task(f"task-{i}", idle[0].agent_id)
@@ -2304,9 +2272,7 @@ class TestPhase4Acceptance:
         from ecos.l0.governance import CollectiveDecision, DecisionMethod
 
         engine = CollectiveDecision()
-        engine.create_proposal(
-            "p1", "测试", ["A", "B", "C"], DecisionMethod.MAJORITY_VOTE
-        )
+        engine.create_proposal("p1", "测试", ["A", "B", "C"], DecisionMethod.MAJORITY_VOTE)
 
         for i in range(7):
             engine.vote("p1", f"a{i}", "A")
@@ -2418,14 +2384,10 @@ class TestSwarmBrainStructureChecker:
             "failover.py",
             "load_balancer.py",
         ]:
-            (tmp_path / "src" / "ecos" / "l0" / "governance" / f).write_text(
-                "# placeholder\n" * 100
-            )
+            (tmp_path / "src" / "ecos" / "l0" / "governance" / f).write_text("# placeholder\n" * 100)
 
         for layer in ["l1/runtime", "l2/engine", "l3/entry"]:
-            (tmp_path / "src" / "ecos" / layer / "__init__.py").write_text(
-                "# " + "x" * 600
-            )
+            (tmp_path / "src" / "ecos" / layer / "__init__.py").write_text("# " + "x" * 600)
 
         for d in ["test_l0", "test_l1", "test_l2", "test_l3"]:
             (tmp_path / "tests" / d).mkdir(parents=True)
@@ -2524,9 +2486,7 @@ class TestCrossLayerIntegration:
             l2_engine.register_agent(f"agent-{i}", ["execute"])
 
         for i in range(10):
-            l2_engine.submit_task(
-                f"task-{i}", f"任务{i}", required_capabilities=["execute"]
-            )
+            l2_engine.submit_task(f"task-{i}", f"任务{i}", required_capabilities=["execute"])
 
         assignments = l2_engine.auto_assign()
         assert len(assignments) == 10
@@ -2819,9 +2779,7 @@ class TestEndToEndWorkflow:
 
         manager = SwarmManager()
         for i in range(8):
-            manager.add_agent(
-                f"agent-{i}", weight=1.0 + i * 0.5, initial_state={"role": "worker"}
-            )
+            manager.add_agent(f"agent-{i}", weight=1.0 + i * 0.5, initial_state={"role": "worker"})
 
         decision = CollectiveDecision()
         weights = {f"agent-{i}": 1.0 + i * 0.5 for i in range(8)}
@@ -3025,9 +2983,7 @@ class TestEndToEndWorkflow:
             lb.register_node(f"node-{i}", weight=1)
 
         health = nm.check_health()
-        healthy_count = sum(
-            1 for s in health.values() if s in (NodeStatus.ONLINE, NodeStatus.HEALTHY)
-        )
+        healthy_count = sum(1 for s in health.values() if s in (NodeStatus.ONLINE, NodeStatus.HEALTHY))
         assert healthy_count == 4
 
         target1 = fm.execute_failover("node-0")
@@ -3473,9 +3429,7 @@ class TestPerformanceBenchmarks:
         from ecos.l0.governance import CollectiveDecision, DecisionMethod
 
         engine = CollectiveDecision()
-        engine.create_proposal(
-            "p1", "测试", ["A", "B", "C"], DecisionMethod.MAJORITY_VOTE
-        )
+        engine.create_proposal("p1", "测试", ["A", "B", "C"], DecisionMethod.MAJORITY_VOTE)
 
         for i in range(50):
             engine.vote("p1", f"agent-{i}", "A" if i < 30 else "B")
@@ -3495,9 +3449,7 @@ class TestPerformanceBenchmarks:
         for i in range(50):
             manager.add_agent(f"a{i}", initial_state={"role": "worker"})
 
-        state = SwarmState(
-            agents=manager.agents, agent_states=manager.agent_states, behaviors=[]
-        )
+        state = SwarmState(agents=manager.agents, agent_states=manager.agent_states, behaviors=[])
 
         start = time.monotonic()
         manager.detect_emergence(state)

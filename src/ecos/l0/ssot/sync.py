@@ -256,9 +256,7 @@ def sync_yaml_to_markdown(
 
         # 追加到文件
         if not dry_run:
-            sync_note = (
-                f"\n<!-- 同步自 ssot-kernel {datetime.date.today().isoformat()} -->\n"
-            )
+            sync_note = f"\n<!-- 同步自 ssot-kernel {datetime.date.today().isoformat()} -->\n"
             new_section = sync_note + "\n".join(new_entries)
             md_path.write_text(md_text.rstrip() + "\n" + new_section, encoding="utf-8")
         else:
@@ -288,12 +286,8 @@ def add_subcommand(subparsers, common_parent):
         required=True,
         help="YAML 领域目录（如 tool/ssot-kernel/domains/guozhuan）",
     )
-    p.add_argument(
-        "--md-dir", required=True, help="Markdown 知识本体根目录（如 domain/）"
-    )
-    p.add_argument(
-        "--write", action="store_true", help="实际写入（默认 dry-run 仅预览）"
-    )
+    p.add_argument("--md-dir", required=True, help="Markdown 知识本体根目录（如 domain/）")
+    p.add_argument("--write", action="store_true", help="实际写入（默认 dry-run 仅预览）")
     return p
 
 

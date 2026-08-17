@@ -245,9 +245,7 @@ class TestMultiProcessSimulation:
             target=_sync_worker,
             args=(queue, "worker-1", {"task": "compute", "load": 50}),
         )
-        p2 = Process(
-            target=_sync_worker, args=(queue, "worker-2", {"task": "store", "load": 30})
-        )
+        p2 = Process(target=_sync_worker, args=(queue, "worker-2", {"task": "store", "load": 30}))
 
         p1.start()
         p2.start()
@@ -277,9 +275,7 @@ class TestMultiProcessSimulation:
 
         processes = []
         for node_id, initial, sync in configs:
-            p = Process(
-                target=_sync_worker_with_update, args=(queue, node_id, initial, sync)
-            )
+            p = Process(target=_sync_worker_with_update, args=(queue, node_id, initial, sync))
             processes.append(p)
             p.start()
 
@@ -304,12 +300,8 @@ class TestMultiProcessSimulation:
         """并发写入"""
         queue = Queue()
 
-        p1 = Process(
-            target=_writer_worker, args=(queue, "w1", "counter", list(range(10)))
-        )
-        p2 = Process(
-            target=_writer_worker, args=(queue, "w2", "counter", list(range(10, 20)))
-        )
+        p1 = Process(target=_writer_worker, args=(queue, "w1", "counter", list(range(10))))
+        p2 = Process(target=_writer_worker, args=(queue, "w2", "counter", list(range(10, 20))))
 
         p1.start()
         p2.start()
@@ -339,11 +331,7 @@ class TestFailoverSimulation:
         from ecos.l0.governance import FailoverManager, FailoverRule, FailoverStrategy
 
         fm = FailoverManager()
-        fm.add_rule(
-            FailoverRule(
-                "r1", "primary", ["s1", "s2", "s3"], FailoverStrategy.ROUND_ROBIN
-            )
-        )
+        fm.add_rule(FailoverRule("r1", "primary", ["s1", "s2", "s3"], FailoverStrategy.ROUND_ROBIN))
 
         targets = []
         for _ in range(6):
@@ -361,11 +349,7 @@ class TestFailoverSimulation:
         fm.update_node_load("s2", 2)
         fm.update_node_load("s3", 5)
 
-        fm.add_rule(
-            FailoverRule(
-                "r1", "primary", ["s1", "s2", "s3"], FailoverStrategy.LEAST_LOADED
-            )
-        )
+        fm.add_rule(FailoverRule("r1", "primary", ["s1", "s2", "s3"], FailoverStrategy.LEAST_LOADED))
 
         target = fm.execute_failover("primary")
         assert target == "s2"
@@ -379,9 +363,7 @@ class TestFailoverSimulation:
         fm.update_node_priority("s2", 10)
         fm.update_node_priority("s3", 5)
 
-        fm.add_rule(
-            FailoverRule("r1", "primary", ["s1", "s2", "s3"], FailoverStrategy.PRIORITY)
-        )
+        fm.add_rule(FailoverRule("r1", "primary", ["s1", "s2", "s3"], FailoverStrategy.PRIORITY))
 
         target = fm.execute_failover("primary")
         assert target == "s2"
@@ -391,9 +373,7 @@ class TestFailoverSimulation:
         from ecos.l0.governance import FailoverManager, FailoverRule, FailoverStrategy
 
         fm = FailoverManager()
-        fm.add_rule(
-            FailoverRule("r1", "primary", ["s1", "s2"], FailoverStrategy.ROUND_ROBIN)
-        )
+        fm.add_rule(FailoverRule("r1", "primary", ["s1", "s2"], FailoverStrategy.ROUND_ROBIN))
 
         fm.execute_failover("primary")
         fm.execute_failover("primary")
@@ -608,9 +588,7 @@ class TestPerformanceBenchmarks:
         start = time.monotonic()
         processes = []
         for i in range(4):
-            p = Process(
-                target=_perf_worker, args=(queue, {f"k{j}": j for j in range(10)})
-            )
+            p = Process(target=_perf_worker, args=(queue, {f"k{j}": j for j in range(10)}))
             processes.append(p)
             p.start()
 
@@ -731,9 +709,7 @@ class TestEndToEndWorkflow:
         assert selected in ["node-2", "node-3"]  # 最少连接的节点
 
         cd = CollectiveDecision()
-        cd.create_proposal(
-            "p1", "部署策略", ["canary", "blue-green"], DecisionMethod.MAJORITY_VOTE
-        )
+        cd.create_proposal("p1", "部署策略", ["canary", "blue-green"], DecisionMethod.MAJORITY_VOTE)
         cd.vote("p1", "node-0", "canary")
         cd.vote("p1", "node-1", "canary")
         cd.vote("p1", "node-2", "blue-green")

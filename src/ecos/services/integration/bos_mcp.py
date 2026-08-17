@@ -250,14 +250,11 @@ def handle_workflow_run(name, params=None, dry_run=False):
     if dry_run:
         result["status"] = "validated"
         result["steps"] = [
-            {"order": s.get("order"), "name": s.get("name"), "action": s.get("action")}
-            for s in node.get("steps", [])
+            {"order": s.get("order"), "name": s.get("name"), "action": s.get("action")} for s in node.get("steps", [])
         ]
     else:
         result["status"] = "routed"
-        result["message"] = (
-            f"已通过 BOS URI 路由到 {result['layer']} 层 {result['realized_by']} 执行器"
-        )
+        result["message"] = f"已通过 BOS URI 路由到 {result['layer']} 层 {result['realized_by']} 执行器"
         result["note"] = "实际执行需 Agora Service Mesh 动态代理"
 
     return result
@@ -294,9 +291,7 @@ def main():
                     args.get("max_results", 10),
                 )
             elif tool_name == "workflow_run":
-                result = handle_workflow_run(
-                    args.get("name", ""), args.get("params"), args.get("dry_run", False)
-                )
+                result = handle_workflow_run(args.get("name", ""), args.get("params"), args.get("dry_run", False))
             else:
                 result = {"error": f"Unknown tool: {tool_name}"}
 

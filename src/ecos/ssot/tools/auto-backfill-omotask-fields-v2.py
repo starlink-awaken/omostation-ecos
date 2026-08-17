@@ -159,9 +159,7 @@ def backfill_data(data: dict, file_path: Path, omo_tasks: dict) -> dict:
 def format_report(results: list[dict]) -> str:
     lines = []
     lines.append("=" * 72)
-    lines.append(
-        "  auto-backfill-omotask-fields v2 — OMOTask 字段批量回填 (ruamel.yaml)"
-    )
+    lines.append("  auto-backfill-omotask-fields v2 — OMOTask 字段批量回填 (ruamel.yaml)")
     lines.append("=" * 72)
     lines.append(f"  时间: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
     lines.append("")
@@ -187,13 +185,9 @@ def format_report(results: list[dict]) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="OMOTask 字段批量回填 (v2 ruamel.yaml)"
-    )
+    parser = argparse.ArgumentParser(description="OMOTask 字段批量回填 (v2 ruamel.yaml)")
     parser.add_argument("--sync", action="store_true", help="实际写盘")
-    parser.add_argument(
-        "--json", dest="json_output", action="store_true", help="JSON 输出"
-    )
+    parser.add_argument("--json", dest="json_output", action="store_true", help="JSON 输出")
     parser.add_argument(
         "--strict",
         action="store_true",

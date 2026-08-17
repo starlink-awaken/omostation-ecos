@@ -131,9 +131,7 @@ class MonitoringDashboard:
         self.data_cache["system_status"] = self._get_system_status()
 
         # 更新指标数据
-        self.data_cache["metrics_snapshot"] = (
-            self.metrics_collector.get_realtime_snapshot()  # type: ignore[reportOptionalMemberAccess]
-        )
+        self.data_cache["metrics_snapshot"] = self.metrics_collector.get_realtime_snapshot()  # type: ignore[reportOptionalMemberAccess]
 
         # 更新告警数据
         self.data_cache["alert_summary"] = self.alerting_system.get_alert_summary()  # type: ignore[reportOptionalMemberAccess]
@@ -147,12 +145,8 @@ class MonitoringDashboard:
             snapshot = self.metrics_collector.get_realtime_snapshot()
 
             # 计算系统健康度
-            cpu_percent = snapshot.get("system_metrics", {}).get(
-                "system.cpu_percent", 0
-            )
-            memory_percent = snapshot.get("system_metrics", {}).get(
-                "system.memory_percent", 0
-            )
+            cpu_percent = snapshot.get("system_metrics", {}).get("system.cpu_percent", 0)
+            memory_percent = snapshot.get("system_metrics", {}).get("system.memory_percent", 0)
 
             if cpu_percent > 80 or memory_percent > 80:
                 health = "warning"
@@ -175,8 +169,7 @@ class MonitoringDashboard:
         # 简化版本：从缓存中获取趋势分析
         if hasattr(self.trend_analyzer, "trend_cache"):
             self.data_cache["trend_analysis"] = {
-                metric_name: analysis.to_dict()
-                for metric_name, analysis in self.trend_analyzer.trend_cache.items()
+                metric_name: analysis.to_dict() for metric_name, analysis in self.trend_analyzer.trend_cache.items()
             }
 
     def render_dashboard(self) -> str:
@@ -196,13 +189,9 @@ class MonitoringDashboard:
         dashboard.append("-" * 70)
         system_status = self.data_cache.get("system_status", {})
 
-        status_icon = {"healthy": "✅", "warning": "⚠️", "error": "❌"}.get(
-            system_status.get("health", "unknown"), "❓"
-        )
+        status_icon = {"healthy": "✅", "warning": "⚠️", "error": "❌"}.get(system_status.get("health", "unknown"), "❓")
 
-        dashboard.append(
-            f"{status_icon} 系统状态: {system_status.get('health', 'unknown')}"
-        )
+        dashboard.append(f"{status_icon} 系统状态: {system_status.get('health', 'unknown')}")
         dashboard.append(f"🖥️  CPU: {system_status.get('cpu_percent', 0):.1f}%")
         dashboard.append(f"💾 内存: {system_status.get('memory_percent', 0):.1f}%")
 

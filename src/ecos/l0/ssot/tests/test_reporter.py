@@ -83,11 +83,7 @@ class TestReporter:
             total_rules=1,
             passed=1,
             all_passed=True,
-            results=[
-                CheckResult(
-                    protocol_id="R-001", name="R1", passed=True, severity="INFO"
-                )
-            ],
+            results=[CheckResult(protocol_id="R-001", name="R1", passed=True, severity="INFO")],
         )
         md = Reporter.to_markdown(report)
         assert "全部通过" in md
@@ -100,9 +96,7 @@ class TestReporter:
             total_rules=1,
             passed=1,
             results=[
-                CheckResult(
-                    protocol_id="R-001", name="R1", passed=True, severity="INFO"
-                ),
+                CheckResult(protocol_id="R-001", name="R1", passed=True, severity="INFO"),
             ],
         )
         json_str = Reporter.to_json(report)

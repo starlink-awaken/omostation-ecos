@@ -46,9 +46,7 @@ class CheckerRegistry:
         """自动发现 ssot_kernel.patterns 中的内置模式"""
         from . import patterns as pkg
 
-        for _importer, modname, _ispkg in pkgutil.walk_packages(
-            pkg.__path__, prefix=f"{pkg.__name__}."
-        ):
+        for _importer, modname, _ispkg in pkgutil.walk_packages(pkg.__path__, prefix=f"{pkg.__name__}."):
             try:
                 mod = importlib.import_module(modname)
                 for _name, obj in inspect.getmembers(mod, inspect.isclass):
@@ -189,15 +187,9 @@ class RuleEngine:
         report.results = all_results
         report.total_rules = len(all_results)
         report.passed = sum(1 for r in all_results if r.passed)
-        report.blocker = sum(
-            1 for r in all_results if not r.passed and r.severity == "BLOCKER"
-        )
-        report.error = sum(
-            1 for r in all_results if not r.passed and r.severity == "ERROR"
-        )
-        report.warn = sum(
-            1 for r in all_results if not r.passed and r.severity == "WARN"
-        )
+        report.blocker = sum(1 for r in all_results if not r.passed and r.severity == "BLOCKER")
+        report.error = sum(1 for r in all_results if not r.passed and r.severity == "ERROR")
+        report.warn = sum(1 for r in all_results if not r.passed and r.severity == "WARN")
         report.all_passed = report.blocker == 0 and report.error == 0
 
         return report

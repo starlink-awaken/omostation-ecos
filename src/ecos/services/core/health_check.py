@@ -187,9 +187,7 @@ def run_check(check: dict) -> dict:
             "dim": check["dim"],
             "pass": passed,
             "status": "pass" if passed else "fail",
-            "reason": ""
-            if passed
-            else (result.stderr.strip() or result.stdout.strip())[:200],
+            "reason": "" if passed else (result.stderr.strip() or result.stdout.strip())[:200],
             "duration_ms": round(duration, 1),
         }
     except subprocess.TimeoutExpired:
@@ -226,9 +224,7 @@ def format_report(results: list[dict]) -> str:
     lines.append("  eCOS v6 — 治理健康检查 (X1-X3 集成测试)")
     lines.append("=" * 64)
     lines.append(f"  时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    lines.append(
-        f"  检查: {total} 项  |  通过: {passed}  |  失败: {failed}  |  跳过: {skipped}"
-    )
+    lines.append(f"  检查: {total} 项  |  通过: {passed}  |  失败: {failed}  |  跳过: {skipped}")
     lines.append("")
 
     for r in results:
@@ -241,10 +237,7 @@ def format_report(results: list[dict]) -> str:
             "error": "💥",
         }
         dim_tag = f"[{r['dim']}]"
-        lines.append(
-            f"  {icon.get(r['status'], '?')} {dim_tag:6s} {r['name']:20s}  "
-            f"{r['duration_ms']:6.0f}ms"
-        )
+        lines.append(f"  {icon.get(r['status'], '?')} {dim_tag:6s} {r['name']:20s}  {r['duration_ms']:6.0f}ms")
 
         if r["reason"] and r["status"] != "pass":
             lines.append(f"       → {r['reason']}")

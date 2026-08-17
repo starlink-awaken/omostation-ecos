@@ -81,9 +81,7 @@ def compiler() -> MofCompiler:
 
 def _import_generated_models(models_path: Path):
     """Import the generated Pydantic models module from a directory."""
-    spec = importlib.util.spec_from_file_location(
-        "mof_control_models_under_test", models_path
-    )
+    spec = importlib.util.spec_from_file_location("mof_control_models_under_test", models_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -229,9 +227,9 @@ def test_mandate_validation_rules_declare_local_invariants_only(
     assert not any("risk_ceiling" in r and "approval_mode" in r for r in rules), (
         "approval_mode must never be bound to a risk cell in M2"
     )
-    assert not any(
-        "risk_ceiling != 'R" in r or "risk_ceiling == 'R" in r for r in rules
-    ), "risk_ceiling cell equality must be a runtime OMO decision, not an M2 rule"
+    assert not any("risk_ceiling != 'R" in r or "risk_ceiling == 'R" in r for r in rules), (
+        "risk_ceiling cell equality must be a runtime OMO decision, not an M2 rule"
+    )
 
 
 # ── invalid examples ─────────────────────────────────────────────────
@@ -278,9 +276,7 @@ def test_check_detects_tampered_artifact(compiler: MofCompiler, tmp_path: Path) 
     compiler.write(tmp_path)
     target = tmp_path / "mof-control.schema.json"
     target.write_text(
-        target.read_text(encoding="utf-8").replace(
-            '"DelegationMandate"', '"DelegationMandateX"'
-        ),
+        target.read_text(encoding="utf-8").replace('"DelegationMandate"', '"DelegationMandateX"'),
         encoding="utf-8",
     )
     problems = compiler.check(tmp_path)
@@ -319,16 +315,12 @@ def test_check_detects_drift_from_model_truth(
     # 1. Copy all M2 YAML files into an isolated truth dir.
     drift_dir = tmp_path_factory.mktemp("m2-drift")
     for src in sorted(M2_DIR.glob("*.yaml")):
-        (drift_dir / src.name).write_text(
-            src.read_text(encoding="utf-8"), encoding="utf-8"
-        )
+        (drift_dir / src.name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
     # 2. Write the artifact set from that copy and prove it is clean.
     drift_compiler = MofCompiler(m2_dir=drift_dir)
     out_dir = drift_dir / "out"
     drift_compiler.write(out_dir)
-    assert drift_compiler.check(out_dir) == [], (
-        f"fresh artifacts must pass check, got: {drift_compiler.check(out_dir)}"
-    )
+    assert drift_compiler.check(out_dir) == [], f"fresh artifacts must pass check, got: {drift_compiler.check(out_dir)}"
     # 3. Mutate the copied DelegationMandate model (drop the matrix approval
     #    mode so every emitted enum surface drifts).
     mandate_path = drift_dir / "delegation_mandate.yaml"
@@ -341,16 +333,12 @@ def test_check_detects_drift_from_model_truth(
     # 4. The stale output must now fail the same compiler's check.
     problems = drift_compiler.check(out_dir)
     assert problems, "check must report stale artifacts after M2 drift"
-    assert any("tampered" in p for p in problems), (
-        f"expected tampered-artifact problems, got: {problems}"
-    )
+    assert any("tampered" in p for p in problems), f"expected tampered-artifact problems, got: {problems}"
 
 
 def test_generated_control_dir_is_clean(compiler: MofCompiler) -> None:
     """The checked-in generated/control directory must pass the compiler check."""
-    assert GENERATED_CONTROL_DIR.is_dir(), (
-        "run mof-compile.py compile --out-dir src/ecos/ssot/mof/generated/control"
-    )
+    assert GENERATED_CONTROL_DIR.is_dir(), "run mof-compile.py compile --out-dir src/ecos/ssot/mof/generated/control"
     problems = compiler.check(GENERATED_CONTROL_DIR)
     assert problems == [], f"checked-in control artifacts drifted: {problems}"
 
@@ -370,9 +358,7 @@ def test_pydantic_model_validates_valid_mandate(generated_models) -> None:
 def test_pydantic_model_validates_revoked_mandate_v2(generated_models) -> None:
     model_cls = _mandate_model(generated_models)
     instance = model_cls(
-        **_valid_mandate_kwargs(
-            {"status": "revoked", "mandate_version": 2, "trace_id": "revoke-trace-001"}
-        )
+        **_valid_mandate_kwargs({"status": "revoked", "mandate_version": 2, "trace_id": "revoke-trace-001"})
     )
     assert instance.status == "revoked"
     assert instance.mandate_version == 2

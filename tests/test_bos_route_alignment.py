@@ -19,15 +19,7 @@ import yaml
 _log = logging.getLogger(__name__)
 
 # ── 路径常量 ───────────────────────────────────────
-BOSROUTE_DIR = (
-    Path(__file__).resolve().parent.parent
-    / "src"
-    / "ecos"
-    / "ssot"
-    / "mof"
-    / "m1"
-    / "bosroute"
-)
+BOSROUTE_DIR = Path(__file__).resolve().parent.parent / "src" / "ecos" / "ssot" / "mof" / "m1" / "bosroute"
 AGORA_BOS_RESOLVER_PATH = (
     Path(os.environ.get("WORKSPACE_ROOT", str(Path.home() / "Workspace")))
     / "projects"
@@ -142,9 +134,7 @@ def load_poc_services_from_file() -> dict[str, dict]:
     keys: list[str] = []
 
     # 新模式: BosService(uri="bos://...") 构造函数 (跨行)
-    pattern_list = re.compile(
-        r'''BosService\(\s*\n\s+uri="(bos://[^"]+)"''', re.MULTILINE
-    )
+    pattern_list = re.compile(r'''BosService\(\s*\n\s+uri="(bos://[^"]+)"''', re.MULTILINE)
 
     for m in pattern_list.finditer(source):
         keys.append(m.group(1))
@@ -337,9 +327,7 @@ def test_yaml_patterns_have_poc_coverage(alignment: dict) -> None:
     yaml_only = alignment["yaml_only"]
 
     if yaml_only:
-        yaml_sample = "\n    ".join(
-            f"{e['uri']:50s} ({e['file']})" for e in yaml_only[:10]
-        )
+        yaml_sample = "\n    ".join(f"{e['uri']:50s} ({e['file']})" for e in yaml_only[:10])
         msg = (
             f"{len(yaml_only)} 个 YAML 模式无 POC 路由匹配:\n"
             f"    {yaml_sample}"

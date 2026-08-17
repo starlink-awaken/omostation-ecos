@@ -23,9 +23,7 @@ class CapabilityGapPattern(BasePattern):
     def pattern_name(self) -> str:
         return "capability_gap"
 
-    def evaluate(
-        self, rule: Rule, domain: DomainConfig, context: dict | None = None
-    ) -> CheckResult:
+    def evaluate(self, rule: Rule, domain: DomainConfig, context: dict | None = None) -> CheckResult:
         rule_id = rule.id
         rule_name = rule.name or rule_id
 
@@ -39,9 +37,7 @@ class CapabilityGapPattern(BasePattern):
             needs = self._extract_needs(conclusion)
             for need in needs:
                 # 检查是否有对应的实体
-                found = any(
-                    need in e.name or need in str(e.attributes) for e in domain.entities
-                )
+                found = any(need in e.name or need in str(e.attributes) for e in domain.entities)
                 if found:
                     covered.append({"inference": inf.id, "need": need})
                 else:

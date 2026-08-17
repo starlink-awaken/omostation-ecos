@@ -297,9 +297,7 @@ class SwarmBrainStructureChecker(GovernanceCheck):
         if len(test_files) < 4:
             issues.append(f"测试文件只有 {len(test_files)} 个 (< 4)")
 
-        l0_total = sum(
-            f.stat().st_size for f in l0_dir.glob("*.py") if f.name != "__pycache__"
-        )
+        l0_total = sum(f.stat().st_size for f in l0_dir.glob("*.py") if f.name != "__pycache__")
         details["l0_bytes"] = l0_total
         if l0_total < 10000:
             issues.append(f"L0 代码量 {l0_total} bytes (< 10KB)")

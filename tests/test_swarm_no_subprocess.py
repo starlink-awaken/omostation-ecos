@@ -24,10 +24,7 @@ def test_ecos_workflow_no_aetherforge_subprocess():
         cmd_str = " ".join(args) if isinstance(args, list) else str(args)
 
         # 2. 检查是否命中了 AetherForge 遗留子进程调用的黑名单
-        if any(
-            keyword in cmd_str
-            for keyword in ["aetherforge", "swarm_engine/cli.py", "swarm_engine.cli"]
-        ):
+        if any(keyword in cmd_str for keyword in ["aetherforge", "swarm_engine/cli.py", "swarm_engine.cli"]):
             violation_msg = f"检测到违规的子进程直调: {cmd_str}"
             detected_violations.append(violation_msg)
             raise AssertionError(violation_msg)
@@ -86,9 +83,7 @@ def test_ecos_workflow_no_aetherforge_subprocess():
 
         # 6. 断言结果
         # 确保没有发生任何 subprocess 违规直调
-        assert len(detected_violations) == 0, "发现子进程直调违规:\n" + "\n".join(
-            detected_violations
-        )
+        assert len(detected_violations) == 0, "发现子进程直调违规:\n" + "\n".join(detected_violations)
         assert result["failed"] == 0
         assert result["passed"] == 1
 

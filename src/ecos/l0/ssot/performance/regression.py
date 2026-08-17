@@ -78,16 +78,12 @@ class RegressionReport:
     @property
     def critical_count(self) -> int:
         """严重回归数量"""
-        return len(
-            [m for m in self.regression_metrics if m.severity == SeverityLevel.CRITICAL]
-        )
+        return len([m for m in self.regression_metrics if m.severity == SeverityLevel.CRITICAL])
 
     @property
     def high_count(self) -> int:
         """高度回归数量"""
-        return len(
-            [m for m in self.regression_metrics if m.severity == SeverityLevel.HIGH]
-        )
+        return len([m for m in self.regression_metrics if m.severity == SeverityLevel.HIGH])
 
     @property
     def total_regression_count(self) -> int:
@@ -106,16 +102,12 @@ class RegressionReport:
             print("🚨 检测到性能回归!")
             print(f"   🔴 严重: {self.critical_count}")
             print(f"   🔴 高度: {self.high_count}")
-            print(
-                f"   🟡 中度: {self.total_regression_count - self.critical_count - self.high_count}"
-            )
+            print(f"   🟡 中度: {self.total_regression_count - self.critical_count - self.high_count}")
 
             print("\n📊 回归详情:")
             for metric in self.regression_metrics:
                 if metric.is_regression:
-                    print(
-                        f"   {metric.trend_icon} {metric.metric_name}: {metric.formatted_change}"
-                    )
+                    print(f"   {metric.trend_icon} {metric.metric_name}: {metric.formatted_change}")
         else:
             print("✅ 未检测到性能回归")
 
@@ -197,9 +189,7 @@ class PerformanceBaseline:
             )
 
             metrics = PerformanceMetrics(
-                total_execution_time_ms=result_data["metrics"][
-                    "total_execution_time_ms"
-                ],
+                total_execution_time_ms=result_data["metrics"]["total_execution_time_ms"],
                 peak_memory_usage_mb=result_data["metrics"]["peak_memory_usage_mb"],
                 rules_per_second=result_data["metrics"]["rules_per_second"],
                 passed_rules=result_data["metrics"]["passed_rules"],
@@ -397,9 +387,7 @@ class PerformanceRegressionDetector:
         higher_is_worse: bool,
     ) -> RegressionMetric:
         """检测单个指标的回归"""
-        change_percent = (
-            (current_value - baseline_value) / (baseline_value + 0.001)
-        ) * 100
+        change_percent = ((current_value - baseline_value) / (baseline_value + 0.001)) * 100
         change_absolute = current_value - baseline_value
 
         # 判断是否回归
@@ -440,9 +428,7 @@ class PerformanceRegressionDetector:
             severity=severity,
         )
 
-    def _assess_overall_severity(
-        self, metrics: list[RegressionMetric]
-    ) -> SeverityLevel:
+    def _assess_overall_severity(self, metrics: list[RegressionMetric]) -> SeverityLevel:
         """评估整体严重程度"""
         if not any(m.is_regression for m in metrics):
             return SeverityLevel.NONE
@@ -499,9 +485,7 @@ class PerformanceRegressionDetector:
                         "执行时间严重退化，建议：1) 分析热点代码路径；2) 考虑并行执行；3) 优化条件评估逻辑"
                     )
                 else:
-                    recommendations.append(
-                        "执行时间有所增长，建议检查最近的代码变更是否有性能影响"
-                    )
+                    recommendations.append("执行时间有所增长，建议检查最近的代码变更是否有性能影响")
 
             elif metric.metric_name == "内存使用":
                 if metric.severity in [SeverityLevel.CRITICAL, SeverityLevel.HIGH]:
@@ -509,9 +493,7 @@ class PerformanceRegressionDetector:
                         "内存使用严重增长，建议：1) 检查内存泄漏；2) 优化数据结构；3) 实现数据分批处理"
                     )
                 else:
-                    recommendations.append(
-                        "内存使用有所增长，建议检查缓存策略和大对象处理"
-                    )
+                    recommendations.append("内存使用有所增长，建议检查缓存策略和大对象处理")
 
             elif metric.metric_name == "规则吞吐量":
                 if metric.severity in [SeverityLevel.CRITICAL, SeverityLevel.HIGH]:
@@ -519,9 +501,7 @@ class PerformanceRegressionDetector:
                         "规则吞吐量显著下降，建议：1) 分析规则执行效率；2) 优化规则依赖关系；3) 考虑规则缓存"
                     )
                 else:
-                    recommendations.append(
-                        "规则吞吐量轻微下降，建议持续监控规则执行效率"
-                    )
+                    recommendations.append("规则吞吐量轻微下降，建议持续监控规则执行效率")
 
         # 通用建议
         if len(recommendations) > 1:
@@ -575,41 +555,29 @@ class PerformanceRegressionDetector:
 
             # 执行时间对比
             time_change = (
-                (
-                    current.metrics.total_execution_time_ms
-                    - baseline.metrics.total_execution_time_ms
-                )
+                (current.metrics.total_execution_time_ms - baseline.metrics.total_execution_time_ms)
                 / baseline.metrics.total_execution_time_ms
                 * 100
             )
-            time_icon = (
-                "🔴" if time_change > 10 else ("🟡" if time_change > 5 else "🟢")
-            )
+            time_icon = "🔴" if time_change > 10 else ("🟡" if time_change > 5 else "🟢")
             report_lines.append(
                 f"{time_icon} 执行时间: {baseline.metrics.total_execution_time_ms / 1000:.2f}s → {current.metrics.total_execution_time_ms / 1000:.2f}s ({time_change:+.1f}%)"
             )
 
             # 内存使用对比
             memory_change = (
-                (
-                    current.metrics.peak_memory_usage_mb
-                    - baseline.metrics.peak_memory_usage_mb
-                )
+                (current.metrics.peak_memory_usage_mb - baseline.metrics.peak_memory_usage_mb)
                 / baseline.metrics.peak_memory_usage_mb
                 * 100
             )
-            memory_icon = (
-                "🔴" if memory_change > 10 else ("🟡" if memory_change > 5 else "🟢")
-            )
+            memory_icon = "🔴" if memory_change > 10 else ("🟡" if memory_change > 5 else "🟢")
             report_lines.append(
                 f"{memory_icon} 内存使用: {baseline.metrics.peak_memory_usage_mb:.1f}MB → {current.metrics.peak_memory_usage_mb:.1f}MB ({memory_change:+.1f}%)"
             )
 
             # 性能得分对比
             score_change = current.performance_score - baseline.performance_score
-            score_icon = (
-                "🔴" if score_change < -5 else ("🟡" if score_change < 0 else "🟢")
-            )
+            score_icon = "🔴" if score_change < -5 else ("🟡" if score_change < 0 else "🟢")
             report_lines.append(
                 f"{score_icon} 性能得分: {baseline.performance_score:.1f} → {current.performance_score:.1f} ({score_change:+.1f})"
             )

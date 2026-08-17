@@ -83,9 +83,7 @@ class OutputFormatter:
             print()
 
     # ── 表格 ──
-    def print_table(
-        self, headers: list[str], rows: list[list[Any]], title: str = ""
-    ) -> None:
+    def print_table(self, headers: list[str], rows: list[list[Any]], title: str = "") -> None:
         if self.json_mode:
             result = [dict(zip(headers, [str(c) for c in row])) for row in rows]
             self.print_json({"table": result, "title": title, "count": len(rows)})
@@ -104,9 +102,7 @@ class OutputFormatter:
             print(f"\n{self._style(title, 'bold')}")
 
         # Header
-        header = " │ ".join(
-            ("\033[1m" + h.ljust(w) + "\033[0m") for h, w in zip(headers, widths)
-        )
+        header = " │ ".join(("\033[1m" + h.ljust(w) + "\033[0m") for h, w in zip(headers, widths))
         sep = "─┼─".join("─" * w for w in widths)
         print(f"  {header}")
         print(f"  {sep}")

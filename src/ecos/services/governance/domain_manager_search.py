@@ -69,11 +69,7 @@ def cmd_search(args):
                 r = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                 for line in r.stdout.strip().split("\n"):
                     if line and len(results) < max_results:
-                        rel = (
-                            Path(line).relative_to(p)
-                            if p in Path(line).parents
-                            else line
-                        )
+                        rel = Path(line).relative_to(p) if p in Path(line).parents else line
                         results.append((did, str(rel)))
             except Exception:  # defensive fallback
                 pass

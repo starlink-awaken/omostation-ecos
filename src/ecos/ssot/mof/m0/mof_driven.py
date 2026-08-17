@@ -172,9 +172,7 @@ def validate(data: dict[str, Any]) -> tuple[bool, list[str]]:
     # transitions 完整性
     for tr in data["transitions"]:
         if not tr.get("from_m3") or not tr.get("to_m3"):
-            errors.append(
-                f"transition {tr['from_stage']}→{tr['to_stage']} 缺 m3 anchor"
-            )
+            errors.append(f"transition {tr['from_stage']}→{tr['to_stage']} 缺 m3 anchor")
     return (len(errors) == 0), errors
 
 
@@ -182,15 +180,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--emit", action="store_true", help="输出 yaml 到 stdout")
     parser.add_argument("--validate", action="store_true", help="校验 m3-meta 兼容")
-    parser.add_argument(
-        "--transition-graph", action="store_true", help="输出 transition 图 JSON"
-    )
+    parser.add_argument("--transition-graph", action="store_true", help="输出 transition 图 JSON")
     parser.add_argument(
         "--write",
         type=Path,
-        default=Path(
-            "../.omo/_derived/m0-driven.yaml"
-        ),  # ADR-0137: 写源端 (子模块内 .omo/_derived/)
+        default=Path("../.omo/_derived/m0-driven.yaml"),  # ADR-0137: 写源端 (子模块内 .omo/_derived/)
         help="写入文件 (默认 projects/ecos/.omo/_derived/m0-driven.yaml)",
     )
     args = parser.parse_args()
@@ -226,9 +220,7 @@ def main() -> int:
     args.write.parent.mkdir(parents=True, exist_ok=True)
     args.write.write_text(emit_yaml(data))
     print(f"✅ M0 snapshot 写入 {args.write}")
-    print(
-        f"   stage_count: {data['stage_count']}, transitions: {len(data['transitions'])}"
-    )
+    print(f"   stage_count: {data['stage_count']}, transitions: {len(data['transitions'])}")
     ok, errors = validate(data)
     if not ok:
         for e in errors:

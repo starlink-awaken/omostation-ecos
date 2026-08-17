@@ -16,9 +16,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(
     0,
-    os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"
-    ),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"),
 )
 
 ECOS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -186,9 +184,7 @@ class TestE2E_Guard:  # noqa: N801
     def test_guard_rules(self, check, op, level, allowed):
         """测试所有 guard 规则"""
         result = check(op, auto_deny=(level >= 3))
-        assert result["level"] == level, (
-            f"{op}: expected level {level}, got {result['level']}"
-        )
+        assert result["level"] == level, f"{op}: expected level {level}, got {result['level']}"
         assert result["allowed"] == allowed, f"{op}: expected allowed={allowed}"
 
     def test_guard_cross_refs_protected(self, check):
@@ -341,9 +337,7 @@ class TestE2E_Common:  # noqa: N801
         conn = ec.get_conn()
         assert conn is not None
         # Verify tables exist
-        tables = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
-        ).fetchall()
+        tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         table_names = [t[0] for t in tables]
         assert "ssb_events" in table_names
         conn.close()

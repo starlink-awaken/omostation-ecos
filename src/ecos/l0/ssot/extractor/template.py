@@ -31,9 +31,7 @@ class TemplatePattern:
     category: str  # entity / fact / inference / relation / rule
     id_prefix: str  # 提取的 ID 前缀（如 "DAT-"）
     title_pattern: str = ""  # 标题匹配正则（如 r"^##\s+(.+)）"
-    field_patterns: dict[str, str] = field(
-        default_factory=dict
-    )  # 字段提取正则：{字段名: 正则}
+    field_patterns: dict[str, str] = field(default_factory=dict)  # 字段提取正则：{字段名: 正则}
     confidence: float = 0.7
     post_process: str = ""  # 后处理函数名（可选）
     # AST 增强字段：当设置时，优先使用 AST 树提取而不是全文 regex
@@ -347,9 +345,7 @@ class TemplateExtractor(Extractor):
             return True
         return False
 
-    def _ast_extract(
-        self, text: str, pattern: TemplatePattern
-    ) -> list[ExtractionCandidate]:
+    def _ast_extract(self, text: str, pattern: TemplatePattern) -> list[ExtractionCandidate]:
         """AST 实体级提取：在 AST 树上按节点精确提取字段。
 
         流程：
@@ -390,9 +386,7 @@ class TemplateExtractor(Extractor):
             # AST 模式：标题已经是纯净文本（如 "person-yangbo"），直接使用
             # 如果 title_pattern 带标题标记（如 ^###\s+），只在非 AST 模式使用
             if not pattern.uses_ast and pattern.title_pattern:
-                id_m = re.search(
-                    pattern.title_pattern, entity_node.title or entity_node.content
-                )
+                id_m = re.search(pattern.title_pattern, entity_node.title or entity_node.content)
                 if id_m:
                     eid = id_m.group(1).strip() if id_m.lastindex else eid
 
@@ -486,18 +480,12 @@ class TemplateExtractor(Extractor):
             if cid.startswith("POL-P-F") or cid.startswith("DAT-D-F"):
                 return cid  # 已规范化
         # 推论：L → INF-L
-        if (
-            category == "inference"
-            and cid.startswith("L")
-            and not cid.startswith("INF-")
-        ):
+        if category == "inference" and cid.startswith("L") and not cid.startswith("INF-"):
             return f"INF-{cid}"
         # 实体：保留原始前缀
         return cid
 
-    def _apply_pattern(
-        self, text: str, pattern: TemplatePattern
-    ) -> list[ExtractionCandidate]:
+    def _apply_pattern(self, text: str, pattern: TemplatePattern) -> list[ExtractionCandidate]:
         """对文本应用一个模板模式"""
         candidates = []
         matches = list(re.finditer(pattern.title_pattern, text, re.MULTILINE))
@@ -507,9 +495,7 @@ class TemplateExtractor(Extractor):
             matched_id = m.group(1).strip() if m.lastindex and m.lastindex >= 1 else ""
 
             for fname, field_re in pattern.field_patterns.items():
-                fm = re.search(
-                    field_re, text[max(0, m.start() - 50) : m.end() + 200], re.MULTILINE
-                )
+                fm = re.search(field_re, text[max(0, m.start() - 50) : m.end() + 200], re.MULTILINE)
                 if fm:
                     # 取最后一个捕获组或第一个
                     val = fm.group(fm.lastindex or 1).strip()
