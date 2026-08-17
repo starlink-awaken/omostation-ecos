@@ -15,6 +15,9 @@ from ecos.ssot.compiler.context_synthesizer import MOFContextSynthesizer
 from ecos.ssot.compiler.fact_inspector import FactInspector
 from ecos.ssot.compiler.mof_policy_compiler import MOFPolicyCompiler
 from ecos.ssot.compiler.path_inspector import PathBoundaryInspector
+from ecos.ssot.compiler.pitfall_inspector import PitfallInspector
+from ecos.ssot.compiler.policy_inspector import PolicyComplianceInspector
+from ecos.ssot.compiler.truth_canvas_server import create_truth_canvas_server
 
 
 def cmd_explain(args: argparse.Namespace) -> int:
@@ -390,7 +393,204 @@ def cmd_facts(args: argparse.Namespace) -> int:
             return 1
         return 0
 
-    print("❌ 请指定 facts 子命令: validate, template", file=sys.stderr)
+    if action == "serve":
+        host = getattr(args, "host", "127.0.0.1")
+        port = getattr(args, "port", 8765)
+        custom_dir = getattr(args, "dir", None)
+        f_dir = Path(custom_dir).expanduser().resolve() if custom_dir else None
+        server = create_truth_canvas_server(host=host, port=port, facts_dir=f_dir)
+        print("\n🌐 Dual-Plane Truth Canvas Web Server 运行中:")
+        print(f"   URL: http://{host}:{port}/")
+        print(f"   事实目录: {f_dir or Path('~/Documents/@工作文档').expanduser()}")
+        print("   按 Ctrl+C 停止服务...\n")
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("\n🛑 服务已优雅退出")
+            server.server_close()
+        return 0
+
+    print("❌ 请指定 facts 子命令: validate, template, serve", file=sys.stderr)
+    return 1
+
+
+# ── Domain Policy-as-Code Engine (ADR-0193) ──────────────────────────────────
+
+
+def cmd_policy(args: argparse.Namespace) -> int:
+    action = getattr(args, "policy_action", None)
+    inspector = PolicyComplianceInspector()
+
+    if action == "explain":
+        info = inspector.explain_policy(args.policy_id)
+        if not info:
+            print(f"❌ 未找到政策规则: {args.policy_id}", file=sys.stderr)
+            return 1
+        if args.json:
+            print(json.dumps({
+                "rule_id": info.rule_id,
+                "domain": info.domain,
+                "title": info.title,
+                "severity": info.severity,
+                "description": info.description,
+                "remediation": info.remediation,
+            }, ensure_ascii=False, indent=2))
+            return 0
+        print(f"\n╭─ 领域政策规则: {info.rule_id} ─────────────────────────────")
+        print(f"│ 标  题: {info.title}")
+        print(f"│ 领  域: {info.domain}   [严重级别: {info.severity}]")
+        print(f"│ 描  述: {info.description}")
+        print(f"│ 处置建议: {info.remediation}")
+        print("╰─────────────────────────────────────────────────────────────\n")
+        return 0
+
+    if action == "list":
+        rules = inspector.list_policies(domain=getattr(args, "domain", None))
+        if args.json:
+            print(json.dumps([{
+                "rule_id": r.rule_id,
+                "domain": r.domain,
+                "title": r.title,
+                "severity": r.severity,
+            } for r in rules], ensure_ascii=False, indent=2))
+            return 0
+        print(f"\n📋 领域 Policy-as-Code 规则列表 (共 {len(rules)} 条):")
+        for r in rules:
+            print(f"  • [{r.rule_id}] [{r.severity}] ({r.domain}) {r.title}")
+        print()
+        return 0
+
+    if action == "audit":
+        target = args.target
+        target_path = Path(target).expanduser().resolve()
+        domain = getattr(args, "domain", "auto")
+
+        if target_path.exists() and target_path.is_file():
+            report = inspector.audit_file(target_path, domain=domain)
+        else:
+            report = inspector.audit_text(target, domain=domain, target_name="raw-text-input")
+
+        if args.json:
+            print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+            return 1 if (not report.passed or (len(report.warnings) > 0 and args.strict)) else 0
+
+        print(f"\n📜 领域政策合规审计: {report.target} (领域: {report.domain})")
+        if report.passed and len(report.warnings) == 0:
+            print("  ✅ 政策合规审计 100% 通过，未发现政策红线违规！\n")
+            return 0
+
+        if report.violations:
+            print(f"\n  ❌ 发现 {len(report.violations)} 处政策红线违规 (BLOCK):")
+            for v in report.violations:
+                print(f"     • [{v.rule_id}] {v.title}")
+                print(f"       详情: {v.detail}")
+                print(f"       建议: {v.remediation}")
+
+        if report.warnings:
+            print(f"\n  ⚠️ 发现 {len(report.warnings)} 处合规关注项 (WARN):")
+            for w in report.warnings:
+                print(f"     • [{w.rule_id}] {w.title}")
+                print(f"       详情: {w.detail}")
+                print(f"       建议: {w.remediation}")
+
+        print()
+        if not report.passed or (len(report.warnings) > 0 and args.strict):
+            return 1
+        return 0
+
+    print("❌ 请指定 policy 子命令: audit, explain, list", file=sys.stderr)
+    return 1
+
+
+# ── Pitfall & Anti-Pattern Inspector (ADR-0194) ──────────────────────────────
+
+
+def cmd_pitfall(args: argparse.Namespace) -> int:
+    action = getattr(args, "pitfall_action", None)
+    inspector = PitfallInspector()
+
+    if action == "explain":
+        p = inspector.explain_pitfall(args.pitfall_id)
+        if not p:
+            print(f"❌ 未找到踩坑条目: {args.pitfall_id}", file=sys.stderr)
+            return 1
+        if args.json:
+            print(json.dumps({
+                "pitfall_id": p.pitfall_id,
+                "title": p.title,
+                "severity": p.severity,
+                "lesson_learned": p.lesson_learned,
+                "safe_recipe": p.safe_pattern_recipe,
+            }, ensure_ascii=False, indent=2))
+            return 0
+        print(f"\n╭─ Agent 踩坑与反模式: {p.pitfall_id} ────────────────────────")
+        print(f"│ 标  题: {p.title}  [严重度: {p.severity}]")
+        print(f"│ 经验教训: {p.lesson_learned}")
+        print(f"│ 规避配方: {p.safe_pattern_recipe}")
+        print("╰─────────────────────────────────────────────────────────────\n")
+        return 0
+
+    if action == "list":
+        pitfalls = inspector.list_pitfalls()
+        if args.json:
+            print(json.dumps([{
+                "pitfall_id": p.pitfall_id,
+                "title": p.title,
+                "severity": p.severity,
+                "lesson_learned": p.lesson_learned,
+            } for p in pitfalls], ensure_ascii=False, indent=2))
+            return 0
+        print(f"\n🕳️ Agent 架构避坑知识库列表 (共 {len(pitfalls)} 条):")
+        for p in pitfalls:
+            print(f"  • [{p.pitfall_id}] [{p.severity}] {p.title}")
+            print(f"    └─ {p.lesson_learned[:80]}...")
+        print()
+        return 0
+
+    if action == "scan":
+        target = Path(args.path).expanduser().resolve()
+        matches: list[Any] = []
+        if target.is_file():
+            res = inspector.scan_file(target)
+            matches.extend(res.matches)
+        elif target.is_dir():
+            for f in target.rglob("*.py"):
+                res = inspector.scan_file(f)
+                matches.extend(res.matches)
+
+        if args.json:
+            print(json.dumps({
+                "target": str(target),
+                "total_matches": len(matches),
+                "passed": len(matches) == 0,
+                "matches": [{
+                    "pitfall_id": m.pitfall_id,
+                    "title": m.title,
+                    "severity": m.severity,
+                    "line": m.line_number,
+                    "snippet": m.matched_snippet,
+                    "lesson": m.lesson,
+                    "recipe": m.recipe,
+                } for m in matches],
+            }, ensure_ascii=False, indent=2))
+            return 1 if (len(matches) > 0 and args.strict) else 0
+
+        print(f"\n🔍 架构避坑扫描: {target}")
+        if not matches:
+            print("  ✅ 扫描完毕，未发现已知架构反模式与踩坑特征。\n")
+            return 0
+
+        print(f"  ⚠️ 发现 {len(matches)} 处潜在踩坑隐患:")
+        for m in matches:
+            print(f"     • [{m.pitfall_id}] L{m.line_number}: {m.matched_snippet}")
+            print(f"       教训: {m.lesson}")
+            print(f"       配方: {m.recipe}")
+        print()
+        if args.strict:
+            return 1
+        return 0
+
+    print("❌ 请指定 pitfall 子命令: scan, list, explain", file=sys.stderr)
     return 1
 
 
@@ -401,7 +601,6 @@ def cmd_patrol(args: argparse.Namespace) -> int:
     from datetime import datetime, timezone
 
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
 
     checks: list[dict[str, Any]] = []
 
@@ -595,7 +794,50 @@ def main(argv: list[str] | None = None) -> int:
     p_facts_template = p_facts_sub.add_parser("template", help="生成标准领域事实 YAML 模板")
     p_facts_template.add_argument("--domain", default="work-weijian", choices=["work-weijian", "work-transfer", "generic"], help="目标领域")
 
+    p_facts_serve = p_facts_sub.add_parser("serve", help="启动 Dual-Plane Truth Canvas Web 事实大盘 (ADR-0194)")
+    p_facts_serve.add_argument("--host", default="127.0.0.1", help="监听地址 (默认 127.0.0.1)")
+    p_facts_serve.add_argument("--port", type=int, default=8765, help="监听端口 (默认 8765)")
+    p_facts_serve.add_argument("--dir", help="自定义事实扫描目录")
+
     p_facts.set_defaults(func=cmd_facts)
+
+    # policy (ADR-0193)
+    p_policy = subparsers.add_parser("policy", help="领域 Policy-as-Code 业务规则与公文审查引擎 (ADR-0193)")
+    p_policy_sub = p_policy.add_subparsers(dest="policy_action", required=True)
+
+    p_policy_audit = p_policy_sub.add_parser("audit", help="对文档、方案或文本进行领域政策红线合规审计")
+    p_policy_audit.add_argument("target", help="目标文档文件路径或输入文本")
+    p_policy_audit.add_argument("--domain", default="auto", choices=["auto", "work-weijian", "work-transfer", "all"], help="业务领域")
+    p_policy_audit.add_argument("--strict", action="store_true", help="存在警告或违规时退出码非 0")
+    p_policy_audit.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_policy_explain = p_policy_sub.add_parser("explain", help="查看指定政策规则详细说明与处置建议")
+    p_policy_explain.add_argument("policy_id", help="政策规则 ID (如 E-POL-WJ-001)")
+    p_policy_explain.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_policy_list = p_policy_sub.add_parser("list", help="列出所有领域 Policy-as-Code 规则")
+    p_policy_list.add_argument("--domain", help="按领域过滤 (work-weijian | work-transfer)")
+    p_policy_list.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_policy.set_defaults(func=cmd_policy)
+
+    # pitfall (ADR-0194)
+    p_pitfall = subparsers.add_parser("pitfall", help="Agent 架构避坑与反模式检测知识库 (ADR-0194)")
+    p_pitfall_sub = p_pitfall.add_subparsers(dest="pitfall_action", required=True)
+
+    p_pitfall_scan = p_pitfall_sub.add_parser("scan", help="扫描代码或目录中的已知架构反模式与踩坑特征")
+    p_pitfall_scan.add_argument("path", nargs="?", default=".", help="扫描路径 (文件或目录)")
+    p_pitfall_scan.add_argument("--strict", action="store_true", help="发现踩坑隐患时退出码非 0")
+    p_pitfall_scan.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_pitfall_list = p_pitfall_sub.add_parser("list", help="列出已知 Agent 避坑条目与经验教训")
+    p_pitfall_list.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_pitfall_explain = p_pitfall_sub.add_parser("explain", help="查看指定避坑条目的教训与安全配方")
+    p_pitfall_explain.add_argument("pitfall_id", help="避坑条目 ID (如 PITFALL-001)")
+    p_pitfall_explain.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_pitfall.set_defaults(func=cmd_pitfall)
 
     # patrol (ADR-0192)
     p_patrol = subparsers.add_parser("patrol", help="全域治理与双平面自动化巡检 (ADR-0192)")
