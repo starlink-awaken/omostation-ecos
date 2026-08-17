@@ -718,6 +718,143 @@ def cmd_patrol(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_intent(args: argparse.Namespace) -> int:
+    from ecos.ssot.compiler.intent_compiler import IntentSpecCompiler
+
+    compiler = IntentSpecCompiler()
+    spec = compiler.compile(args.prompt, domain=args.domain)
+
+    if args.json:
+        print(json.dumps(spec.to_dict(), ensure_ascii=False, indent=2))
+        return 0
+
+    print("\n╭─ 🧠 意图解构与工程规格编译器 (Intent-to-Spec Compiler) ──────────")
+    print(f"│ 原始输入: {spec.raw_prompt}")
+    print(f"│ 推断领域: {spec.detected_domain}")
+    print(f"│ 意图摘要: {spec.intent_summary}")
+    print("├─ 📜 政策红线依赖 (Policy Requirements):")
+    if not spec.policy_requirements:
+        print("│  (无特定政策红线绑定)")
+    for p in spec.policy_requirements:
+        print(f"│  • [{p.rule_id}] [{p.severity}] {p.title}")
+        print(f"│    └─ 依据: {p.binding_reason}")
+    print("├─ 📊 事实真源依赖 (Fact Dependencies):")
+    if not spec.fact_requirements:
+        print("│  (无特定事实实体绑定)")
+    for f in spec.fact_requirements:
+        print(f"│  • {f.entity_pattern} (领域: {f.target_domain}, SLA: {f.max_age_days}天)")
+        print(f"│    └─ 用途: {f.purpose}")
+    print("├─ 👥 多 Agent DAG 拓扑 (Agent DAG Topology):")
+    for a in spec.agent_dag:
+        print(f"│  • [{a.archetype}] {a.role}: {a.responsibility}")
+    if spec.compute_budget:
+        cb = spec.compute_budget
+        print("├─ ⚡️ 算力与 Token 预算分配 (Compute & Token Budget):")
+        print(f"│  • 推荐档位: {cb.recommended_model_tier}")
+        print(f"│  • 预估上下文: ~{cb.estimated_context_tokens} tokens (安全裕量: {int(cb.safe_headroom_ratio*100)}%)")
+        print(f"│  • 本地 Speculative 投机草稿: {'已启用' if cb.speculative_draft_enabled else '未启用'}")
+    print("╰─────────────────────────────────────────────────────────────────\n")
+    return 0
+
+
+def cmd_challenge(args: argparse.Namespace) -> int:
+    from ecos.ssot.compiler.shadow_challenger import ShadowChallenger
+
+    challenger = ShadowChallenger()
+    target_p = Path(args.target).expanduser().resolve() if Path(args.target).is_file() else None
+
+    if target_p and target_p.exists():
+        report = challenger.challenge_file(target_p, domain=args.domain, auto_patch=args.auto_patch)
+    else:
+        report = challenger.challenge_text(args.target, domain=args.domain, auto_patch=args.auto_patch)
+
+    if args.json:
+        print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        return 1 if (not report.passed and args.strict) else 0
+
+    status_icon = "🟢 ALL PASS" if report.passed else "🔴 FLAGGED VULNERABILITIES"
+    print("\n⚡️ ─────────────────────────────────────────────────────────────")
+    print("   影子红蓝对抗审议大盘 (Shadow Challenger Loop)")
+    print(f"   目标: {report.target_name}   状态: {status_icon}   健壮度得分: {report.robustness_score}/100")
+    print("─────────────────────────────────────────────────────────────────")
+
+    if not report.challenges:
+        print("  ✅ 审议通过：未发现重大审计预算、网络安全等保或科技转化法律漏洞。\n")
+        return 0
+
+    print(f"  ⚠️ 影子对抗发现 {len(report.challenges)} 处被攻击风险与合规隐患:")
+    for c in report.challenges:
+        sev_icon = "🔴" if c.severity == "BLOCK" else "🟡"
+        print(f"\n  {sev_icon} [{c.perspective}] [{c.severity}] {c.flaw_title}")
+        print(f"     ⚔️  对抗视角: {c.attack_critique}")
+        print(f"     🛡️  合规配方: {c.patch_prescription}")
+
+    if report.patched_text and args.auto_patch:
+        print("\n  📦 已自动合成增强版合规补丁 (Auto-Patch Generated)")
+        if args.output:
+            out_p = Path(args.output).expanduser().resolve()
+            import os
+            os.makedirs(str(out_p.parent), exist_ok=True)
+            with open(str(out_p), "w", encoding="utf-8") as f:
+                f.write(report.patched_text)
+            print(f"  ✅ 补丁已写入: {out_p}")
+
+    print()
+    if not report.passed and args.strict:
+        return 1
+    return 0
+
+
+def cmd_cartridge(args: argparse.Namespace) -> int:
+    from ecos.ssot.compiler.domain_cartridge import DomainCartridgeManager
+
+    manager = DomainCartridgeManager()
+    action = args.cartridge_action
+
+    if action == "list":
+        cartridges = manager.list_cartridges()
+        if args.json:
+            print(json.dumps([c.to_dict() for c in cartridges], ensure_ascii=False, indent=2))
+            return 0
+        print(f"\n📦 长尾领域卡带工坊列表 (Domain Cartridges, 共 {len(cartridges)} 个):")
+        for c in cartridges:
+            print(f"  • [{c.cartridge_id}] {c.name} (v{c.version})")
+            print(f"    领域: {c.domain} | 作者: {c.author}")
+            print(f"    规则数: {c.policies_count} | SOP 模板数: {c.sops_count}")
+            print(f"    说明: {c.description}")
+        print()
+        return 0
+
+    if action == "export":
+        out_file = args.output
+        try:
+            exported_path = manager.export_cartridge(args.cartridge_id, output_path=out_file)
+            print(f"✅ 领域卡带已成功导出: {exported_path}")
+            return 0
+        except Exception as e:
+            print(f"❌ 导出卡带失败: {e}", file=sys.stderr)
+            return 1
+
+    if action == "validate":
+        target = Path(args.file).expanduser().resolve()
+        ok, errors = manager.validate_cartridge_file(target)
+        if args.json:
+            print(json.dumps({"file": str(target), "valid": ok, "errors": errors}, ensure_ascii=False, indent=2))
+            return 0 if ok else 1
+
+        if ok:
+            print(f"✅ 领域卡带校验通过: {target}")
+            return 0
+        else:
+            print(f"❌ 领域卡带校验失败: {target}")
+            for err in errors:
+                print(f"  • {err}")
+            return 1
+
+    print("❌ 请指定 cartridge 子命令: list, export, validate", file=sys.stderr)
+    return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="ecos-constraint",
@@ -843,6 +980,43 @@ def main(argv: list[str] | None = None) -> int:
     p_pitfall_explain.add_argument("--json", action="store_true", help="以 JSON 输出")
 
     p_pitfall.set_defaults(func=cmd_pitfall)
+
+    # intent (ADR-0195)
+    p_intent = subparsers.add_parser("intent", help="自然语言意图解构与工程规格编译器 (ADR-0195)")
+    p_intent_sub = p_intent.add_subparsers(dest="intent_action", required=True)
+    p_intent_compile = p_intent_sub.add_parser("compile", help="编译自然语言需求为 Policy/Fact/DAG 执行规格")
+    p_intent_compile.add_argument("prompt", help="自然语言需求或意图描述")
+    p_intent_compile.add_argument("--domain", default="auto", help="指定领域 (默认 auto)")
+    p_intent_compile.add_argument("--json", action="store_true", help="以 JSON 输出")
+    p_intent.set_defaults(func=cmd_intent)
+
+    # challenge (ADR-0196)
+    p_challenge = subparsers.add_parser("challenge", help="双 Agent 影子红蓝对抗审议与自动打补丁引擎 (ADR-0196)")
+    p_challenge.add_argument("target", help="待审议的方案、文本或文件路径")
+    p_challenge.add_argument("--domain", default="auto", help="指定领域 (默认 auto)")
+    p_challenge.add_argument("--auto-patch", action="store_true", default=True, help="发现漏洞时自动合成合规补丁 (默认开启)")
+    p_challenge.add_argument("--no-patch", dest="auto_patch", action="store_false", help="仅审查不生成补丁")
+    p_challenge.add_argument("--output", help="将打好补丁的文本保存到指定文件")
+    p_challenge.add_argument("--strict", action="store_true", help="存在重大缺陷时返回非 0 退出码")
+    p_challenge.add_argument("--json", action="store_true", help="以 JSON 输出")
+    p_challenge.set_defaults(func=cmd_challenge)
+
+    # cartridge (ADR-0198)
+    p_cartridge = subparsers.add_parser("cartridge", help="长尾领域治理卡带工坊与包管理器 (ADR-0198)")
+    p_cartridge_sub = p_cartridge.add_subparsers(dest="cartridge_action", required=True)
+
+    p_cartridge_list = p_cartridge_sub.add_parser("list", help="列出内置与已安装的领域卡带")
+    p_cartridge_list.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_cartridge_export = p_cartridge_sub.add_parser("export", help="导出指定领域卡带为 YAML 文件")
+    p_cartridge_export.add_argument("cartridge_id", help="卡带 ID (如 cartridge-weijian-v1)")
+    p_cartridge_export.add_argument("--output", help="输出文件路径")
+
+    p_cartridge_validate = p_cartridge_sub.add_parser("validate", help="校验领域卡带 YAML 完整性与规范")
+    p_cartridge_validate.add_argument("file", help="卡带 YAML 文件路径")
+    p_cartridge_validate.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_cartridge.set_defaults(func=cmd_cartridge)
 
     # patrol (ADR-0192)
     p_patrol = subparsers.add_parser("patrol", help="全域治理与双平面自动化巡检 (ADR-0192)")

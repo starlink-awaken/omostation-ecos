@@ -161,7 +161,7 @@ class PolicyComplianceInspector:
 
         # 2. 卫健委等保与互联互通门禁 (E-POL-WJ-002)
         if any(r.rule_id == "E-POL-WJ-002" for r in applicable_rules):
-            if any(k in text for k in ["临床", "电子病历", "健康档案", "全员人口", "区域平台", "HIS"]):
+            if any(k in text for k in ["临床", "诊疗", "电子病历", "健康档案", "全员人口", "区域平台", "HIS", "公有云"]):
                 if not any(k in text for k in ["等保三级", "三级等保", "等保3级", "第三级"]):
                     rule = self._policies["E-POL-WJ-002"]
                     violations.append(

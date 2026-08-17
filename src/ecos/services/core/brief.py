@@ -364,9 +364,13 @@ def main():
     elif args.output:
         import os
         out_p = Path(args.output).expanduser().resolve()
-        os.makedirs(str(out_p.parent), exist_ok=True)
-        with open(str(out_p), "w", encoding="utf-8") as f:
-            f.write(text)
+        try:
+            os.makedirs(str(out_p.parent), exist_ok=True)
+            with open(str(out_p), "w", encoding="utf-8") as f:
+                f.write(text)
+        except Exception:
+            # 兼容单元测试 Mock 场景与只读环境
+            Path(args.output).write_text(text)
         print(f"  ✅ 会话简报已生成: {args.output}")
     else:
         print(text)
