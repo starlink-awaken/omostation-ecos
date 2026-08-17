@@ -5,6 +5,11 @@ from __future__ import annotations
 from ecos.ssot.compiler.ast_inspector import AstDependencyInspector
 from ecos.ssot.compiler.command_inspector import CommandSafetyInspector
 from ecos.ssot.compiler.context_synthesizer import MOFContextSynthesizer
+from ecos.ssot.compiler.fact_inspector import (
+    FactInspectionResult,
+    FactInspector,
+    FactValidationError,
+)
 from ecos.ssot.compiler.models import (
     CompiledPolicySet,
     EvaluationResult,
@@ -23,6 +28,9 @@ __all__ = [
     "CommandSafetyInspector",
     "CompiledPolicySet",
     "EvaluationResult",
+    "FactInspectionResult",
+    "FactInspector",
+    "FactValidationError",
     "MOFContextSynthesizer",
     "MOFPolicyCompiler",
     "PathBoundaryInspector",

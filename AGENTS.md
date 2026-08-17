@@ -22,8 +22,14 @@
 
     ```bash
     uv sync
-uv run pytest "tests/" -q
-uv run ruff check "src/"
+    uv run pytest "tests/" -q
+    uv run ruff check "src/" tests/
+    # MOF 动态约束与双平面事实治理 (ADR-0190 / ADR-0191 / ADR-0192)
+    uv run ecos-constraint explain <rule_id>
+    uv run ecos-constraint audit [path]
+    uv run ecos-constraint documents sync-clients [--mode {install,check,render}]
+    uv run ecos-constraint facts validate [path]
+    uv run ecos-constraint patrol [--strict]
     ```
 
     ## Key Files
