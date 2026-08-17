@@ -21,7 +21,20 @@ from ecos.ssot.compiler.mof_policy_compiler import (
     MOFPolicyCompiler,
     compile_l0_constraints,
 )
-from ecos.ssot.compiler.path_inspector import PathBoundaryInspector
+from ecos.ssot.compiler.pitfall_inspector import (
+    PitfallAuditResult,
+    PitfallInspector,
+    PitfallMatch,
+)
+from ecos.ssot.compiler.policy_inspector import (
+    PolicyAuditReport,
+    PolicyComplianceInspector,
+    PolicyViolation,
+)
+from ecos.ssot.compiler.truth_canvas_server import (
+    TruthCanvasRequestHandler,
+    create_truth_canvas_server,
+)
 
 __all__ = [
     "AstDependencyInspector",
@@ -34,8 +47,16 @@ __all__ = [
     "MOFContextSynthesizer",
     "MOFPolicyCompiler",
     "PathBoundaryInspector",
+    "PitfallAuditResult",
+    "PitfallInspector",
+    "PitfallMatch",
+    "PolicyAuditReport",
+    "PolicyComplianceInspector",
     "PolicyRule",
+    "PolicyViolation",
     "RuleSeverity",
+    "TruthCanvasRequestHandler",
     "ViolationReport",
     "compile_l0_constraints",
+    "create_truth_canvas_server",
 ]
