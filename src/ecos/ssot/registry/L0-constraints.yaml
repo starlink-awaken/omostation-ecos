@@ -33,10 +33,10 @@ constraints:
 - applies_to:
   - L0
   - I0
-  description: BOS URI 路由表注册必须提供 domain 和 cross_references.realized_by 元数据
+  description: BOS URI 路由表注册必须提供 domain 和 cross_references.realized_by 元数据 (仅 active 服务, deprecated 豁免)
   dimension: X1
   id: CS-10
-  rule: bos_route.domain != null and bos_route.cross_references.realized_by != null
+  rule: bos_route.status == 'deprecated' or (bos_route.domain != null and bos_route.cross_references.realized_by != null)
   type: required
   violation: 'E-L0-012: BOS URI 元数据缺失'
 - applies_to:
