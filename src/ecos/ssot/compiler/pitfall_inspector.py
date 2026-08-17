@@ -138,10 +138,10 @@ class PitfallInspector:
         p = Path(file_path).expanduser().resolve()
         if not p.exists() or not p.is_file():
             return PitfallAuditResult(target=str(p), passed=True, matches=[])
-        # 跳过测试文件、自身及第三方依赖
+        # 跳过测试文件、自身、提示词合成器模板及第三方依赖
         if any(part in p.parts for part in (".venv", "node_modules", ".git", "tests", "test")):
             return PitfallAuditResult(target=str(p), passed=True, matches=[])
-        if p.name in ("pitfall_inspector.py", "test_policy_canvas_and_pitfall.py"):
+        if p.name in ("pitfall_inspector.py", "test_policy_canvas_and_pitfall.py", "context_synthesizer.py"):
             return PitfallAuditResult(target=str(p), passed=True, matches=[])
 
         try:

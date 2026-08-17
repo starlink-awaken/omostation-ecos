@@ -362,7 +362,11 @@ def main():
             )
         )
     elif args.output:
-        Path(args.output).write_text(text)
+        import os
+        out_p = Path(args.output).expanduser().resolve()
+        os.makedirs(str(out_p.parent), exist_ok=True)
+        with open(str(out_p), "w", encoding="utf-8") as f:
+            f.write(text)
         print(f"  ✅ 会话简报已生成: {args.output}")
     else:
         print(text)

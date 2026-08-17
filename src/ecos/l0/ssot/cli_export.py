@@ -130,7 +130,11 @@ def cmd_export(args):
         return 1
 
     if out:
-        Path(out).write_text(output, encoding="utf-8")
+        import os
+        out_p = Path(out).expanduser().resolve()
+        os.makedirs(str(out_p.parent), exist_ok=True)
+        with open(str(out_p), "w", encoding="utf-8") as f:
+            f.write(output)
         print(f"✅ 已导出: {out} ({len(output)} 字节)")
     else:
         print(output)

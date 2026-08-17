@@ -118,8 +118,13 @@ def cmd_graph(args):
 </body>
 </html>"""
 
+        import os
+
         out_path = args.output or str(Path(args.dir) / f"{args.type}.html")
-        Path(out_path).write_text(html, encoding="utf-8")
+        out_p = Path(out_path).expanduser().resolve()
+        os.makedirs(str(out_p.parent), exist_ok=True)
+        with open(str(out_p), "w", encoding="utf-8") as f:
+            f.write(html)
         print(f"✅ HTML 已生成: {out_path}")
         print("   用浏览器打开即可查看")
     else:
