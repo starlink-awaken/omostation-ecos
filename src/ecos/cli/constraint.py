@@ -487,15 +487,11 @@ def cmd_patrol(args: argparse.Namespace) -> int:
     output_path = getattr(args, "output", None)
     if output_path:
         out_p = Path(output_path).expanduser().resolve()
-        out_p.parent.mkdir(parents=True, exist_ok=True)
-        out_p.write_text(report_md, encoding="utf-8")
-    else:
-        default_rep = Path(f".omo/reports/hygiene/patrol-{date_str}.md")
-        try:
-            default_rep.parent.mkdir(parents=True, exist_ok=True)
-            default_rep.write_text(report_md, encoding="utf-8")
-        except Exception:
-            pass
+        import os
+
+        os.makedirs(str(out_p.parent), exist_ok=True)
+        with open(str(out_p), "w", encoding="utf-8") as f:
+            f.write(report_md)
 
     if args.json:
         print(
