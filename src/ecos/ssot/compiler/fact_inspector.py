@@ -198,9 +198,9 @@ class FactInspector:
             # 跳过虚拟环境或配置
             if any(part in yf.parts for part in (".venv", "venv", ".git", "__pycache__", "node_modules")):
                 continue
-            # 严格审计 _entities/facts/ 目录、facts/ 目录或名称以 fact 开头的文件
-            is_fact_location = "_entities" in yf.parts or "facts" in yf.parts
-            is_fact_naming = yf.name.lower().startswith("fact") or yf.stem.lower().startswith("fact")
+            # 严格审计 _entities/facts/ 目录或名称以 fact- 开头的文件
+            is_fact_location = ("_entities" in yf.parts and "facts" in yf.parts) or (yf.parent.name == "facts")
+            is_fact_naming = yf.name.lower().startswith("fact-") or yf.stem.lower().startswith("fact-")
             if is_fact_location or is_fact_naming:
                 res = self.inspect_file(yf)
                 if domain is None or res.domain == domain:
