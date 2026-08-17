@@ -7,10 +7,12 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 from ecos.ssot.compiler.ast_inspector import AstDependencyInspector
 from ecos.ssot.compiler.command_inspector import CommandSafetyInspector
 from ecos.ssot.compiler.context_synthesizer import MOFContextSynthesizer
+from ecos.ssot.compiler.fact_inspector import FactInspector
 from ecos.ssot.compiler.mof_policy_compiler import MOFPolicyCompiler
 from ecos.ssot.compiler.path_inspector import PathBoundaryInspector
 
@@ -278,45 +280,242 @@ def cmd_documents(args: argparse.Namespace) -> int:
         return 0
 
     elif action == "sync-clients":
+        mode = getattr(args, "mode", "install")
+        if args.dry_run:
+            mode = "render"
         if not args.json:
-            print("\n🔄 执行 Documents 多客户端配置 SSOT 同步...")
-        scripts = [
-            "bin/gac/documents-claude-desktop-config.py",
-            "bin/gac/documents-zed-profile.py",
-            "bin/gac/documents-codex-profile.py",
-            "bin/gac/documents-zcode-config.py",
+            print(f"\n🔄 执行 Documents 多客户端配置 SSOT 同步 [模式: {mode}]...")
+        scripts_with_modes = [
+            ("bin/gac/documents-claude-desktop-config.py", mode),
+            ("bin/gac/documents-zed-profile.py", mode),
+            ("bin/gac/documents-codex-profile.py", mode),
+            ("bin/gac/documents-zcode-config.py", mode),
+            ("bin/gac/documents-chatgpt-tunnel.py", "render" if mode == "render" else "check"),
         ]
         results = []
-        for script in scripts:
+        for script, script_mode in scripts_with_modes:
             p = Path(script)
             if not p.exists():
                 results.append({"script": script, "status": "NOT_FOUND"})
                 continue
             if args.dry_run:
-                results.append({"script": script, "status": "DRY_RUN_OK"})
+                results.append({"script": script, "status": "DRY_RUN_OK", "mode": script_mode})
             else:
                 try:
-                    res = subprocess.run([sys.executable, str(p)], capture_output=True, text=True, timeout=10)
+                    res = subprocess.run([sys.executable, str(p), script_mode], capture_output=True, text=True, timeout=10)
+                    status = "OK" if res.returncode == 0 else "FAILED"
                     results.append(
                         {
                             "script": script,
-                            "status": "OK" if res.returncode == 0 else "FAILED",
-                            "output": res.stdout.strip()[:100],
+                            "status": status,
+                            "mode": script_mode,
+                            "output": res.stdout.strip()[:150] or res.stderr.strip()[:150],
                         }
                     )
                 except Exception as e:
-                    results.append({"script": script, "status": "ERROR", "detail": str(e)})
+                    results.append({"script": script, "status": "ERROR", "mode": script_mode, "detail": str(e)})
 
         if args.json:
             print(json.dumps({"sync_results": results}, ensure_ascii=False, indent=2))
         else:
             for r in results:
-                print(f"  • {r['script']}: {r['status']}")
+                print(f"  • {r['script']} ({r.get('mode', mode)}): {r['status']}")
+                if r.get("output"):
+                    print(f"    └─ {r['output']}")
             print("✅ 客户端配置同步完成\n")
         return 0
 
     print("❌ 请指定 documents 子命令: guardrail, audit, sync-clients", file=sys.stderr)
     return 1
+
+
+# ── Facts Subcommand Suite (ADR-0192 / E-DOC-004) ──────────────────────────
+
+
+def cmd_facts(args: argparse.Namespace) -> int:
+    action = getattr(args, "facts_action", None)
+    inspector = FactInspector(max_age_days=getattr(args, "max_age_days", 14))
+
+    if action == "template":
+        tpl = inspector.generate_template(domain=args.domain)
+        print(tpl)
+        return 0
+
+    elif action == "validate":
+        target = Path(args.path).expanduser().resolve()
+        results = []
+        if target.is_file():
+            results = [inspector.inspect_file(target)]
+        else:
+            results = inspector.inspect_directory(target, domain=args.domain if args.domain != "all" else None)
+
+        total_files = len(results)
+        valid_count = sum(1 for r in results if r.passed)
+        stale_count = sum(1 for r in results if r.passed and not r.is_fresh)
+        invalid_count = sum(1 for r in results if not r.passed)
+
+        if args.json:
+            print(
+                json.dumps(
+                    {
+                        "target": str(target),
+                        "files_scanned": total_files,
+                        "valid_facts_count": valid_count,
+                        "stale_facts_count": stale_count,
+                        "violations_count": invalid_count,
+                        "results": [r.to_dict() for r in results],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return 1 if (invalid_count > 0 or (stale_count > 0 and args.strict)) else 0
+
+        print(f"\n📊 领域事实真源 Schema 校验: 扫描 {total_files} 个文件")
+        print(f"  ✅ 合格: {valid_count}   ⚠️ 需保鲜: {stale_count}   ❌ 违规: {invalid_count}\n")
+
+        for r in results:
+            if not r.passed:
+                print(f"  ❌ [SCHEMA 违规] {r.file_path}")
+                for err in r.errors:
+                    print(f"     └─ [{err.field}] {err.message}")
+            elif not r.is_fresh:
+                print(f"  ⚠️ [保鲜预警] {r.entity_id or r.file_path}: {r.freshness_warning}")
+            else:
+                print(f"  ✅ [合格] {r.entity_id} ({r.domain}) — {r.name or '未命名'}")
+
+        print()
+        if invalid_count > 0 or (stale_count > 0 and args.strict):
+            print("⛔ 事实校验未通过")
+            return 1
+        return 0
+
+    print("❌ 请指定 facts 子命令: validate, template", file=sys.stderr)
+    return 1
+
+
+# ── Automated Hygiene Patrol Suite (ADR-0192) ──────────────────────────────
+
+
+def cmd_patrol(args: argparse.Namespace) -> int:
+    from datetime import datetime, timezone
+
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
+
+    checks: list[dict[str, Any]] = []
+
+    # 1. MOF SSOT 规则漂移
+    compiler = MOFPolicyCompiler()
+    policy_set = compiler.compile()
+    drift_ok = compiler.constraints_path.exists()
+    checks.append(
+        {
+            "name": "MOF SSOT Policy Compiler",
+            "category": "Governance Core",
+            "passed": drift_ok,
+            "summary": f"编译 {len(policy_set)} 条约束规则 (v{policy_set.version})",
+        }
+    )
+
+    # 2. Documents 双平面纯净度
+    path_inspector = PathBoundaryInspector()
+    docs_violations = 0
+    docs_path = Path("~/Documents").expanduser().resolve()
+    if docs_path.exists():
+        for p in docs_path.rglob("*"):
+            if p.is_file():
+                res = path_inspector.inspect_write(str(p))
+                if not res.passed:
+                    docs_violations += len(res.violations)
+    checks.append(
+        {
+            "name": "Documents Dual-Plane Cleanliness",
+            "category": "ADR-0191 Plane Separation",
+            "passed": docs_violations == 0,
+            "summary": f"发现 {docs_violations} 处运行时/脚本违规",
+        }
+    )
+
+    # 3. 领域事实 Schema 校验
+    fact_inspector = FactInspector()
+    fact_results = fact_inspector.inspect_directory(Path("."))
+    fact_invalid = sum(1 for r in fact_results if not r.passed)
+    checks.append(
+        {
+            "name": "Domain Truth Facts Schema & Freshness",
+            "category": "ADR-0192 SSOT Truth",
+            "passed": fact_invalid == 0,
+            "summary": f"扫描 {len(fact_results)} 处事实实体，{fact_invalid} 处违规",
+        }
+    )
+
+    all_passed = all(c["passed"] for c in checks)
+
+    # 生成 Markdown 巡检报告
+    report_lines = [
+        "# 🛡️ 全域治理与双平面自动化巡检报告",
+        "",
+        f"> **巡检时间**: {now_iso}  ",
+        f"> **巡检状态**: {'✅ ALL PASS (全域健康)' if all_passed else '⚠️ VIOLATIONS DETECTED (存在风险)'}  ",
+        "",
+        "## 📊 巡检检查项明细",
+        "",
+        "| 检查项 | 分类 | 状态 | 详情摘要 |",
+        "| :--- | :--- | :---: | :--- |",
+    ]
+    for c in checks:
+        status_icon = "✅ PASS" if c["passed"] else "❌ FAIL"
+        report_lines.append(f"| {c['name']} | {c['category']} | {status_icon} | {c['summary']} |")
+
+    report_lines.extend(
+        [
+            "",
+            "## 🚀 处置与自愈指引",
+            "",
+            "- **规则漂移**: 运行 `ecos-constraint drift` 与 `ecos-constraint compile` 同步规则。",
+            "- **Documents 污染**: 运行 `ecos-constraint documents audit` 定位违规文件并清理。",
+            "- **事实实体违规**: 运行 `ecos-constraint facts validate` 修复元数据缺失或更新保鲜期。",
+            "- **客户端配置**: 运行 `ecos-constraint documents sync-clients` 重新下发 IDE 挂载。",
+            "",
+            "---",
+            "*Report generated by ECOS Automated Governance Engine (ADR-0192)*",
+        ]
+    )
+    report_md = "\n".join(report_lines)
+
+    output_path = getattr(args, "output", None)
+    if output_path:
+        out_p = Path(output_path).expanduser().resolve()
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        out_p.write_text(report_md, encoding="utf-8")
+    else:
+        default_rep = Path(f".omo/reports/hygiene/patrol-{date_str}.md")
+        try:
+            default_rep.parent.mkdir(parents=True, exist_ok=True)
+            default_rep.write_text(report_md, encoding="utf-8")
+        except Exception:
+            pass
+
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "patrol_timestamp": now_iso,
+                    "all_passed": all_passed,
+                    "summary": f"{sum(1 for c in checks if c['passed'])}/{len(checks)} passed",
+                    "checks": checks,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+    else:
+        print(report_md)
+
+    if not all_passed and args.strict:
+        return 1
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -380,10 +579,34 @@ def main(argv: list[str] | None = None) -> int:
     p_doc_audit.add_argument("--json", action="store_true", help="以 JSON 输出")
 
     p_doc_sync = p_docs_sub.add_parser("sync-clients", help="同步生成多客户端 Documents MCP 配置")
+    p_doc_sync.add_argument("--mode", choices=["install", "check", "render"], default="install", help="执行模式")
     p_doc_sync.add_argument("--dry-run", action="store_true", help="仅预检不实际写文件")
     p_doc_sync.add_argument("--json", action="store_true", help="以 JSON 输出")
 
     p_docs.set_defaults(func=cmd_documents)
+
+    # facts (ADR-0192)
+    p_facts = subparsers.add_parser("facts", help="领域事实真源 Schema 校验与 SOP 模板引擎 (ADR-0192)")
+    p_facts_sub = p_facts.add_subparsers(dest="facts_action", required=True)
+
+    p_facts_validate = p_facts_sub.add_parser("validate", help="校验事实实体 Schema 规范与 14 天保鲜 SLA")
+    p_facts_validate.add_argument("path", nargs="?", default=".", help="审计文件或目录路径")
+    p_facts_validate.add_argument("--domain", default="all", help="过滤领域名称")
+    p_facts_validate.add_argument("--max-age-days", type=int, default=14, help="最大允许的保鲜天数")
+    p_facts_validate.add_argument("--strict", action="store_true", help="保鲜预警或违规时退出码非 0")
+    p_facts_validate.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_facts_template = p_facts_sub.add_parser("template", help="生成标准领域事实 YAML 模板")
+    p_facts_template.add_argument("--domain", default="work-weijian", choices=["work-weijian", "work-transfer", "generic"], help="目标领域")
+
+    p_facts.set_defaults(func=cmd_facts)
+
+    # patrol (ADR-0192)
+    p_patrol = subparsers.add_parser("patrol", help="全域治理与双平面自动化巡检 (ADR-0192)")
+    p_patrol.add_argument("--output", help="输出 Markdown 报告文件路径")
+    p_patrol.add_argument("--strict", action="store_true", help="发现任何未通过项时退出码非 0")
+    p_patrol.add_argument("--json", action="store_true", help="以 JSON 输出")
+    p_patrol.set_defaults(func=cmd_patrol)
 
     args = parser.parse_args(argv)
     return args.func(args)
@@ -391,3 +614,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
