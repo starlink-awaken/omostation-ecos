@@ -13,56 +13,31 @@ license = {text = "MIT"}
 dependencies = [
     "pyyaml>=6.0.3",
     "requests>=2.34.2",
-    "beautifulsoup4>=4.12",
-    "jinja2>=3.1",
+    "pydantic>=2.13.4",
+    "httpx>=0.28.1",
     "fastmcp>=3.4.2",
 ]
 
 [project.optional-dependencies]
-dashboard = []  # Dashboard/MOF BOS features use HTTP/MCP or fallback instead of direct agora import
+dashboard = []
 
 [project.scripts]
-# SSB — 签名链操作 (通过 cockpit ssb 调用)
-# 入口已收敛: ecoss-ssb → cockpit ssb
-
-# Dashboard / Scheduler / Governance
 ecos-dashboard = "ecos.cli.dashboard:main"
 ecos-scheduler = "ecos.cli.scheduler:main"
 ecos-watchdog = "ecos.cli.watchdog:main"
 ecos-constraint = "ecos.cli.constraint:main"
-
-# Workflow engine (通过 cockpit workflow 调用)
-# 入口已收敛: ecos-workflow → cockpit workflow
-
-# MCP Server (含 workflow MCP tools) — 由 Agora gateway 管理
 ecos-mcp = "ecos.mcp_server:main"
-
-# Phase 0 (BOS Contract Linter 30-day plan) — P110+ added
-# File: src/ecos/ssot/tools/mof_contract_lint.py (underscore for Python import)
-# CLI name: mof-contract-lint (hyphen for CLI convention, matches other mof-*.py tools)
-# Validates bos-services.yaml: internal transport module/function existence,
-# required_scopes (omo.scopes fallback), action naming convention
 mof-contract-lint = "ecos.ssot.tools.mof_contract_lint:main"
-
-# Phase 3 (Autonomy) — P110+ added
-# File: src/ecos/ssot/agents/mof_contract_agent.py
-# Subcommands: analyze <uri>, diagnose <error_log>
-# Reuses Phase 2 v0.2 explain_error() for 4 IDs
-# Real subprocess --json output (NOT mock, Phase 3 C2 adjustment)
 mof-contract-agent = "ecos.ssot.agents.mof_contract_agent:main"
-
-# ADR-0181 Phase 3 — logical partition import gate
 ecos-partition-lint = "ecos.ssot.tools.partition_import_lint:main"
 
-# Phase 3 agent entry-points (Phase 3 C1: use ecos.agents NOT qoder.agents)
-# Standard setuptools entry-points for AI agent discovery
 [project.entry-points."ecos.agents"]
 mof-contract-agent = "ecos.ssot.agents.mof_contract_agent:main"
 
-# MOF 元模型工具链 (通过 cockpit mof 调用)
-# 入口已收敛: mof → cockpit mof
+[tool.ruff]
+target-version = "py313"
+line-length = 120
 
-# 稳定 ruff 配置 — 默认规则集 (E/F/W), 不收紧已有代码
 [tool.ruff.lint]
 ignore = ["E501", "E402", "F403"]
 per-file-ignores = {"tests/*" = ["N806"]}
@@ -81,8 +56,7 @@ asyncio_mode = "auto"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.3",
-    "pytest-asyncio>=1.0.0",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.16",
 ]

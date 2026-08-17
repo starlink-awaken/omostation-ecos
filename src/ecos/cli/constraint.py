@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -207,6 +208,95 @@ def cmd_list(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── Documents Subcommand Suite (ADR-0191) ──────────────────────────────────
+
+
+def cmd_documents(args: argparse.Namespace) -> int:
+    action = getattr(args, "doc_action", None)
+    if action == "guardrail":
+        synthesizer = MOFContextSynthesizer()
+        prompt = synthesizer.synthesize_documents_guardrails(domain_id=args.domain)
+        print(prompt)
+        return 0
+
+    elif action == "audit":
+        target_path = Path(args.path).expanduser().resolve()
+        path_inspector = PathBoundaryInspector()
+        violations: list[dict] = []
+        files_scanned = 0
+
+        if target_path.exists():
+            for p in target_path.rglob("*"):
+                if p.is_file():
+                    files_scanned += 1
+                    res = path_inspector.inspect_write(str(p), caller_domain=args.domain)
+                    if not res.passed:
+                        for v in res.violations:
+                            violations.append({"path": str(p), **v.to_dict()})
+
+        if args.json:
+            print(json.dumps({
+                "target": str(target_path),
+                "files_scanned": files_scanned,
+                "violations_count": len(violations),
+                "violations": violations,
+            }, ensure_ascii=False, indent=2))
+            return 1 if violations and args.strict else 0
+
+        print(f"\n📑 Documents 双平面纯净度审计: 扫描 {files_scanned} 个文件，发现 {len(violations)} 处违规")
+        for v in violations:
+            print(f"  ❌ [{v['severity'].upper()}] {v['violation_code']} at {v['path']}")
+            print(f"     {v['summary']} — {v['detail']}")
+            print(f"     👉 修复方案: {v['remediation']}")
+            if v.get("suggested_patch"):
+                print(f"     💡 建议:\n        {v['suggested_patch']}")
+            print()
+
+        if violations and args.strict:
+            print("⛔ Documents 审计失败 (存在双平面违规)")
+            return 1
+        return 0
+
+    elif action == "sync-clients":
+        if not args.json:
+            print("\n🔄 执行 Documents 多客户端配置 SSOT 同步...")
+        scripts = [
+            "bin/gac/documents-claude-desktop-config.py",
+            "bin/gac/documents-zed-profile.py",
+            "bin/gac/documents-codex-profile.py",
+            "bin/gac/documents-zcode-config.py",
+        ]
+        results = []
+        for script in scripts:
+            p = Path(script)
+            if not p.exists():
+                results.append({"script": script, "status": "NOT_FOUND"})
+                continue
+            if args.dry_run:
+                results.append({"script": script, "status": "DRY_RUN_OK"})
+            else:
+                try:
+                    res = subprocess.run([sys.executable, str(p)], capture_output=True, text=True, timeout=10)
+                    results.append({
+                        "script": script,
+                        "status": "OK" if res.returncode == 0 else "FAILED",
+                        "output": res.stdout.strip()[:100],
+                    })
+                except Exception as e:
+                    results.append({"script": script, "status": "ERROR", "detail": str(e)})
+
+        if args.json:
+            print(json.dumps({"sync_results": results}, ensure_ascii=False, indent=2))
+        else:
+            for r in results:
+                print(f"  • {r['script']}: {r['status']}")
+            print("✅ 客户端配置同步完成\n")
+        return 0
+
+    print("❌ 请指定 documents 子命令: guardrail, audit, sync-clients", file=sys.stderr)
+    return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="ecos-constraint",
@@ -253,6 +343,25 @@ def main(argv: list[str] | None = None) -> int:
     p_list.add_argument("--dimension", help="按维度过滤 (如 dependency, command_safety)")
     p_list.add_argument("--json", action="store_true", help="以 JSON 输出")
     p_list.set_defaults(func=cmd_list)
+
+    # documents (ADR-0191)
+    p_docs = subparsers.add_parser("documents", help="Workspace x Documents 双平面治理工具组 (ADR-0191)")
+    p_docs_sub = p_docs.add_subparsers(dest="doc_action", required=True)
+
+    p_doc_guard = p_docs_sub.add_parser("guardrail", help="生成 Documents 双平面提示词约束块")
+    p_doc_guard.add_argument("--domain", default="work-weijian", help="领域名称")
+
+    p_doc_audit = p_docs_sub.add_parser("audit", help="扫描 Documents 目录中的脚本与依赖违规")
+    p_doc_audit.add_argument("path", nargs="?", default="~/Documents", help="Documents 扫描根路径")
+    p_doc_audit.add_argument("--domain", default="default", help="调用方领域")
+    p_doc_audit.add_argument("--strict", action="store_true", help="发现违规返回非 0 退出码")
+    p_doc_audit.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_doc_sync = p_docs_sub.add_parser("sync-clients", help="同步生成多客户端 Documents MCP 配置")
+    p_doc_sync.add_argument("--dry-run", action="store_true", help="仅预检不实际写文件")
+    p_doc_sync.add_argument("--json", action="store_true", help="以 JSON 输出")
+
+    p_docs.set_defaults(func=cmd_documents)
 
     args = parser.parse_args(argv)
     return args.func(args)

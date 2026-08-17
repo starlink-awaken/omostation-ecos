@@ -45,6 +45,22 @@ class MOFContextSynthesizer:
         lines.append("</mof_architecture_guardrails>")
         return "\n".join(lines)
 
+    def synthesize_documents_guardrails(
+        self,
+        domain_id: str = "default",
+    ) -> str:
+        """Generate dual-plane Documents guardrail block (ADR-0191) for Agent System Prompt."""
+        lines = [
+            f'<documents_dual_plane_guardrails domain="{domain_id}">',
+            "# Workspace × Documents 双平面治理契约 (ADR-0191):",
+            "1. [E-DOC-001: REQUIRED] 禁止在 Documents 业务域写入可执行脚本 (.py/.sh/.js/.ts)，脚本必须落地在 Workspace/scripts 或 projects/。",
+            "2. [E-DOC-002: REQUIRED] 禁止在 Documents 内容域引入依赖/缓存环境 (node_modules/.venv/__pycache__)，保持内容面 100% 纯净。",
+            "3. [E-DOC-003: REQUIRED] Documents 仅作为事实资产平面 (What & Truth)，物理事实以 _entities/facts/ 为 SSOT，执行状态以 Workspace/.omo/state 为准。",
+            "4. [E-DOC-004: REQUIRED] 跨域调用必须经由 bos:// 统一寻址或 Cockpit Documents MCP 只读网关，严禁裸写其他域私有目录。",
+            "</documents_dual_plane_guardrails>",
+        ]
+        return "\n".join(lines)
+
     def get_domain_summary(self, domain: str = "default", layer: str = "L3") -> dict[str, Any]:
         """Return raw dictionary digest of active policies for the domain."""
         rules = self.compiler.get_domain_rules(domain, layer)
@@ -75,7 +91,8 @@ class MOFContextSynthesizer:
 
         if target is None:
             # Check built-in fallback explanations
-            if identifier.upper() in {"E-L0-002", "X1-C02"}:
+            id_up = identifier.upper()
+            if id_up in {"E-L0-002", "X1-C02"}:
                 return {
                     "rule_id": "X1-C02",
                     "violation_code": "E-L0-002",
@@ -89,7 +106,7 @@ class MOFContextSynthesizer:
                         "valid": "from agora.client import get_service_client\nclient = get_service_client('bos://governance/mof/auth')",
                     },
                 }
-            elif identifier.upper() in {"E-CMD-001", "X1-C01"}:
+            elif id_up in {"E-CMD-001", "X1-C01"}:
                 return {
                     "rule_id": "X1-C01",
                     "violation_code": "E-CMD-001",
@@ -101,6 +118,34 @@ class MOFContextSynthesizer:
                     "code_recipe": {
                         "invalid": "pip install --user flask",
                         "valid": "uv add flask",
+                    },
+                }
+            elif id_up in {"E-DOC-001", "X4-C15"}:
+                return {
+                    "rule_id": "X4-C15",
+                    "violation_code": "E-DOC-001",
+                    "severity": "required",
+                    "dimension": "dual_plane_boundary",
+                    "summary": "禁止在 Documents 内容域写入可执行脚本",
+                    "motivation": "严格保持 Documents 作为纯文档与事实资产的纯净性，执行代码归入 Workspace (ADR-0191)",
+                    "remediation": "将执行代码与脚本移至 Workspace/scripts/ 或 projects/ 对应工程子目录",
+                    "code_recipe": {
+                        "invalid": "# Write to ~/Documents/@工作文档/卫健委/fetch_data.py",
+                        "valid": "# Write to ~/Workspace/scripts/weijian/fetch_data.py\n# Reference via SOP in ~/Documents/@工作文档/卫健委/_knowledge/SOP.md",
+                    },
+                }
+            elif id_up in {"E-DOC-002", "X4-C16"}:
+                return {
+                    "rule_id": "X4-C16",
+                    "violation_code": "E-DOC-002",
+                    "severity": "required",
+                    "dimension": "dual_plane_boundary",
+                    "summary": "禁止在 Documents 引入运行时依赖/缓存环境",
+                    "motivation": "防止 node_modules、.venv、__pycache__ 污染知识资产与多端云同步 (ADR-0191)",
+                    "remediation": "使用 Workspace 统一环境与 uv/npm 管理，禁止在 Documents 内 init 虚拟环境",
+                    "code_recipe": {
+                        "invalid": "cd ~/Documents/@家庭生活/app && npm install # generates node_modules in Documents",
+                        "valid": "cd ~/Workspace/projects/family-hub/apps/dashboard && uv run npm install",
                     },
                 }
             return None
