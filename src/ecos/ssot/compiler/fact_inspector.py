@@ -113,7 +113,53 @@ class FactInspector:
                 errors=[FactValidationError(field="root", message="事实文件根节点必须为映射字典", code="E-FACT-NOT-DICT")],
             )
 
-        # 1. 必填字段校验
+        # 模式 A: 聚合事实表列表格式 (List-based Fact Table, 如 00-budget.yaml)
+        if isinstance(data.get("facts"), list):
+            fact_items = data.get("facts", [])
+            latest_date_str = None
+            for idx, item in enumerate(fact_items):
+                if not isinstance(item, dict):
+                    errors.append(FactValidationError(field=f"facts[{idx}]", message="事实项必须为字典", code="E-FACT-INVALID-ITEM"))
+                    continue
+                if "fid" not in item:
+                    errors.append(FactValidationError(field=f"facts[{idx}].fid", message="缺少事实 ID (fid)", code="E-FACT-MISSING-FID"))
+                v_at = item.get("verified_at")
+                if v_at:
+                    if not latest_date_str or str(v_at) > str(latest_date_str):
+                        latest_date_str = str(v_at)
+
+            age_days = 0
+            is_fresh = True
+            freshness_warning = None
+            if latest_date_str:
+                try:
+                    dt_str = latest_date_str.split("T")[0]
+                    updated_date = datetime.strptime(dt_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    age_days = max(0, (datetime.now(timezone.utc) - updated_date).days)
+                    if age_days > self.max_age_days:
+                        is_fresh = False
+                        freshness_warning = f"聚合事实最新验证时间为 {dt_str} (距今 {age_days} 天)，超过 {self.max_age_days} 天保鲜 SLA"
+                except ValueError:
+                    pass
+
+            domain = "work-weijian" if "卫健委" in p.parts else "general"
+            return FactInspectionResult(
+                file_path=str(p),
+                passed=len(errors) == 0,
+                entity_id=p.stem,
+                domain=domain,
+                name=f"聚合事实表: {p.name} ({len(fact_items)} 条)",
+                owner="规划信息科" if "卫健委" in p.parts else "系统",
+                lifecycle_stage="OPERATIONAL",
+                updated_at=latest_date_str or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                age_days=age_days,
+                is_fresh=is_fresh,
+                freshness_warning=freshness_warning,
+                errors=errors,
+                facts_data={"total_facts": len(fact_items)},
+            )
+
+        # 模式 B: 单实体真源格式 (Single Entity Fact SSOT, 如 fact-wj-2026-001.yaml)
         for req_field in self.REQUIRED_METADATA_FIELDS:
             if req_field not in data or data[req_field] is None:
                 errors.append(
@@ -195,7 +241,9 @@ class FactInspector:
 
         yaml_files = list(root.rglob("*.yaml")) + list(root.rglob("*.yml"))
         for yf in sorted(yaml_files):
-            # 跳过虚拟环境或配置
+            # 跳过虚拟环境、配置及私有索引文件
+            if yf.name.startswith("_"):
+                continue
             if any(part in yf.parts for part in (".venv", "venv", ".git", "__pycache__", "node_modules")):
                 continue
             # 严格审计 _entities/facts/ 目录或名称以 fact- 开头的文件
