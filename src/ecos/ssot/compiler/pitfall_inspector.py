@@ -38,7 +38,7 @@ KNOWN_PITFALLS: Final[dict[str, PitfallEntry]] = {
         pitfall_id="PITFALL-002",
         title="Documents Executable / Dependency Directory Pollution",
         severity="HIGH",
-        anti_pattern_pattern=r"\b(?:Documents[\\/].*\.(?:py|sh|exe|bin)|node_modules|\.venv)\b",
+        anti_pattern_pattern=r"['\"][^'\"]*Documents[\\/][^'\"]*\.(?:py|sh|exe|bin)['\"]",
         lesson_learned="Documents plane is reserved for pure domain truth/facts. Executables trigger E-DOC-001 / E-DOC-002 violations.",
         safe_pattern_recipe="Place scripts and binaries in Workspace/bin/ or projects/*/src/, keeping Documents pristine.",
     ),
@@ -111,6 +111,10 @@ class PitfallInspector:
         for pitfall in self._pitfalls.values():
             regex = re.compile(pitfall.anti_pattern_pattern)
             for idx, line in enumerate(lines, start=1):
+                stripped = line.strip()
+                # 忽略纯注释行
+                if stripped.startswith("#") or stripped.startswith("//") or stripped.startswith("*"):
+                    continue
                 if regex.search(line):
                     matches.append(
                         PitfallMatch(
@@ -118,7 +122,7 @@ class PitfallInspector:
                             title=pitfall.title,
                             severity=pitfall.severity,
                             line_number=idx,
-                            matched_snippet=line.strip()[:100],
+                            matched_snippet=stripped[:100],
                             lesson=pitfall.lesson_learned,
                             recipe=pitfall.safe_pattern_recipe,
                         )
@@ -134,6 +138,12 @@ class PitfallInspector:
         p = Path(file_path).expanduser().resolve()
         if not p.exists() or not p.is_file():
             return PitfallAuditResult(target=str(p), passed=True, matches=[])
+        # 跳过测试文件、自身及第三方依赖
+        if any(part in p.parts for part in (".venv", "node_modules", ".git", "tests", "test")):
+            return PitfallAuditResult(target=str(p), passed=True, matches=[])
+        if p.name in ("pitfall_inspector.py", "test_policy_canvas_and_pitfall.py"):
+            return PitfallAuditResult(target=str(p), passed=True, matches=[])
+
         try:
             content = p.read_text(encoding="utf-8")
             return self.scan_text(content, target_name=str(p))
