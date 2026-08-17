@@ -198,8 +198,8 @@ class FactInspector:
             # 跳过虚拟环境或配置
             if any(part in yf.parts for part in (".venv", "venv", ".git", "__pycache__", "node_modules")):
                 continue
-            # 只审计 _entities/facts/ 目录或明确为 fact 的文件
-            if "_entities" in yf.parts or "facts" in yf.name.lower() or "fact" in yf.parts:
+            # 审计 _entities/facts/ 目录、facts/ 目录或名称含 fact 的文件
+            if "_entities" in yf.parts or "facts" in yf.parts or "fact" in yf.name.lower():
                 res = self.inspect_file(yf)
                 if domain is None or res.domain == domain:
                     results.append(res)
