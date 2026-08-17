@@ -345,7 +345,12 @@ def cmd_facts(args: argparse.Namespace) -> int:
         return 0
 
     elif action == "validate":
-        target = Path(args.path).expanduser().resolve()
+        raw_path = getattr(args, "path", ".")
+        target = Path(raw_path).expanduser().resolve()
+        docs_facts_dir = Path("~/Documents/@工作文档").expanduser().resolve()
+        if (raw_path == "." or raw_path is None) and docs_facts_dir.exists():
+            target = docs_facts_dir
+
         results = []
         if target.is_file():
             results = [inspector.inspect_file(target)]
