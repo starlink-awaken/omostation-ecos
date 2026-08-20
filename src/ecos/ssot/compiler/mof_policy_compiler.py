@@ -20,13 +20,12 @@ from ecos.ssot.compiler.path_inspector import PathBoundaryInspector
 
 def _find_constraints_file() -> Path:
     current = Path(__file__).resolve()
+    ecos_root = current.parents[4]  # .../src/ecos/ssot/compiler -> ecos repo root
     # Try derived v2 (137 rules) first, then base constraints.yaml (36 families)
     candidates = [
-        current.parents[3] / ".omo" / "_derived" / "l0-constraints.v2.yaml",
-        Path.home() / "Workspace" / "projects" / "ecos" / ".omo" / "_derived" / "l0-constraints.v2.yaml",
+        ecos_root / ".omo" / "_derived" / "l0-constraints.v2.yaml",
         current.parents[2] / "l0" / "constraints.yaml",
-        Path.home() / "Workspace" / "projects" / "ecos" / "src" / "ecos" / "l0" / "constraints.yaml",
-        Path.home() / "Documents" / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml",
+        ecos_root / "src" / "ecos" / "l0" / "constraints.yaml",
     ]
     for c in candidates:
         if c.exists():
