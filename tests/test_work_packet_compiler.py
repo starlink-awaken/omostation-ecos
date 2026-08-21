@@ -63,6 +63,33 @@ FIXED_PACKET = {
 }
 
 
+def _instruction_binding(**overrides):
+    binding = {
+        "instruction_ref": "repo://docs/operations/blueprint-agent-instruction-pack-v1.md",
+        "instruction_version": "blueprint-agent-instruction-pack/v1",
+        "content_digest": "sha256:" + "b" * 64,
+        "instruction_profile": "executor",
+    }
+    binding.update(overrides)
+    return binding
+
+
+def _v2_packet(**overrides):
+    packet = dict(
+        FIXED_PACKET,
+        schema_version="work-packet/v2",
+        spec_binding={
+            "spec_ref": "registry://spec/demo",
+            "spec_version": "1.0.0",
+            "content_digest": "sha256:" + "a" * 64,
+            "decision_ref": "ADR-0001",
+        },
+        instruction_binding=_instruction_binding(),
+    )
+    packet.update(overrides)
+    return packet
+
+
 class TestCanonicalize:
     def test_v1_fixed_hash_is_unchanged(self):
         assert compute_packet_hash(canonicalize(FIXED_PACKET)) == (
@@ -70,17 +97,9 @@ class TestCanonicalize:
         )
 
     def test_v2_binding_is_invariant(self):
-        packet = dict(
-            FIXED_PACKET,
-            schema_version="work-packet/v2",
-            spec_binding={
-                "spec_ref": "registry://spec/demo",
-                "spec_version": "1.0.0",
-                "content_digest": "sha256:" + "a" * 64,
-                "decision_ref": "ADR-0001",
-            },
-        )
-        assert "spec_binding" in canonicalize(packet)
+        canonical = canonicalize(_v2_packet())
+        assert "spec_binding" in canonical
+        assert "instruction_binding" in canonical
 
     @pytest.mark.parametrize(
         "binding",
@@ -92,14 +111,56 @@ class TestCanonicalize:
         ],
     )
     def test_v2_rejects_missing_or_invalid_binding(self, binding):
-        packet = dict(FIXED_PACKET, schema_version="work-packet/v2")
+        packet = _v2_packet()
         if binding is not None:
             packet["spec_binding"] = binding
+        else:
+            packet.pop("spec_binding")
         with pytest.raises(ValueError, match="spec_binding"):
             canonicalize(packet)
 
+    @pytest.mark.parametrize(
+        "binding",
+        [
+            None,
+            {},
+            {"instruction_ref": "repo://pack"},
+            _instruction_binding(extra="unexpected"),
+            _instruction_binding(instruction_ref=" "),
+            _instruction_binding(content_digest="sha256:" + "B" * 64),
+            _instruction_binding(content_digest="bad"),
+            _instruction_binding(instruction_profile="verifier"),
+        ],
+    )
+    def test_v2_rejects_missing_or_invalid_instruction_binding(self, binding):
+        packet = _v2_packet()
+        if binding is None:
+            packet.pop("instruction_binding")
+        else:
+            packet["instruction_binding"] = binding
+        with pytest.raises(ValueError, match="instruction_binding"):
+            canonicalize(packet)
+
+    @pytest.mark.parametrize(
+        ("field", "value"),
+        [
+            ("instruction_ref", "repo://docs/operations/other.md"),
+            ("instruction_version", "blueprint-agent-instruction-pack/v2"),
+            ("content_digest", "sha256:" + "c" * 64),
+        ],
+    )
+    def test_instruction_binding_fields_change_packet_hash(self, field, value):
+        base = _v2_packet()
+        changed = _v2_packet(instruction_binding=_instruction_binding(**{field: value}))
+        assert compute_packet_hash(canonicalize(base)) != compute_packet_hash(canonicalize(changed))
+
     def test_v1_rejects_binding(self):
         packet = dict(FIXED_PACKET, spec_binding={})
+        with pytest.raises(ValueError, match="work-packet/v1"):
+            canonicalize(packet)
+
+    def test_v1_rejects_instruction_binding(self):
+        packet = dict(FIXED_PACKET, instruction_binding=_instruction_binding())
         with pytest.raises(ValueError, match="work-packet/v1"):
             canonicalize(packet)
 

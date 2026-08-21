@@ -213,6 +213,28 @@ WorkPacket:
     spec_binding:
       type: SpecificationBinding
       description: 绑定唯一 Specification；v2 必须完整声明
+    instruction_binding:
+      type: map
+      description: 绑定 worker 必须逐字读取并确认的不可变 Instruction Pack；v2 必须完整声明
+      additionalProperties: false
+      required: [instruction_ref, instruction_version, content_digest, instruction_profile]
+      properties:
+        instruction_ref:
+          type: string
+          description: Instruction Pack 的 repo URI
+          pattern: '^\S(?:.*\S)?$'
+        instruction_version:
+          type: string
+          description: Instruction Pack 契约版本
+          pattern: '^\S(?:.*\S)?$'
+        content_digest:
+          type: string
+          description: Instruction Pack 原始字节的 SHA-256
+          pattern: '^sha256:[a-f0-9]{64}$'
+        instruction_profile:
+          type: enum
+          description: 初始仅允许执行器 profile
+          values: [executor]
     description:
       type: string
       description: 详细描述
@@ -278,6 +300,15 @@ WorkPacket:
         equals: work-packet/v2
       required:
         - spec_binding
+        - instruction_binding
+
+  conditionalForbiddances:
+    - when:
+        property: schema_version
+        equals: work-packet/v1
+      forbidden:
+        - spec_binding
+        - instruction_binding
 
   relationConstraints:
     can_be_source_of:

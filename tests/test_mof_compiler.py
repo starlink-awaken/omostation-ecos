@@ -340,14 +340,39 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
     doc = json.loads(artifacts["json-schema"])
     work_packet = doc["$defs"]["WorkPacket"]
     assert work_packet["properties"]["spec_binding"] == {"$ref": "#/$defs/SpecificationBinding"}
+    instruction_binding = work_packet["properties"]["instruction_binding"]
+    assert instruction_binding["type"] == "object"
+    assert set(instruction_binding["required"]) == {
+        "instruction_ref",
+        "instruction_version",
+        "content_digest",
+        "instruction_profile",
+    }
+    assert instruction_binding["additionalProperties"] is False
+    assert instruction_binding["properties"]["content_digest"]["pattern"] == "^sha256:[a-f0-9]{64}$"
+    assert instruction_binding["properties"]["instruction_profile"]["enum"] == ["executor"]
     assert work_packet["allOf"] == [
         {
             "if": {
                 "properties": {"schema_version": {"const": "work-packet/v2"}},
                 "required": ["schema_version"],
             },
-            "then": {"required": ["spec_binding"]},
-        }
+            "then": {"required": ["spec_binding", "instruction_binding"]},
+        },
+        {
+            "if": {
+                "properties": {"schema_version": {"const": "work-packet/v1"}},
+                "required": ["schema_version"],
+            },
+            "then": {
+                "not": {
+                    "anyOf": [
+                        {"required": ["spec_binding"]},
+                        {"required": ["instruction_binding"]},
+                    ]
+                }
+            },
+        },
     ]
     binding = doc["$defs"]["SpecificationBinding"]
     assert set(binding["required"]) == {
@@ -366,37 +391,68 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
         module = importlib.util.module_from_spec(spec)
         sys.modules["mof_control_models_v2"] = module
         spec.loader.exec_module(module)
-        with pytest.raises(ValueError, match="spec_binding"):
-            module.WorkPacket.model_validate(
-                {
-                    "packet_id": "WP-V2-MISSING",
-                    "schema_version": "work-packet/v2",
-                    "blueprint_ref": "blueprint://test",
-                    "wave": "W1",
-                    "bet_id": "BET-TEST",
-                    "strategic_outcome": "test",
-                    "objective": "test",
-                    "why_now": "test",
-                    "status": "active",
-                    "authority": {},
-                    "scope": {},
-                    "dependencies": {},
-                    "acceptance": {},
-                    "budgets": {},
-                    "rollback": {},
-                    "circuit_breaker": {},
-                    "assignment": {},
-                }
-            )
+        packet = {
+            "packet_id": "WP-V2-MISSING",
+            "schema_version": "work-packet/v2",
+            "blueprint_ref": "blueprint://test",
+            "wave": "W1",
+            "bet_id": "BET-TEST",
+            "strategic_outcome": "test",
+            "objective": "test",
+            "why_now": "test",
+            "status": "active",
+            "authority": {},
+            "scope": {},
+            "dependencies": {},
+            "acceptance": {},
+            "budgets": {},
+            "rollback": {},
+            "circuit_breaker": {},
+            "assignment": {},
+            "spec_binding": {
+                "spec_ref": "registry://spec/demo",
+                "spec_version": "1.0.0",
+                "content_digest": "sha256:" + "a" * 64,
+                "decision_ref": "ADR-0001",
+            },
+        }
+        with pytest.raises(ValueError, match="instruction_binding"):
+            module.WorkPacket.model_validate(packet)
+        valid_binding = {
+            "instruction_ref": "repo://docs/operations/blueprint-agent-instruction-pack-v1.md",
+            "instruction_version": "blueprint-agent-instruction-pack/v1",
+            "content_digest": "sha256:" + "b" * 64,
+            "instruction_profile": "executor",
+        }
+        module.WorkPacket.model_validate({**packet, "instruction_binding": valid_binding})
+        for invalid in (
+            {**valid_binding, "extra": "unexpected"},
+            {**valid_binding, "content_digest": "bad"},
+            {**valid_binding, "instruction_profile": "verifier"},
+        ):
+            with pytest.raises(ValueError, match="instruction_binding"):
+                module.WorkPacket.model_validate({**packet, "instruction_binding": invalid})
+        legacy_packet = {**packet, "schema_version": "work-packet/v1"}
+        legacy_packet.pop("spec_binding")
+        module.WorkPacket.model_validate(legacy_packet)
+        with pytest.raises(ValueError, match="instruction_binding"):
+            module.WorkPacket.model_validate({**legacy_packet, "instruction_binding": valid_binding})
 
     zod = artifacts["zod"]
     assert "export const SpecificationBinding = z.object({" in zod
     assert "export const WorkPacket = z.object({" in zod
+    assert "instruction_binding: z.object({" in zod
+    assert 'instruction_profile: z.enum(["executor"])' in zod
+    assert "}).strict().optional()" in zod
     assert ").superRefine((value, ctx) => {" in zod
     assert 'value.schema_version === "work-packet/v2"' in zod
     assert 'path: ["spec_binding"]' in zod
+    assert 'path: ["instruction_binding"]' in zod
+    assert "instruction_binding is forbidden when schema_version equals work-packet/v1" in zod
     sqlite_ddl = artifacts["sqlite"]
     assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "spec_binding" IS NOT NULL)' in sqlite_ddl
+    assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "instruction_binding" IS NOT NULL)' in sqlite_ddl
+    assert 'CHECK ("schema_version" <> \'work-packet/v1\' OR "instruction_binding" IS NULL)' in sqlite_ddl
 
 
 def test_sqlite_ddl_executes(compiler: MofCompiler) -> None:

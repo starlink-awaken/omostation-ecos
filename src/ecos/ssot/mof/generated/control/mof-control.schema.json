@@ -4408,8 +4408,37 @@
           },
           "then": {
             "required": [
-              "spec_binding"
+              "spec_binding",
+              "instruction_binding"
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "schema_version": {
+                "const": "work-packet/v1"
+              }
+            },
+            "required": [
+              "schema_version"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "spec_binding"
+                  ]
+                },
+                {
+                  "required": [
+                    "instruction_binding"
+                  ]
+                }
+              ]
+            }
           }
         }
       ],
@@ -4450,6 +4479,39 @@
         "description": {
           "description": "\u8be6\u7ec6\u63cf\u8ff0",
           "type": "string"
+        },
+        "instruction_binding": {
+          "additionalProperties": false,
+          "description": "\u7ed1\u5b9a worker \u5fc5\u987b\u9010\u5b57\u8bfb\u53d6\u5e76\u786e\u8ba4\u7684\u4e0d\u53ef\u53d8 Instruction Pack\uff1bv2 \u5fc5\u987b\u5b8c\u6574\u58f0\u660e",
+          "properties": {
+            "content_digest": {
+              "description": "Instruction Pack \u539f\u59cb\u5b57\u8282\u7684 SHA-256",
+              "pattern": "^sha256:[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "instruction_profile": {
+              "enum": [
+                "executor"
+              ]
+            },
+            "instruction_ref": {
+              "description": "Instruction Pack \u7684 repo URI",
+              "pattern": "^\\S(?:.*\\S)?$",
+              "type": "string"
+            },
+            "instruction_version": {
+              "description": "Instruction Pack \u5951\u7ea6\u7248\u672c",
+              "pattern": "^\\S(?:.*\\S)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "instruction_ref",
+            "instruction_version",
+            "content_digest",
+            "instruction_profile"
+          ],
+          "type": "object"
         },
         "objective": {
           "description": "\u53ef\u6d4b\u91cf\u76ee\u6807 (non-empty)",
