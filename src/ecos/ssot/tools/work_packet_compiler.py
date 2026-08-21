@@ -60,6 +60,7 @@ INVARIANT_FIELDS = (
     "circuit_breaker",
     "assignment",
     "spec_binding",
+    "instruction_binding",
 )
 
 PLATFORM_HEADERS = {
@@ -209,6 +210,7 @@ def canonicalize(packet: dict[str, Any]) -> str:
         packet = packet["WorkPacket"]
     version = packet.get("schema_version")
     binding = packet.get("spec_binding")
+    instruction_binding = packet.get("instruction_binding")
     if version == "work-packet/v2":
         if not isinstance(binding, dict) or set(binding) != {
             "spec_ref",
@@ -221,8 +223,27 @@ def canonicalize(packet: dict[str, Any]) -> str:
             raise ValueError("spec_binding fields must be non-empty strings")
         if not SHA256_RE.fullmatch(binding["content_digest"]):
             raise ValueError("spec_binding.content_digest must match sha256:<64 lowercase hex>")
-    elif version == "work-packet/v1" and binding is not None:
-        raise ValueError("work-packet/v1 does not accept spec_binding")
+        if not isinstance(instruction_binding, dict) or set(instruction_binding) != {
+            "instruction_ref",
+            "instruction_version",
+            "content_digest",
+            "instruction_profile",
+        }:
+            raise ValueError("work-packet/v2 requires complete instruction_binding")
+        if not all(
+            isinstance(instruction_binding[key], str) and instruction_binding[key].strip()
+            for key in instruction_binding
+        ):
+            raise ValueError("instruction_binding fields must be non-empty strings")
+        if not SHA256_RE.fullmatch(instruction_binding["content_digest"]):
+            raise ValueError("instruction_binding.content_digest must match sha256:<64 lowercase hex>")
+        if instruction_binding["instruction_profile"] != "executor":
+            raise ValueError("instruction_binding.instruction_profile must be executor")
+    elif version == "work-packet/v1":
+        if binding is not None:
+            raise ValueError("work-packet/v1 does not accept spec_binding")
+        if instruction_binding is not None:
+            raise ValueError("work-packet/v1 does not accept instruction_binding")
     invariant_fields = {key: packet[key] for key in INVARIANT_FIELDS if key in packet and packet[key] is not None}
     return json.dumps(invariant_fields, sort_keys=True, separators=(",", ":"))
 

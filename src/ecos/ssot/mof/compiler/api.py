@@ -102,6 +102,8 @@ class M2Property:
     items_type: str | None = None
     ref_target: str | None = None
     enum_values: tuple[str, ...] | None = None
+    inline_properties: tuple[M2Property, ...] = field(default_factory=tuple)
+    closed_map: bool = False
     required: bool = False
 
 
@@ -221,6 +223,30 @@ def _parse_property(name: str, spec: dict, required: bool, model_names: set[str]
         if not values:
             raise CompilerError(f"{path.name}: property '{name}': enum type requires explicit values")
         enum_values = tuple(str(v) for v in values)
+    inline_properties: tuple[M2Property, ...] = ()
+    closed_map = ptype == "map" and spec.get("additionalProperties") is False
+    if closed_map:
+        raw_properties = spec.get("properties")
+        raw_required = spec.get("required") or []
+        if not isinstance(raw_properties, dict) or not raw_properties:
+            raise CompilerError(f"{path.name}: property '{name}': closed map requires properties")
+        if not isinstance(raw_required, list):
+            raise CompilerError(f"{path.name}: property '{name}': required must be a list")
+        required_names = {str(child_name) for child_name in raw_required}
+        unknown_required = required_names - {str(child_name) for child_name in raw_properties}
+        if unknown_required:
+            raise CompilerError(
+                f"{path.name}: property '{name}': required references unknown properties {sorted(unknown_required)}"
+            )
+        parsed_children: list[M2Property] = []
+        for child_name, child_spec in raw_properties.items():
+            if not isinstance(child_spec, dict):
+                raise CompilerError(f"{path.name}: property '{name}.{child_name}' must be a mapping")
+            child_name = str(child_name)
+            parsed_children.append(
+                _parse_property(child_name, child_spec, child_name in required_names, model_names, path)
+            )
+        inline_properties = tuple(parsed_children)
     return M2Property(
         name=name,
         type=ptype,
@@ -230,6 +256,8 @@ def _parse_property(name: str, spec: dict, required: bool, model_names: set[str]
         items_type=items_type,
         ref_target=ref_target,
         enum_values=enum_values,
+        inline_properties=inline_properties,
+        closed_map=closed_map,
         required=required,
     )
 

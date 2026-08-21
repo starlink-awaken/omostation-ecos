@@ -99,6 +99,17 @@ def _prop_json_schema(prop: "M2Property", compiled: set[str]) -> dict:
         return {"type": "array", "items": items_spec}
     if ptype == "enum":
         return {"enum": list(prop.enum_values or [])}
+    if ptype == "map" and prop.inline_properties:
+        spec = {
+            "type": "object",
+            "properties": {child.name: _prop_json_schema(child, compiled) for child in prop.inline_properties},
+            "required": [child.name for child in prop.inline_properties if child.required],
+        }
+        if prop.closed_map:
+            spec["additionalProperties"] = False
+        if prop.description:
+            spec["description"] = prop.description
+        return spec
     spec: dict = {"type": _JSON_TYPES.get(ptype, "string")}
     if ptype in ("date", "datetime"):
         spec["format"] = "date-time" if ptype == "datetime" else "date"
@@ -257,6 +268,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
         '"""Pydantic v2 models compiled deterministically from W1 M2 contracts."""',
         "from __future__ import annotations",
         "",
+        "import re",
         "from datetime import date, datetime",
         "from typing import Any, Literal",
         "",
@@ -280,6 +292,41 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                     if kwargs
                     else f"    {field_name}: {py_type} | None = None"
                 )
+        inline_maps = [p for p in s.properties if p.type == "map" and p.inline_properties]
+        if inline_maps:
+            lines.extend(
+                [
+                    "",
+                    '    @model_validator(mode="after")',
+                    "    def _enforce_inline_map_contracts(self):",
+                ]
+            )
+            for prop in inline_maps:
+                field_name = _py_field_name(prop.name)
+                lines.append(f"        if self.{field_name} is not None:")
+                if prop.closed_map:
+                    allowed = sorted(child.name for child in prop.inline_properties)
+                    lines.append(f"            if set(self.{field_name}) != set({allowed!r}):")
+                    lines.append(f'                raise ValueError("{prop.name} must contain exactly {allowed!r}")')
+                for child in prop.inline_properties:
+                    child_expr = f'self.{field_name}.get({json.dumps(child.name)})'
+                    if child.required:
+                        lines.append(f"            if {child_expr} is None:")
+                        lines.append(f'                raise ValueError("{prop.name}.{child.name} is required")')
+                    if child.type == "string":
+                        lines.append(f"            if not isinstance({child_expr}, str):")
+                        lines.append(f'                raise ValueError("{prop.name}.{child.name} must be a string")')
+                    elif child.type == "enum":
+                        lines.append(f"            if {child_expr} not in {list(child.enum_values or ())!r}:")
+                        lines.append(
+                            f'                raise ValueError("{prop.name}.{child.name} has an invalid value")'
+                        )
+                    if child.pattern:
+                        lines.append(f"            if re.fullmatch({json.dumps(child.pattern)}, {child_expr}) is None:")
+                        lines.append(
+                            f'                raise ValueError("{prop.name}.{child.name} has an invalid format")'
+                        )
+            lines.append("        return self")
         if s.conditional_requirements:
             lines.extend(
                 [
@@ -326,6 +373,15 @@ def _zod_type(prop: "M2Property", compiled: set[str]) -> str:
             compiled,
         )
         return f"z.array({inner})"
+    if ptype == "map" and prop.inline_properties:
+        fields: list[str] = []
+        for child in prop.inline_properties:
+            expression = _zod_type(child, compiled)
+            if not child.required:
+                expression += ".optional()"
+            fields.append(f"    {child.name}: {expression},")
+        suffix = ".strict()" if prop.closed_map else ""
+        return "z.object({\n" + "\n".join(fields) + "\n  })" + suffix
     return _zod_scalar(ptype, None, prop.enum_values, prop.pattern, compiled)
 
 

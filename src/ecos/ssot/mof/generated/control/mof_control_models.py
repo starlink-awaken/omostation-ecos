@@ -4,6 +4,7 @@
 """Pydantic v2 models compiled deterministically from W1 M2 contracts."""
 from __future__ import annotations
 
+import re
 from datetime import date, datetime
 from typing import Any, Literal
 
@@ -774,13 +775,45 @@ risk controls derived from the execution-control blueprint §7.1."""
     circuit_breaker: dict[str, Any] = Field(..., description="\u81ea\u52a8\u4e2d\u65ad\u6761\u4ef6")
     assignment: dict[str, Any] = Field(..., description="\u6d3e\u5de5\u7ea6\u675f (WorkPacket \u7ea7\u6a21\u677f; Assignment \u5b9e\u4f8b\u5316\u65f6\u590d\u5236)")
     spec_binding: SpecificationBinding | None = Field(None, description="\u7ed1\u5b9a\u552f\u4e00 Specification\uff1bv2 \u5fc5\u987b\u5b8c\u6574\u58f0\u660e")
+    instruction_binding: dict[str, Any] | None = Field(None, description="\u7ed1\u5b9a worker \u5fc5\u987b\u9010\u5b57\u8bfb\u53d6\u5e76\u786e\u8ba4\u7684\u4e0d\u53ef\u53d8 Instruction Pack\uff1bv2 \u5fc5\u987b\u5b8c\u6574\u58f0\u660e")
     description: str | None = Field(None, description="\u8be6\u7ec6\u63cf\u8ff0")
     tags: list[str] | None = Field(None, description="\u5206\u7c7b\u6807\u7b7e")
+
+    @model_validator(mode="after")
+    def _enforce_inline_map_contracts(self):
+        if self.instruction_binding is not None:
+            if set(self.instruction_binding) != set(['content_digest', 'instruction_profile', 'instruction_ref', 'instruction_version']):
+                raise ValueError("instruction_binding must contain exactly ['content_digest', 'instruction_profile', 'instruction_ref', 'instruction_version']")
+            if self.instruction_binding.get("instruction_ref") is None:
+                raise ValueError("instruction_binding.instruction_ref is required")
+            if not isinstance(self.instruction_binding.get("instruction_ref"), str):
+                raise ValueError("instruction_binding.instruction_ref must be a string")
+            if re.fullmatch("^\\S(?:.*\\S)?$", self.instruction_binding.get("instruction_ref")) is None:
+                raise ValueError("instruction_binding.instruction_ref has an invalid format")
+            if self.instruction_binding.get("instruction_version") is None:
+                raise ValueError("instruction_binding.instruction_version is required")
+            if not isinstance(self.instruction_binding.get("instruction_version"), str):
+                raise ValueError("instruction_binding.instruction_version must be a string")
+            if re.fullmatch("^\\S(?:.*\\S)?$", self.instruction_binding.get("instruction_version")) is None:
+                raise ValueError("instruction_binding.instruction_version has an invalid format")
+            if self.instruction_binding.get("content_digest") is None:
+                raise ValueError("instruction_binding.content_digest is required")
+            if not isinstance(self.instruction_binding.get("content_digest"), str):
+                raise ValueError("instruction_binding.content_digest must be a string")
+            if re.fullmatch("^sha256:[a-f0-9]{64}$", self.instruction_binding.get("content_digest")) is None:
+                raise ValueError("instruction_binding.content_digest has an invalid format")
+            if self.instruction_binding.get("instruction_profile") is None:
+                raise ValueError("instruction_binding.instruction_profile is required")
+            if self.instruction_binding.get("instruction_profile") not in ['executor']:
+                raise ValueError("instruction_binding.instruction_profile has an invalid value")
+        return self
 
     @model_validator(mode="after")
     def _enforce_conditional_requirements(self):
         if self.schema_version == "work-packet/v2" and self.spec_binding is None:
             raise ValueError("spec_binding is required when schema_version equals work-packet/v2")
+        if self.schema_version == "work-packet/v2" and self.instruction_binding is None:
+            raise ValueError("instruction_binding is required when schema_version equals work-packet/v2")
         return self
 
 class Workflow(BaseModel):

@@ -707,11 +707,20 @@ export const WorkPacket = z.object({
   circuit_breaker: z.record(z.string(), z.unknown()),
   assignment: z.record(z.string(), z.unknown()),
   spec_binding: z.lazy(() => SpecificationBinding).optional(),
+  instruction_binding: z.object({
+    instruction_ref: z.string().regex(new RegExp("^\\S(?:.*\\S)?$")),
+    instruction_version: z.string().regex(new RegExp("^\\S(?:.*\\S)?$")),
+    content_digest: z.string().regex(new RegExp("^sha256:[a-f0-9]{64}$")),
+    instruction_profile: z.enum(["executor"]),
+  }).strict().optional(),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
 }).superRefine((value, ctx) => {
   if (value.schema_version === "work-packet/v2" && value.spec_binding === undefined) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["spec_binding"], message: "spec_binding is required when schema_version equals work-packet/v2" });
+  }
+  if (value.schema_version === "work-packet/v2" && value.instruction_binding === undefined) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["instruction_binding"], message: "instruction_binding is required when schema_version equals work-packet/v2" });
   }
 });
 
