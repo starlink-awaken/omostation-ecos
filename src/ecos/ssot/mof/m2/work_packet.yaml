@@ -302,6 +302,14 @@ WorkPacket:
         - spec_binding
         - instruction_binding
 
+  conditionalForbiddances:
+    - when:
+        property: schema_version
+        equals: work-packet/v1
+      forbidden:
+        - spec_binding
+        - instruction_binding
+
   relationConstraints:
     can_be_source_of:
       - Assignment

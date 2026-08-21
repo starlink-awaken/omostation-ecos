@@ -46,11 +46,12 @@ from ecos.ssot.mof.compiler.emitters import (
 
 __all__ = [
     "ARTIFACT_CLASSES",
-    "M2Property",
+    "CompilerError",
+    "M2ConditionalForbiddance",
     "M2ConditionalRequirement",
+    "M2Property",
     "M2Schema",
     "MofCompiler",
-    "CompilerError",
 ]
 
 M2_DIR_DEFAULT = Path(__file__).resolve().parents[1] / "m2"
@@ -117,6 +118,15 @@ class M2ConditionalRequirement:
 
 
 @dataclass(frozen=True)
+class M2ConditionalForbiddance:
+    """Forbid fields when one discriminator has an exact value."""
+
+    property_name: str
+    equals: str
+    forbidden_names: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class M2Schema:
     """Parsed M2 contract — the intermediate representation of one type."""
 
@@ -128,6 +138,7 @@ class M2Schema:
     state_machine: tuple[tuple[str, tuple[str, ...]], ...] = field(default_factory=tuple)
     validation_rules: tuple[dict, ...] = field(default_factory=tuple)
     conditional_requirements: tuple[M2ConditionalRequirement, ...] = field(default_factory=tuple)
+    conditional_forbiddances: tuple[M2ConditionalForbiddance, ...] = field(default_factory=tuple)
 
     @property
     def required_names(self) -> tuple[str, ...]:
@@ -336,6 +347,33 @@ def _parse_conditional_requirements(
     return tuple(parsed)
 
 
+def _parse_conditional_forbiddances(
+    body: dict, properties: tuple[M2Property, ...], path: Path
+) -> tuple[M2ConditionalForbiddance, ...]:
+    raw_forbiddances = body.get("conditionalForbiddances") or []
+    if not isinstance(raw_forbiddances, list):
+        raise CompilerError(f"{path.name}: 'conditionalForbiddances' must be a list")
+    property_names = {prop.name for prop in properties}
+    parsed: list[M2ConditionalForbiddance] = []
+    for index, raw in enumerate(raw_forbiddances):
+        if not isinstance(raw, dict) or not isinstance(raw.get("when"), dict):
+            raise CompilerError(f"{path.name}: conditional forbiddance {index} must contain 'when'")
+        when = raw["when"]
+        property_name = str(when.get("property") or "").strip()
+        equals = str(when.get("equals") or "").strip()
+        forbidden = raw.get("forbidden")
+        if not property_name or not equals or not isinstance(forbidden, list) or not forbidden:
+            raise CompilerError(f"{path.name}: conditional forbiddance {index} is incomplete")
+        forbidden_names = tuple(str(name).strip() for name in forbidden)
+        unknown = ({property_name} | set(forbidden_names)) - property_names
+        if unknown or any(not name for name in forbidden_names):
+            raise CompilerError(
+                f"{path.name}: conditional forbiddance {index} references unknown properties {sorted(unknown)}"
+            )
+        parsed.append(M2ConditionalForbiddance(property_name, equals, forbidden_names))
+    return tuple(parsed)
+
+
 def load_m2_dir(m2_dir: Path) -> list[M2Schema]:
     """Load every M2 YAML file in ``m2_dir`` via a deterministic two-pass load.
 
@@ -381,6 +419,7 @@ def load_m2_dir(m2_dir: Path) -> list[M2Schema]:
                 state_machine=_parse_state_machine(body.get("stateMachine") or {}),
                 validation_rules=tuple(body.get("validationRules") or []),
                 conditional_requirements=_parse_conditional_requirements(body, properties, path),
+                conditional_forbiddances=_parse_conditional_forbiddances(body, properties, path),
             )
         )
     return schemas

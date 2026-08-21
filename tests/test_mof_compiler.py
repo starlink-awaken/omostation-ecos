@@ -358,7 +358,21 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
                 "required": ["schema_version"],
             },
             "then": {"required": ["spec_binding", "instruction_binding"]},
-        }
+        },
+        {
+            "if": {
+                "properties": {"schema_version": {"const": "work-packet/v1"}},
+                "required": ["schema_version"],
+            },
+            "then": {
+                "not": {
+                    "anyOf": [
+                        {"required": ["spec_binding"]},
+                        {"required": ["instruction_binding"]},
+                    ]
+                }
+            },
+        },
     ]
     binding = doc["$defs"]["SpecificationBinding"]
     assert set(binding["required"]) == {
@@ -418,6 +432,11 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
         ):
             with pytest.raises(ValueError, match="instruction_binding"):
                 module.WorkPacket.model_validate({**packet, "instruction_binding": invalid})
+        legacy_packet = {**packet, "schema_version": "work-packet/v1"}
+        legacy_packet.pop("spec_binding")
+        module.WorkPacket.model_validate(legacy_packet)
+        with pytest.raises(ValueError, match="instruction_binding"):
+            module.WorkPacket.model_validate({**legacy_packet, "instruction_binding": valid_binding})
 
     zod = artifacts["zod"]
     assert "export const SpecificationBinding = z.object({" in zod
@@ -429,9 +448,11 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
     assert 'value.schema_version === "work-packet/v2"' in zod
     assert 'path: ["spec_binding"]' in zod
     assert 'path: ["instruction_binding"]' in zod
+    assert "instruction_binding is forbidden when schema_version equals work-packet/v1" in zod
     sqlite_ddl = artifacts["sqlite"]
     assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "spec_binding" IS NOT NULL)' in sqlite_ddl
     assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "instruction_binding" IS NOT NULL)' in sqlite_ddl
+    assert 'CHECK ("schema_version" <> \'work-packet/v1\' OR "instruction_binding" IS NULL)' in sqlite_ddl
 
 
 def test_sqlite_ddl_executes(compiler: MofCompiler) -> None:

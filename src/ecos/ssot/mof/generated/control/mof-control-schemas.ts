@@ -722,6 +722,12 @@ export const WorkPacket = z.object({
   if (value.schema_version === "work-packet/v2" && value.instruction_binding === undefined) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["instruction_binding"], message: "instruction_binding is required when schema_version equals work-packet/v2" });
   }
+  if (value.schema_version === "work-packet/v1" && value.spec_binding !== undefined) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["spec_binding"], message: "spec_binding is forbidden when schema_version equals work-packet/v1" });
+  }
+  if (value.schema_version === "work-packet/v1" && value.instruction_binding !== undefined) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["instruction_binding"], message: "instruction_binding is forbidden when schema_version equals work-packet/v1" });
+  }
 });
 
 export const Workflow = z.object({

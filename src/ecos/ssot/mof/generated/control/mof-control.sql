@@ -870,7 +870,9 @@ CREATE TABLE IF NOT EXISTS work_packet (
     "tags" TEXT,
     -- JSON-encoded
     CHECK ("schema_version" <> 'work-packet/v2' OR "spec_binding" IS NOT NULL),
-    CHECK ("schema_version" <> 'work-packet/v2' OR "instruction_binding" IS NOT NULL)
+    CHECK ("schema_version" <> 'work-packet/v2' OR "instruction_binding" IS NOT NULL),
+    CHECK ("schema_version" <> 'work-packet/v1' OR "spec_binding" IS NULL),
+    CHECK ("schema_version" <> 'work-packet/v1' OR "instruction_binding" IS NULL)
 );
 
 CREATE TABLE IF NOT EXISTS workflow (

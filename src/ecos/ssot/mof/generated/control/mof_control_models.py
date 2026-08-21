@@ -816,6 +816,14 @@ risk controls derived from the execution-control blueprint §7.1."""
             raise ValueError("instruction_binding is required when schema_version equals work-packet/v2")
         return self
 
+    @model_validator(mode="after")
+    def _enforce_conditional_forbiddances(self):
+        if self.schema_version == "work-packet/v1" and self.spec_binding is not None:
+            raise ValueError("spec_binding is forbidden when schema_version equals work-packet/v1")
+        if self.schema_version == "work-packet/v1" and self.instruction_binding is not None:
+            raise ValueError("instruction_binding is forbidden when schema_version equals work-packet/v1")
+        return self
+
 class Workflow(BaseModel):
     """工作流——有明确步骤序列的执行流程。支持 PipelineWorkflow/AgentWorkflow/ScheduledWorkflow/MCPWorkflow 四种子类型。回答"怎么做"。"""
     workflow_name: str = Field(..., description="\u5de5\u4f5c\u6d41\u540d\u79f0")

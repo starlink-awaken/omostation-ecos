@@ -200,6 +200,21 @@ def emit_json_schema(schemas: list["M2Schema"], m2_dir: Path) -> str:
                 }
                 for requirement in s.conditional_requirements
             ]
+        if s.conditional_forbiddances:
+            schema_doc.setdefault("allOf", []).extend(
+                {
+                    "if": {
+                        "properties": {forbiddance.property_name: {"const": forbiddance.equals}},
+                        "required": [forbiddance.property_name],
+                    },
+                    "then": {
+                        "not": {
+                            "anyOf": [{"required": [name]} for name in forbiddance.forbidden_names]
+                        }
+                    },
+                }
+                for forbiddance in s.conditional_forbiddances
+            )
         defs[s.name] = schema_doc
     doc = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -344,6 +359,25 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                         f"            raise ValueError({json.dumps(required_name + ' is required when ' + requirement.property_name + ' equals ' + requirement.equals)})"
                     )
             lines.append("        return self")
+        if s.conditional_forbiddances:
+            lines.extend(
+                [
+                    "",
+                    '    @model_validator(mode="after")',
+                    "    def _enforce_conditional_forbiddances(self):",
+                ]
+            )
+            for forbiddance in s.conditional_forbiddances:
+                for forbidden_name in forbiddance.forbidden_names:
+                    lines.append(
+                        f"        if self.{_py_field_name(forbiddance.property_name)} == {json.dumps(forbiddance.equals)} and self.{_py_field_name(forbidden_name)} is not None:"
+                    )
+                    message = (
+                        f"{forbidden_name} is forbidden when "
+                        f"{forbiddance.property_name} equals {forbiddance.equals}"
+                    )
+                    lines.append(f"            raise ValueError({json.dumps(message)})")
+            lines.append("        return self")
         lines.append("")
     rebuilt = [s.name for s in schemas if s.referenced]
     if rebuilt:
@@ -433,7 +467,7 @@ def emit_zod(schemas: list["M2Schema"], m2_dir: Path) -> str:
             fields.append(f"  {p.name}: {expr},")
         body = "\n".join(fields)
         expression = f"z.object({{\n{body}\n}})"
-        if s.conditional_requirements:
+        if s.conditional_requirements or s.conditional_forbiddances:
             checks: list[str] = []
             for requirement in s.conditional_requirements:
                 for required_name in requirement.required_names:
@@ -441,6 +475,19 @@ def emit_zod(schemas: list["M2Schema"], m2_dir: Path) -> str:
                         [
                             f"  if (value.{requirement.property_name} === {json.dumps(requirement.equals)} && value.{required_name} === undefined) {{",
                             f"    ctx.addIssue({{ code: z.ZodIssueCode.custom, path: [{json.dumps(required_name)}], message: {json.dumps(required_name + ' is required when ' + requirement.property_name + ' equals ' + requirement.equals)} }});",
+                            "  }",
+                        ]
+                    )
+            for forbiddance in s.conditional_forbiddances:
+                for forbidden_name in forbiddance.forbidden_names:
+                    message = (
+                        f"{forbidden_name} is forbidden when "
+                        f"{forbiddance.property_name} equals {forbiddance.equals}"
+                    )
+                    checks.extend(
+                        [
+                            f"  if (value.{forbiddance.property_name} === {json.dumps(forbiddance.equals)} && value.{forbidden_name} !== undefined) {{",
+                            f"    ctx.addIssue({{ code: z.ZodIssueCode.custom, path: [{json.dumps(forbidden_name)}], message: {json.dumps(message)} }});",
                             "  }",
                         ]
                     )
@@ -536,6 +583,13 @@ def emit_sqlite(schemas: list["M2Schema"], m2_dir: Path) -> str:
                     "    CHECK ("
                     f"{_q(requirement.property_name)} <> {_sql_str(requirement.equals)} "
                     f"OR {_q(required_name)} IS NOT NULL)"
+                )
+        for forbiddance in s.conditional_forbiddances:
+            for forbidden_name in forbiddance.forbidden_names:
+                decls.append(
+                    "    CHECK ("
+                    f"{_q(forbiddance.property_name)} <> {_sql_str(forbiddance.equals)} "
+                    f"OR {_q(forbidden_name)} IS NULL)"
                 )
         if own_identity:
             identity_decl = f"{_q(own_identity)} "
