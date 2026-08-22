@@ -4,6 +4,15 @@ id: MODEL-PRICING-DEFAULT
 type: Model
 name: 模型定价默认值
 status: active
+source: AetherForge/pricing
+mapping:
+  - source: model_id
+    target: pricing.model_id
+  - source: provider
+    target: pricing.provider
+  - source: cost_per_1k_input
+    target: pricing.cost_per_1k_input
+formality: semiformal
 
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
