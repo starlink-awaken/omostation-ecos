@@ -53,6 +53,17 @@ OMOTASK_SCHEMA = REPO_ROOT / "src" / "ecos" / "ssot" / "mof" / "m2" / "omo_task.
 OMO_TASKS_ACTIVE = WORKSPACE_ROOT / ".omo" / "tasks" / "active"
 OMO_TASKS_PLANNED = WORKSPACE_ROOT / ".omo" / "tasks" / "planned"
 OMO_TASKS_DONE = WORKSPACE_ROOT / ".omo" / "tasks" / "done"
+# 任务命名体系演进: done → closed (兼容两种目录)
+OMO_TASKS_CLOSED = WORKSPACE_ROOT / ".omo" / "tasks" / "closed"
+
+
+def _done_dir() -> Path:
+    """返回实际存在的 done/ 或 closed/ 目录."""
+    if OMO_TASKS_DONE.is_dir():
+        return OMO_TASKS_DONE
+    if OMO_TASKS_CLOSED.is_dir():
+        return OMO_TASKS_CLOSED
+    return OMO_TASKS_DONE  # fall back (will yield empty scan, not crash)
 
 
 # ── 加载 ──────────────────────────────────────────────────
@@ -62,7 +73,9 @@ def load_yaml(path: Path) -> dict | None:
     if not path.exists():
         return None
     try:
-        return yaml.safe_load(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        docs = list(yaml.safe_load_all(text))
+        return docs[0] if docs else None
     except yaml.YAMLError as e:
         print(f"⚠️  YAML parse fail: {path}: {e}", file=sys.stderr)
         return None
@@ -83,7 +96,7 @@ def load_omotask_m1() -> dict:
 def load_omo_tasks_dirs() -> dict:
     """.omo/tasks/{active,planned,done}/* → {id: {dir, file, data}}."""
     out = {}
-    for d in (OMO_TASKS_ACTIVE, OMO_TASKS_PLANNED, OMO_TASKS_DONE):
+    for d in (OMO_TASKS_ACTIVE, OMO_TASKS_PLANNED, _done_dir()):
         if not d.exists():
             continue
         for f in d.glob("*.yaml"):
@@ -371,7 +384,7 @@ def _collect_m1_to_omo_candidates(diff: dict) -> list[dict[str, object]]:
         existing = (
             list(OMO_TASKS_ACTIVE.glob(f"{omo_id}*.yaml"))
             + list(OMO_TASKS_PLANNED.glob(f"{omo_id}*.yaml"))
-            + list(OMO_TASKS_DONE.glob(f"{omo_id}*.yaml"))
+            + list(_done_dir().glob(f"{omo_id}*.yaml"))
         )
         if existing:
             continue
