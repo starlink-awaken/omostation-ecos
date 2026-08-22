@@ -43,7 +43,7 @@ def compile_constraints(data: dict) -> str:
 
     lines = []
     lines.append("# eCOS v6 L0 — 编译约束 (自动生成, 勿手改)")
-    lines.append(f"# 源: src/ecos/ssot/registry/L0-constraints.yaml")
+    lines.append("# 源: src/ecos/ssot/registry/L0-constraints.yaml")
     lines.append(f"# 编译时间: {now.isoformat()}")
     lines.append(f"# 约束数: {len(constraints)}")
     lines.append("")
@@ -111,8 +111,8 @@ def compile_constraints(data: dict) -> str:
             lines.append("    passed = len(mutations) == 0")
             lines.append('    detail = f"direct mutations: {len(mutations)}"')
         else:
-            lines.append(f'    passed = True  # TODO: implement rule "{rule[:40]}"')
-            lines.append(f'    detail = "rule not auto-evaluated"')
+            lines.append('    passed = True  # TODO: implement rule "' + rule[:40] + '"')
+            lines.append('    detail = "rule not auto-evaluated"')
 
         lines.append("    results.append({")
         lines.append(f'        "id": "{cid}",')
