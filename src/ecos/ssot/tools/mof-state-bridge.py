@@ -113,28 +113,53 @@ def load_omo_tasks_dirs() -> dict:
 def diff_m1_vs_omo(m1_nodes: dict, omo_tasks: dict) -> dict:
     """M1 OMOTask ↔ .omo/tasks/ 双向 diff.
 
-    关联 key: m1 id = OMOTASK-{omo id}, 例如 OMOTASK-OPC-P5 ↔ OPC-P5
+    关联策略 (两级):
+      1. ID 精确匹配: m1 id = OMOTASK-{omo id}
+      2. 内容模糊匹配: 基于 title/name/description token 重叠
     """
-    # m1 id → omo id (strip OMOTASK- prefix)
-    m1_to_omo = {mid: mid.replace("OMOTASK-", "") for mid in m1_nodes}
-    {oid: f"OMOTASK-{oid}" for oid in omo_tasks}
+    # 相对导入 (避免 sys.path 问题)
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location("mof_bridge_match",
+        Path(__file__).parent / "mof-bridge-match.py")
+    _mod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_mod)
+    tokenize, similarity = _mod.tokenize, _mod.similarity
 
-    # 对照表
-    pairs = []
-    for mid, oid in m1_to_omo.items():
-        omo_info = omo_tasks.get(oid)
-        pairs.append(
-            {
-                "m1_id": mid,
-                "omo_id": oid,
-                "omo_exists": omo_info is not None,
-                "m1_data": m1_nodes[mid]["data"],
-                "omo_data": omo_info["data"] if omo_info else None,
-            }
-        )
+    paired_m1, paired_omo, pairs = set(), set(), []
 
-    m1_only = [mid for mid in m1_nodes if m1_to_omo[mid] not in omo_tasks]
-    omo_only = [oid for oid in omo_tasks if f"OMOTASK-{oid}" not in m1_nodes]
+    # 第一级: ID 精确匹配
+    for mid in m1_nodes:
+        oid = mid.replace("OMOTASK-", "")
+        if oid in omo_tasks:
+            pairs.append({"m1_id": mid, "omo_id": oid, "omo_exists": True,
+                          "match_type": "id", "m1_data": m1_nodes[mid]["data"],
+                          "omo_data": omo_tasks[oid]["data"]})
+            paired_m1.add(mid)
+            paired_omo.add(oid)
+
+    # 第二级: 内容模糊匹配
+    unmatched_m1 = {mid: m1_nodes[mid] for mid in m1_nodes if mid not in paired_m1}
+    unmatched_omo = {oid: omo_tasks[oid] for oid in omo_tasks if oid not in paired_omo}
+    if unmatched_m1 and unmatched_omo:
+        m1_t = [(mid, tokenize(" ".join(str(m1_nodes[mid]["data"].get(k, "")) for k in ("name","title","description")))) for mid in unmatched_m1]
+        omo_t = [(oid, tokenize(" ".join(str(omo_tasks[oid]["data"].get(k, "")) for k in ("title","desc","description","name")))) for oid in unmatched_omo]
+        for mid, mt in m1_t:
+            best, best_omo = 0.05, None
+            for oid, ot in omo_t:
+                if oid in paired_omo:
+                    continue
+                sc = similarity(mt, ot)
+                if sc > best:
+                    best, best_omo = sc, oid
+            if best_omo:
+                pairs.append({"m1_id": mid, "omo_id": best_omo, "omo_exists": True,
+                              "match_type": f"content({best:.2f})", "m1_data": m1_nodes[mid]["data"],
+                              "omo_data": omo_tasks[best_omo]["data"]})
+                paired_m1.add(mid)
+                paired_omo.add(best_omo)
+
+    m1_only = [mid for mid in m1_nodes if mid not in paired_m1]
+    omo_only = [oid for oid in omo_tasks if oid not in paired_omo]
 
     # 字段漂移
     # M1 OMOTask 用顶层 name, .omo 任务用顶层 title, 双向兼容
