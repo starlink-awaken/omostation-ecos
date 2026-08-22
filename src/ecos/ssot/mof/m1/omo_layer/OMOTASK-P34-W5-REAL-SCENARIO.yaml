@@ -4,7 +4,7 @@ subtype: Task
 name: 真实场景 5/5 ok — 修基础设施让 5 URI 串联全活
 description: '修 P34-W2 揭出的 3 错误:'
 status: done
-title: "真实场景 5/5 ok — 修基础设施让 5 URI 串联全活"
+title: 真实场景 5/5 ok — 修基础设施让 5 URI 串联全活
 gate: none
 gate_status: passed
 priority: P2
@@ -15,11 +15,13 @@ properties:
   - .omo/tasks/planned/P34-W5-REAL-SCENARIO.yaml
   signals:
   - task-P34-W5-REAL-SCENARIO-running
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - OMOTASK-P34-W2-ANALYSIS-EXEC
+  provides: []

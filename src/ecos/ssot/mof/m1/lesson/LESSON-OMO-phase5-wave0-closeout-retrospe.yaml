@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase5-wave0-closeout-retrospe
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase5-wave0-closeout-retrospe
 type: Lesson
 subtype: OMORetro
@@ -18,11 +15,21 @@ properties:
     findings as the input set for Wave 1 planning and s
   source: Workspace/.omo/_knowledge/summaries/phase5/phase5-wave0-closeout-retrospective.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-p4-wave2-closure-retrospective
+  - LESSON-OMO-phase14-closeout
+  - LESSON-OMO-phase15-closeout
+  - LESSON-OMO-phase5-closeout-retrospective
+  provides:
+  - LESSON-OMO-phase5-wave0-kickoff-retrospec
+  - LESSON-OMO-phase5-wave1-retrospective
+  - LESSON-OMO-phase6-wave3-closeout
+  - LESSON-OMO-phase7-planning-ratification
+  - LESSON-OMO-phase8-planning-ratification

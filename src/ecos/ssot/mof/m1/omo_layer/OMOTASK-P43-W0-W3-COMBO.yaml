@@ -4,7 +4,7 @@ subtype: Task
 name: P43 4 wave 全面实施 (ProcessPool + 40 URI smoke + audit + 修测试)
 description: P43-W0 agora 长驻进程池 (75x 加速, 6 URI 0.80s vs P42-W2 60s).
 status: done
-title: "P43 4 wave 全面实施 (ProcessPool + 40 URI smoke + audit + 修测试)"
+title: P43 4 wave 全面实施 (ProcessPool + 40 URI smoke + audit + 修测试)
 gate: none
 gate_status: passed
 priority: P2
@@ -15,11 +15,13 @@ properties:
   - .omo/tasks/planned/P43-W0-W3-COMBO.yaml
   signals:
   - task-P43-W0-W3-COMBO-running
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - OMOTASK-P44-W0-W4-COMBO

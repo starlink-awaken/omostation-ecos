@@ -13,11 +13,45 @@ properties:
   - OMO 超能力
   scope:
   - OMO
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - SPEC-OMO-SP-plan-2026-05-31-phase10-wave2-norma
+  - SPEC-OMO-SP-plan-2026-05-31-phase10-wave3-actio
+  - SPEC-OMO-SP-plan-2026-05-31-phase7-planning-gat
+  - SPEC-OMO-SP-plan-2026-05-31-phase8-control-plan
+  - SPEC-OMO-SP-plan-2026-06-02-debt-approval-seam
+  - SPEC-OMO-SP-plan-2026-06-02-debt-campaign-coord
+  - SPEC-OMO-SP-plan-2026-06-02-debt-dispatch-execu
+  - SPEC-OMO-SP-plan-2026-06-02-debt-governance-mec
+  - SPEC-OMO-SP-plan-2026-06-02-debt-owner-dispatch
+  - SPEC-OMO-SP-plan-2026-06-02-debt-owner-routing-
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-diff
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-entr
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-exec
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-hist
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-owne
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-roll
+  - SPEC-OMO-SP-plan-2026-06-02-debt-reporting-run-
+  - SPEC-OMO-SP-spec-2026-05-31-phase7-planning-gat
+  - SPEC-OMO-SP-spec-2026-05-31-phase8-control-plan
+  - SPEC-OMO-SP-spec-2026-06-02-debt-approval-seam-
+  - SPEC-OMO-SP-spec-2026-06-02-debt-campaign-coord
+  - SPEC-OMO-SP-spec-2026-06-02-debt-dispatch-execu
+  - SPEC-OMO-SP-spec-2026-06-02-debt-governance-mec
+  - SPEC-OMO-SP-spec-2026-06-02-debt-owner-dispatch
+  - SPEC-OMO-SP-spec-2026-06-02-debt-owner-routing-
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-diff
+  provides:
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-exec
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-hist
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-owne
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-roll
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-run-
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-stat
+  - SPEC-OMO-SP-spec-2026-06-02-debt-reporting-tren

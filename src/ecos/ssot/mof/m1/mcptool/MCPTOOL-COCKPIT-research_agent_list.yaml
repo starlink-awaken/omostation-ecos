@@ -17,3 +17,53 @@ state_history:
 - state: active
   timestamp: '2026-07-06T00:00:00Z'
   reason: sync from cockpit mcp --list-tools (MOF 注册 ↔ 实现 drift 治本, PR#125 探针 follow-up)
+relations:
+  depends_on:
+  - ARTIFACT-L0-mof-audit
+  - ARTIFACT-L0-mof-bootstrap
+  - ARTIFACT-L0-mof-derive
+  - ARTIFACT-L0-mof-enforce
+  - ARTIFACT-L0-mof-entity
+  - ARTIFACT-L0-mof-events
+  - ARTIFACT-L0-mof-extract
+  - ARTIFACT-L0-mof-gate
+  - ARTIFACT-L0-mof-generate
+  - ARTIFACT-L0-mof-model
+  - ARTIFACT-L0-mof-register-tasks
+  - ARTIFACT-L0-mof-scan
+  - ARTIFACT-L0-mof-sla
+  - ARTIFACT-L0-mof-trail
+  - ARTIFACT-L0-mof-validate
+  - ARTIFACT-L0-mof-verify
+  - ARTIFACT-L0-mof-view
+  - MCPTOOL-COCKPIT-cards_check
+  - MCPTOOL-COCKPIT-cards_status
+  - MCPTOOL-COCKPIT-daily_summary
+  - MCPTOOL-COCKPIT-domains_list
+  - MCPTOOL-COCKPIT-github_pr_review
+  - MCPTOOL-COCKPIT-governance_check
+  - MCPTOOL-COCKPIT-governance_dashboard
+  - MCPTOOL-COCKPIT-governance_history
+  - MCPTOOL-COCKPIT-governance_leaderboard
+  - MCPTOOL-COCKPIT-governance_sla
+  - MCPTOOL-COCKPIT-governance_status
+  provides:
+  - MCPTOOL-COCKPIT-research_archive
+  - MCPTOOL-COCKPIT-research_ask
+  - MCPTOOL-COCKPIT-research_create
+  - MCPTOOL-COCKPIT-research_dossier
+  - MCPTOOL-COCKPIT-research_half_life
+  - MCPTOOL-COCKPIT-research_list
+  - MCPTOOL-COCKPIT-research_open
+  - MCPTOOL-COCKPIT-research_rename
+  - MCPTOOL-COCKPIT-research_restore
+  - MCPTOOL-COCKPIT-research_search
+  - MCPTOOL-COCKPIT-research_tag
+  - MCPTOOL-COCKPIT-shared_context_list
+  - MCPTOOL-COCKPIT-shared_context_read
+  - MCPTOOL-COCKPIT-shared_context_write
+  - MCPTOOL-COCKPIT-status_json
+  - MCPTOOL-COCKPIT-status_summary
+  - MCPTOOL-COCKPIT-vault_search
+  - MCPTOOL-COCKPIT-workspace_context
+  - PROTOCOL-MCP

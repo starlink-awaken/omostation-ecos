@@ -4,7 +4,7 @@ subtype: Task
 name: P33 北极星 — 人类审批 5 Domain + BOS URI 战略
 description: 'P33 北极星:'
 status: done
-title: "P33 北极星 — 人类审批 5 Domain + BOS URI 战略"
+title: P33 北极星 — 人类审批 5 Domain + BOS URI 战略
 gate: none
 gate_status: passed
 priority: P2
@@ -15,11 +15,13 @@ properties:
   - .omo/tasks/planned/P33-W0-NORTH-STAR.yaml
   signals:
   - task-P33-W0-NORTH-STAR-running
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - OMOTASK-P33-VERIFY
+  provides: []

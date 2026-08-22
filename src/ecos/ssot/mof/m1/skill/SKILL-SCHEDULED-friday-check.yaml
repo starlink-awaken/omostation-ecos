@@ -11,11 +11,51 @@ layer: L4
 properties:
   skill: 执行 friday-check 中定义的指令
   trigger: scheduled
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - MECH-SCHEDULED-ai-toolbox-health-check
+  - MECH-SCHEDULED-ai-toolbox-weekly-insight
+  - MECH-SCHEDULED-cross-domain-sync
+  - MECH-SCHEDULED-emr-biweekly-report
+  - MECH-SCHEDULED-emr-monthly-report
+  - MECH-SCHEDULED-eureka-weekly-insight
+  - MECH-SCHEDULED-family-weekly-maintenance
+  - MECH-SCHEDULED-forge-daily-maintenance
+  - MECH-SCHEDULED-forge-weekly-report
+  - MECH-SCHEDULED-friday-check
+  - MECH-SCHEDULED-gzh-daily-fetch
+  - MECH-SCHEDULED-kos-daily-ontology-sync
+  - MECH-SCHEDULED-kos-kuabu
+  - MECH-SCHEDULED-kos-weekly-health-check
+  - MECH-SCHEDULED-kronos-rss-weekly
+  - MECH-SCHEDULED-metaos-daily-health
+  - MECH-SCHEDULED-metaos-quarterly-review
+  - MECH-SCHEDULED-monday-vault-comprehensive
+  - MECH-SCHEDULED-neirong-caiji
+  - MECH-SCHEDULED-pingtai-kanban
+  - MECH-SCHEDULED-policy-weekly-brief
+  - MECH-SCHEDULED-refresh-knowledge-index
+  - MECH-SCHEDULED-sanyi-friday-report
+  - MECH-SCHEDULED-skills-weekly-review
+  - MECH-SCHEDULED-timeline-daily-sync
+  - MECH-SCHEDULED-update-platforms-dashboard
+  - MECH-SCHEDULED-vault-index-sync
+  - MECH-SCHEDULED-vault-method-digest
+  - MECH-SCHEDULED-vault-weekly-check
+  - MECH-SCHEDULED-wednesday-maintenance
+  - MECH-SCHEDULED-zhengce-jianbao
+  - SKILL-SCHEDULED-ai-toolbox-health-check
+  - SKILL-SCHEDULED-ai-toolbox-weekly-insight
+  - SKILL-SCHEDULED-family-weekly-maintenance
+  - SKILL-SCHEDULED-forge-weekly-report
+  provides:
+  - SKILL-SCHEDULED-kos-weekly-health-check
+  - SKILL-SCHEDULED-sanyi-friday-report
+  - SKILL-SCHEDULED-skills-weekly-review
+  - TRIGGER-CRON-SERVICE

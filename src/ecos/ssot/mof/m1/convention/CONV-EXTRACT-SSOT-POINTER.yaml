@@ -1,8 +1,3 @@
-# M1 Node: CONV-EXTRACT-SSOT-POINTER
-# Type: Convention
-# Extracted by mof-extract: 2026-06-08T09:39:12.595157+00:00
-# ⚠️ 待人工审核
-
 id: CONV-EXTRACT-SSOT-POINTER
 type: Convention
 name: 域 CLAUDE.md 的 §0 必须声明 SSOT 位置并区分'本文件策略'
@@ -17,11 +12,13 @@ properties:
   scope: domain
   enforcement: mandatory
   auto_check: true
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: adopted
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: adopted
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - CONV-DOMAIN-CLAUDE
+  provides: []

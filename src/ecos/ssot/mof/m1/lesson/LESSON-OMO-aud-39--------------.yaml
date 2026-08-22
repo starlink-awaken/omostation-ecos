@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-aud-39--------------
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-aud-39--------------
 type: Lesson
 subtype: OMORetro
@@ -26,11 +23,16 @@ properties:
     MCP Buses          █████████████████████'
   source: Workspace/.omo/_knowledge/summaries/audits/aud-39-全面架构审计与债务治理报告.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - LESSON-OMO-aud-44---------v2
+  - SPEC-OMO-MGMT-ARCH-AUDIT-2026-05
+  - SPEC-OMO-MGMT-ARCH-AUDIT-v2
+  - SPEC-OMO-MGMT-debt-governance-round3-report

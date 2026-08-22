@@ -2,7 +2,8 @@ id: BOSROUTE-AGT-HYPERVISOR
 type: Component
 subtype: BOSRoute
 name: bos://governance/agt/hypervisor
-description: AGT Hypervisor — execution audit and Merkle audit chain for tamper-evident governance logging
+description: AGT Hypervisor — execution audit and Merkle audit chain for tamper-evident
+  governance logging
 status: active
 domain: governance
 created: '2026-08-04'
@@ -19,6 +20,11 @@ cross_references:
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/bosroute/
 state_history:
-  - state: proposal_only
-    timestamp: '2026-08-04T00:00:00Z'
-    reason: agt_external_adapter_proposal
+- state: proposal_only
+  timestamp: '2026-08-04T00:00:00Z'
+  reason: agt_external_adapter_proposal
+relations:
+  depends_on: []
+  provides:
+  - BOSROUTE-AGT-POLICY
+  - BOSROUTE-GOVERNANCE-AGENT-WORKFLOW

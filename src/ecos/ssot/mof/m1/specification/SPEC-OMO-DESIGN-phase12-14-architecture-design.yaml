@@ -13,11 +13,45 @@ properties:
   - OMO 设计
   scope:
   - OMO
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - SPEC-OMO-DESIGN-29-OMO---------Load-Shedding--
+  - SPEC-OMO-DESIGN-INSIGHTS-AND-ROADMAP
+  - SPEC-OMO-DESIGN-MASTER-BLUEPRINT
+  - SPEC-OMO-DESIGN-agentmesh-capability-audit
+  - SPEC-OMO-DESIGN-architecture-remediation-plan
+  - SPEC-OMO-DESIGN-architecture-remediation-plan-
+  - SPEC-OMO-DESIGN-cli-unification-plan
+  - SPEC-OMO-DESIGN-debt-cleanup-plan
+  - SPEC-OMO-DESIGN-hermes-convergence-strategy
+  - SPEC-OMO-DESIGN-hermes-research-notes
+  - SPEC-OMO-DESIGN-metaos-gap-analysis
+  - SPEC-OMO-DESIGN-omo-playbook-38-outline
+  - SPEC-OMO-DESIGN-omo_theory_tooling_benchmark
+  - SPEC-OMO-DESIGN-omostation-strategic-architect
+  - SPEC-OMO-DESIGN-organ-migration-master-plan
+  - SPEC-OMO-DESIGN-organ-salvage-assessment
+  - SPEC-OMO-DESIGN-organ-salvage-final-report
+  provides:
+  - SPEC-OMO-DESIGN-phase15-autonomous-governance-
+  - SPEC-OMO-DESIGN-phase17-planning-gate-guardrai
+  - SPEC-OMO-DESIGN-phase5-entry-architecture
+  - SPEC-OMO-DESIGN-phase5-hermes-contract
+  - SPEC-OMO-DESIGN-phase5-program-architecture
+  - SPEC-OMO-DESIGN-phase5-proposal-governance-mod
+  - SPEC-OMO-DESIGN-phase5-requirements
+  - SPEC-OMO-DESIGN-phase5-secrets-ownership
+  - SPEC-OMO-DESIGN-phase5-task-center-landing-mod
+  - SPEC-OMO-DESIGN-remaining-modules-architecture
+  - SPEC-OMO-DESIGN-sharedbrain-architecture-gover
+  - SPEC-OMO-MGMT-design-dashboard-cockpit
+  - SPEC-OMO-MGMT-design-smart-notify
+  - SPEC-OMO-MGMT-design-taskobject-live
+  - SPEC-OMO-SP-spec-2026-05-31-phase7-planning-gat
+  - SPEC-OMO-SP-spec-2026-05-31-phase8-control-plan

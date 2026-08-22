@@ -80,12 +80,9 @@ execution:
   on_failure: abort
   audit_enabled: true
 relations:
-- type: triggers
-  target: bos://forge/code/execute
-  note: 代码执行请求触发 KEI 沙箱
-- type: data_flows
-  target: bos://forge/result
-  note: 执行结果返回运行时消费端
+  depends_on:
+  - BOSROUTE-FORGE-RUNTIME
+  provides: []
 sla:
   max_execution_time: 600
   expected_completion_rate: 0.95
@@ -99,11 +96,9 @@ maintained_by: runtime
 last_reviewed: '2026-06-07'
 properties:
   workflow_name: Runtime KEI 沙箱执行管线
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling

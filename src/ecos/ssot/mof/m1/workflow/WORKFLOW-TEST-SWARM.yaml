@@ -26,7 +26,10 @@ steps:
   description: 步骤描述
   depends_on:
   - Step1
-relations: []
+relations:
+  depends_on:
+  - DOMAIN-agents-config
+  provides: []
 sla:
   max_execution_time: 300
   expected_completion_rate: 0.95

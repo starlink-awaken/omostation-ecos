@@ -2,7 +2,7 @@ id: BOSROUTE-WORK-CONTRACTS
 type: Component
 subtype: BOSRoute
 name: bos://work-docs/contracts/**
-description: "工作文档：合同法规路由"
+description: 工作文档：合同法规路由
 status: active
 domain: work
 created: '2026-06-13'
@@ -16,11 +16,13 @@ cross_references:
   realized_by:
     project: l4-kernel
     entrypoint: src/l4_kernel/
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - BOSROUTE-WORK-DOCS

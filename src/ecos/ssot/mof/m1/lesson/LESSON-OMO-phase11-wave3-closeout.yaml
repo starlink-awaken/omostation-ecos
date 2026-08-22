@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase11-wave3-closeout
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase11-wave3-closeout
 type: Lesson
 subtype: OMORetro
@@ -18,11 +15,18 @@ properties:
     with the user-layer MVP baseli
   source: Workspace/.omo/_knowledge/summaries/phase11/phase11-wave3-closeout.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-phase11-wave1-closeout
+  provides:
+  - LESSON-OMO-phase12-closeout
+  - LESSON-OMO-phase14-closeout
+  - LESSON-OMO-phase7-planning-ratification
+  - LESSON-OMO-phase9-wave2-closeout
+  - LESSON-OMO-phase9-wave4-closeout

@@ -2,7 +2,8 @@ id: BOSROUTE-AGT-TRUST
 type: Component
 subtype: BOSRoute
 name: bos://capability/agt/trust
-description: AGT Trust Platform — Ed25519 identity verification and trust scoring (0-1000)
+description: AGT Trust Platform — Ed25519 identity verification and trust scoring
+  (0-1000)
 status: active
 domain: capability
 created: '2026-08-04'
@@ -19,6 +20,14 @@ cross_references:
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/bosroute/
 state_history:
-  - state: proposal_only
-    timestamp: '2026-08-04T00:00:00Z'
-    reason: agt_external_adapter_proposal
+- state: proposal_only
+  timestamp: '2026-08-04T00:00:00Z'
+  reason: agt_external_adapter_proposal
+relations:
+  depends_on:
+  - BOSROUTE-AGT-LIGHTNING
+  - BOSROUTE-AGT-MARKETPLACE
+  - BOSROUTE-AGT-MCP-SECURITY
+  - BOSROUTE-AGT-SANDBOX
+  - BOSROUTE-AGT-SRE
+  provides: []

@@ -1,27 +1,29 @@
-id: "TRIGGER-GIT-PRECOMMIT"
+id: TRIGGER-GIT-PRECOMMIT
 type: Trigger
-name: "Git Pre-commit Hook"
-description: "代码质量门禁 — 每次 git commit 前检查 Python 文件变更"
-status: "active"
-domain: "meta"
-layer: "L0"
-created: "2026-06-09"
-version: "1.0.0"
+name: Git Pre-commit Hook
+description: 代码质量门禁 — 每次 git commit 前检查 Python 文件变更
+status: active
+domain: meta
+layer: L0
+created: '2026-06-09'
+version: 1.0.0
 properties:
-  trigger_type: "git_hook"
-  trigger_source: "git commit"
-  trigger_action: "arcnode-validate --changed"
-  schedule: "on_commit"
+  trigger_type: git_hook
+  trigger_source: git commit
+  trigger_action: arcnode-validate --changed
+  schedule: on_commit
   dependencies: []
   health_check:
-    endpoint: ".husky/pre-commit"
-    expected_status: "executable"
-source: "ecos/.husky/pre-commit"
-
+    endpoint: .husky/pre-commit
+    expected_status: executable
+source: ecos/.husky/pre-commit
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: "active"
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - ARTIFACT-SCRIPT-ecos-event-watcher
+  provides: []

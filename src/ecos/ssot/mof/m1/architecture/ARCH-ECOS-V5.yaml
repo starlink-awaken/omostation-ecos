@@ -1,7 +1,3 @@
-# M1 Node: ARCH-ECOS-V5
-# Type: Architecture
-# Generated: 2026-06-06T13:08:34.011905+00:00
-
 id: ARCH-ECOS-V5
 type: Architecture
 name: 织星架构 (eCOS v6)
@@ -37,14 +33,16 @@ layer: multi
 sources:
 - 驾驶舱/5+4+1+1架构全景.md
 - 学习进化/2-knowledge/基建架构/eCOS-v6-Architecture-SSOT.md
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
-  - state: active
-    timestamp: '2026-06-30T00:00:00Z'
-    reason: 'v5→v6 命名对齐: 5+4+1+1 架构 (P0 界面层独立)'
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+- state: active
+  timestamp: '2026-06-30T00:00:00Z'
+  reason: 'v5→v6 命名对齐: 5+4+1+1 架构 (P0 界面层独立)'
+relations:
+  depends_on: []
+  provides:
+  - DEC-2026-06-06-5-4-1

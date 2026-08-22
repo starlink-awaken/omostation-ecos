@@ -109,12 +109,9 @@ execution:
   on_failure: abort
   audit_enabled: true
 relations:
-- type: triggers
-  target: bos://forge/tool/discover
-  note: 工具发现请求触发 Orchestrator
-- type: data_flows
-  target: bos://forge/tool/loaded
-  note: 工具加载状态通知能力域
+  depends_on:
+  - PROC-TASK-LIFECYCLE
+  provides: []
 sla:
   max_execution_time: 600
   expected_completion_rate: 0.95
@@ -129,11 +126,9 @@ maintained_by: agora
 last_reviewed: '2026-06-07'
 properties:
   workflow_name: Agora 工具全流程编排
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling

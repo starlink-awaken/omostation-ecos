@@ -10,7 +10,12 @@ layer: L0
 created: '2026-06-07'
 bos_uri: bos://ecos/workflow/weekly-audit
 execution:
-  cache_ttl: 7200
+  backend: default
+  mode: sequential
+  max_retries: 3
+  timeout: 1200
+  on_failure: abort
+  audit_enabled: true
 cross_layer:
   realized_by:
   - project: ecos
@@ -93,23 +98,11 @@ steps:
   - bos://meta/audit/report
   depends_on:
   - IndexSync
-execution:
-  backend: default
-  mode: sequential
-  max_retries: 3
-  timeout: 1200
-  on_failure: abort
-  audit_enabled: true
 relations:
-- type: triggers
-  target: MECH-DAEMON-CYCLE
-  note: Daemon 每周一触发全量审计
-- type: data_flows
-  target: bos://meta/audit/report
-  note: 审计报告输出到元系统域
-- type: depends_on
-  target: WORKFLOW-ECOS-DAILY-HEALTH
-  note: 周审计依赖每日巡检的基础数据
+  depends_on:
+  - WORKFLOW-ECOS-DAILY-HEALTH
+  - WORKFLOW-ECOS-SYNC-ALL
+  provides: []
 sla:
   max_execution_time: 600
   expected_completion_rate: 0.99
@@ -123,11 +116,9 @@ maintained_by: ecos
 last_reviewed: '2026-06-07'
 properties:
   workflow_name: 每周全量审计管线
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling

@@ -1,7 +1,3 @@
-# M1 Node: ENTITY-DOMAIN-工作文档
-# Type: Entity
-# Modeled: 2026-06-06T13:31:04
-
 id: ENTITY-DOMAIN-工作文档
 type: Entity
 subtype: Domain
@@ -20,11 +16,17 @@ properties:
   - 工作文档
   attributes:
     file_count: 229198
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - ENTITY-STATE----------
+  - ENTITY-STATE------0----
+  - ENTITY-STATE------wiki
+  - SPEC-CLAUDE---------
+  - SPEC-CLAUDE----------

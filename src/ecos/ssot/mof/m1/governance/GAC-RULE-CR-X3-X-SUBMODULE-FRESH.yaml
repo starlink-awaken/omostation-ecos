@@ -1,6 +1,3 @@
-# M1 GacRule instance — DERIVED by gac-m1-sync.py
-# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
-# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
 id: GAC-RULE-CR-X3-X-SUBMODULE-FRESH
 type: GacRule
 name: 子模块新鲜度
@@ -37,3 +34,7 @@ state_history:
 - state: active
   timestamp: '2026-06-29T00:00:00Z'
   reason: M1 实例由 gac-m1-sync.py 从 registry 派生
+relations:
+  depends_on:
+  - GAC-RULE-CR-X3-DEBT-TIER
+  provides: []

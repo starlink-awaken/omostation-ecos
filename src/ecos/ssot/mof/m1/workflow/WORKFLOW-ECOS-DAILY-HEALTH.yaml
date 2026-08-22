@@ -82,12 +82,10 @@ execution:
   on_failure: abort
   audit_enabled: true
 relations:
-- type: triggers
-  target: MECH-DAEMON-CYCLE
-  note: Daemon 每 6 小时触发健康巡检
-- type: data_flows
-  target: bos://meta/health/report
-  note: 健康报告输出到元系统域
+  depends_on: []
+  provides:
+  - WORKFLOW-ECOS-SYNC-ALL
+  - WORKFLOW-ECOS-WEEKLY-AUDIT
 sla:
   max_execution_time: 300
   expected_completion_rate: 0.99
@@ -102,11 +100,9 @@ maintained_by: ecos
 last_reviewed: '2026-06-07'
 properties:
   workflow_name: 每日健康巡检管线
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling

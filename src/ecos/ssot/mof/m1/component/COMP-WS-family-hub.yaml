@@ -1,7 +1,3 @@
-# M1 Node: COMP-WS-family-hub
-# Type: Component
-# Modeled: 2026-06-06T13:31:04
-
 id: COMP-WS-family-hub
 type: Component
 subtype: Project
@@ -18,17 +14,22 @@ properties:
   has_pyproject: false
   has_package_json: true
   has_tests: false
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
-
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
 value_metrics:
   business_value: high
   technical_debt: low
   maintenance_cost: medium
   strategic_importance: critical
+relations:
+  depends_on:
+  - COMP-WS-data
+  provides:
+  - COMP-WS-metaos
+  - COMP-WS-omo-debt
+  - COMP-WS-scripts
+  - COMP-WS-spaces

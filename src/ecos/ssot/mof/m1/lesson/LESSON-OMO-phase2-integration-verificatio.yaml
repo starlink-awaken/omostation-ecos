@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase2-integration-verificatio
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase2-integration-verificatio
 type: Lesson
 subtype: OMORetro
@@ -16,11 +13,13 @@ properties:
   lesson: '## 3. KOS Health: Drift Detec'
   source: Workspace/.omo/_knowledge/summaries/phase2/phase2-integration-verification-report.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - LESSON-OMO-phase7-wave3-freshness-report

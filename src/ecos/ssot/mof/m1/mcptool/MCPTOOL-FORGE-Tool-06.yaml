@@ -11,11 +11,66 @@ layer: L2
 properties:
   tool_name: Tool 06
   server: forge
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - MCPTOOL-FORGE-Candidate-X
+  - MCPTOOL-FORGE-Claude-Code
+  - MCPTOOL-FORGE-Document-Tool
+  - MCPTOOL-FORGE-PDF-Viewer
+  - MCPTOOL-FORGE-Tool-00
+  - MCPTOOL-FORGE-Tool-01
+  - MCPTOOL-FORGE-Tool-02
+  - MCPTOOL-FORGE-Tool-03
+  - MCPTOOL-FORGE-Tool-04
+  - MCPTOOL-FORGE-Tool-05
+  provides:
+  - MCPTOOL-FORGE-Tool-07
+  - MCPTOOL-FORGE-Tool-08
+  - MCPTOOL-FORGE-Tool-09
+  - MCPTOOL-FORGE-Tool-10
+  - MCPTOOL-FORGE-Tool-11
+  - MCPTOOL-FORGE-Tool-12
+  - MCPTOOL-FORGE-Tool-13
+  - MCPTOOL-FORGE-Tool-14
+  - MCPTOOL-FORGE-Tool-15
+  - MCPTOOL-FORGE-Tool-16
+  - MCPTOOL-FORGE-Tool-17
+  - MCPTOOL-FORGE-Tool-18
+  - MCPTOOL-FORGE-Tool-19
+  - MCPTOOL-FORGE-Tool-20
+  - MCPTOOL-FORGE-Tool-21
+  - MCPTOOL-FORGE-Tool-22
+  - MCPTOOL-FORGE-Tool-23
+  - MCPTOOL-FORGE-Tool-24
+  - MCPTOOL-FORGE-Vision-Analyzer
+  - SKILL-FORGE-__init__
+  - SKILL-FORGE-asset_cli
+  - SKILL-FORGE-build_graph
+  - SKILL-FORGE-cron_manager
+  - SKILL-FORGE-cron_utils
+  - SKILL-FORGE-discover_ecosystem
+  - SKILL-FORGE-discover_links
+  - SKILL-FORGE-entropy
+  - SKILL-FORGE-forge
+  - SKILL-FORGE-forge_config
+  - SKILL-FORGE-graph_utils
+  - SKILL-FORGE-graph_viz
+  - SKILL-FORGE-health_check
+  - SKILL-FORGE-http_api
+  - SKILL-FORGE-insight_report
+  - SKILL-FORGE-model_garden
+  - SKILL-FORGE-query_graph
+  - SKILL-FORGE-ratings
+  - SKILL-FORGE-recommend
+  - SKILL-FORGE-sediment
+  - SKILL-FORGE-skill_extractor
+  - SKILL-FORGE-sniff
+  - SKILL-FORGE-sync_registry
+  - SKILL-FORGE-verify
+  - SKILL-FORGE-watchdog

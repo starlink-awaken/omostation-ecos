@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase6-wave3-closeout
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase6-wave3-closeout
 type: Lesson
 subtype: OMORetro
@@ -18,11 +15,27 @@ properties:
     path and can enter OMO through the same governed packet model.'
   source: Workspace/.omo/_knowledge/summaries/phase6/phase6-wave3-closeout.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-phase5-wave0-closeout-retrospe
+  - LESSON-OMO-phase5-wave0-kickoff-retrospec
+  - LESSON-OMO-phase5-wave3-retrospective
+  - LESSON-OMO-phase6-closeout-retrospective
+  - LESSON-OMO-phase6-wave1-closeout
+  - LESSON-OMO-phase6-wave2-closeout
+  provides:
+  - LESSON-OMO-phase7-wave1-closeout
+  - LESSON-OMO-phase7-wave2-closeout
+  - LESSON-OMO-phase7-wave3-closeout
+  - LESSON-OMO-phase8-wave1-closeout
+  - LESSON-OMO-phase8-wave2-closeout
+  - LESSON-OMO-phase8-wave3-closeout
+  - LESSON-OMO-phase9-wave2-closeout
+  - LESSON-OMO-phase9-wave3-closeout
+  - LESSON-OMO-phase9-wave4-closeout

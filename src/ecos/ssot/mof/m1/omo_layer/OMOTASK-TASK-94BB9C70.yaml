@@ -19,3 +19,7 @@ state_history:
 - state: proposed
   timestamp: '2026-06-28T00:00:00Z'
   reason: synced_from_omo_tasks
+relations:
+  depends_on: []
+  provides:
+  - OMOTASK-TASK-F7114ABA

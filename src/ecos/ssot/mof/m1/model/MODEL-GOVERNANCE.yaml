@@ -1,10 +1,8 @@
-# M1 Node: MODEL-GOVERNANCE
-# Type: Model
-
 id: MODEL-GOVERNANCE
 type: Model
 name: 治理维度模型
-description: X1审计·X2保鲜·X3价值·X4一致性——覆盖 `.omo` 状态面、`projects/omo` 内核、`projects/c2g` 入口的四维治理模型
+description: X1审计·X2保鲜·X3价值·X4一致性——覆盖 `.omo` 状态面、`projects/omo` 内核、`projects/c2g`
+  入口的四维治理模型
 status: active
 domain: meta
 created: '2026-06-06'
@@ -21,20 +19,25 @@ properties:
   formality: semiformal
   m3_parent: DescriptiveElement.Model
   model_driven_refs:
-    - .omo/standards/omo-governance-surfaces.md
-    - .omo/_truth/registry/omo-governance-surfaces.yaml
-    - .omo/_truth/x1-governance-policies.yaml
-    - .omo/_truth/x2-freshness-rules.yaml
-    - .omo/_truth/x3-value-stack.yaml
-    - .omo/_truth/x4-consistency-rules.yaml
-    - projects/model-driven/src/model_driven/management/hybrid_judge.py:HybridJudge
-    - projects/model-driven/src/model_driven/management/evaluator.py:GovernanceEvaluator
-    - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X1-CONSTRAINT.yaml
-    - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X2-POLICY.yaml
-    - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X3-VALUE.yaml
-    - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X4-CONSISTENCY.yaml
-
+  - .omo/standards/omo-governance-surfaces.md
+  - .omo/_truth/registry/omo-governance-surfaces.yaml
+  - .omo/_truth/x1-governance-policies.yaml
+  - .omo/_truth/x2-freshness-rules.yaml
+  - .omo/_truth/x3-value-stack.yaml
+  - .omo/_truth/x4-consistency-rules.yaml
+  - projects/model-driven/src/model_driven/management/hybrid_judge.py:HybridJudge
+  - projects/model-driven/src/model_driven/management/evaluator.py:GovernanceEvaluator
+  - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X1-CONSTRAINT.yaml
+  - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X2-POLICY.yaml
+  - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X3-VALUE.yaml
+  - projects/ecos/src/ecos/ssot/mof/m1/governance/GOV-X4-CONSISTENCY.yaml
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - GOV-X1-CONSTRAINT
+  - GOV-X3-VALUE
+  - GOV-X4-CONSISTENCY
+  provides: []

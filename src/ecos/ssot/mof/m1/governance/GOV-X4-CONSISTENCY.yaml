@@ -1,66 +1,74 @@
-id: "GOV-X4-CONSISTENCY"
+id: GOV-X4-CONSISTENCY
 type: GovernancePolicy
-name: "X4 一致性维 — SSOT 级联与跨层一致性"
-description: "X4 治理维: M1↔M0 漂移检测 + 跨阶段一致性检查 + `.omo` 状态面 / `projects/omo` / `projects/c2g` 三层 SSOT 一致性"
+name: X4 一致性维 — SSOT 级联与跨层一致性
+description: 'X4 治理维: M1↔M0 漂移检测 + 跨阶段一致性检查 + `.omo` 状态面 / `projects/omo` / `projects/c2g`
+  三层 SSOT 一致性'
 status: active
-domain: "meta"
-layer: "X4"
-created: "2026-06-09"
-version: "1.0.0"
+domain: meta
+layer: X4
+created: '2026-06-09'
+version: 1.0.0
 properties:
-  policy_id: "x4-consistency-policy"
-  dimension: "X4"
+  policy_id: x4-consistency-policy
+  dimension: X4
   constraints:
-    - "CS-01: 规划→设计一致性 (Spec 必须有 OKR)"
-    - "CS-02: 设计→开发一致性 (代码模块必须有 Spec)"
-    - "CS-03: 开发→部署一致性 (服务必须有 CI)"
-    - "CS-04: 部署→运行一致性 (服务必须有告警)"
-    - "CS-05: 运行→运维一致性 (事件必须有 runbook)"
-    - "CS-06: gate_status 单一字段一致性 (plan.yaml 不得 self-add readiness/cadence 字段)"
-    - "CS-07: 5repos 路径唯一一致性 (.omo/_delivery/audit-rollout/{date}-5repos.json)"
-    - "CS-08: cron 触发窗口一致性 (manual 演练与 cron evidence 必须可区分)"
-    - "CS-09: L4 域三源一致性 (L4 Registry、Vault-Paths、DOMAIN-INDEX 数量与内容必须绝对对齐)"
-    - "CS-10: BOS URI 实现溯源一致性 (BOSRoute 必须通过 cross_references.realized_by 指定明确的上下游归属)"
-    - "CS-11: C2G 编排一致性 (OpenSpec 转入 OMO Planned Task 必须通过未决项预检门控)"
-    - "CS-12: C2G v2 柔性锚点一致性 (GSD 阶段必须具备可用的 context_uri 降维锚点，挂起任务必须进入 yield_to_ideation 循环)"
-    - "CS-13: `.omo` 目录分类一致性 (INDEX / standard / registry / kernel path constants 口径一致)"
-    - "CS-14: C2G 产物治理引用一致性 (planned task 应携带 governance_refs)"
-  scope: "全层"
+  - 'CS-01: 规划→设计一致性 (Spec 必须有 OKR)'
+  - 'CS-02: 设计→开发一致性 (代码模块必须有 Spec)'
+  - 'CS-03: 开发→部署一致性 (服务必须有 CI)'
+  - 'CS-04: 部署→运行一致性 (服务必须有告警)'
+  - 'CS-05: 运行→运维一致性 (事件必须有 runbook)'
+  - 'CS-06: gate_status 单一字段一致性 (plan.yaml 不得 self-add readiness/cadence 字段)'
+  - 'CS-07: 5repos 路径唯一一致性 (.omo/_delivery/audit-rollout/{date}-5repos.json)'
+  - 'CS-08: cron 触发窗口一致性 (manual 演练与 cron evidence 必须可区分)'
+  - 'CS-09: L4 域三源一致性 (L4 Registry、Vault-Paths、DOMAIN-INDEX 数量与内容必须绝对对齐)'
+  - 'CS-10: BOS URI 实现溯源一致性 (BOSRoute 必须通过 cross_references.realized_by 指定明确的上下游归属)'
+  - 'CS-11: C2G 编排一致性 (OpenSpec 转入 OMO Planned Task 必须通过未决项预检门控)'
+  - 'CS-12: C2G v2 柔性锚点一致性 (GSD 阶段必须具备可用的 context_uri 降维锚点，挂起任务必须进入 yield_to_ideation
+    循环)'
+  - 'CS-13: `.omo` 目录分类一致性 (INDEX / standard / registry / kernel path constants 口径一致)'
+  - 'CS-14: C2G 产物治理引用一致性 (planned task 应携带 governance_refs)'
+  scope: 全层
   thresholds:
     warn_threshold: 0.8
     fail_threshold: 0.5
     debt_weight_min: 1.0
     debt_health_min: 50
   sla:
-    check_frequency: "per-commit"
+    check_frequency: per-commit
     response_time_hours: 0.1
   behavior:
-    enforcement: "block-merge"
+    enforcement: block-merge
     auto_remediation: false
-  domain_field: "meta"
+  domain_field: meta
   rules:
-    - "CS-01: 规划→设计一致性 (Spec 必须有 OKR)"
-    - "CS-02: 设计→开发一致性 (代码模块必须有 Spec)"
-    - "CS-03: 开发→部署一致性 (服务必须有 CI)"
-    - "CS-04: 部署→运行一致性 (服务必须有告警)"
-    - "CS-05: 运行→运维一致性 (事件必须有 runbook)"
-    - "CS-06: gate_status 单一字段一致性 (plan.yaml 不得 self-add readiness/cadence 字段)"
-    - "CS-07: 5repos 路径唯一一致性 (.omo/_delivery/audit-rollout/{date}-5repos.json)"
-    - "CS-08: cron 触发窗口一致性 (manual 演练与 cron evidence 必须可区分)"
-    - "CS-09: L4 域三源一致性 (L4 Registry、Vault-Paths、DOMAIN-INDEX 数量与内容必须绝对对齐)"
-    - "CS-10: BOS URI 实现溯源一致性 (BOSRoute 必须通过 cross_references.realized_by 指定明确的上下游归属)"
-    - "CS-11: C2G 编排一致性 (OpenSpec 转入 OMO Planned Task 必须通过未决项预检门控)"
-    - "CS-12: C2G v2 柔性锚点一致性 (GSD 阶段必须具备可用的 context_uri 降维锚点，挂起任务必须进入 yield_to_ideation 循环)"
-    - "CS-13: `.omo` 目录分类一致性 (INDEX / standard / registry / kernel path constants 口径一致)"
-    - "CS-14: C2G 产物治理引用一致性 (planned task 应携带 governance_refs)"
-  validator: "model-driven/ssot/lifecycle_ssot.py + .omo/_truth/x4-consistency-rules.yaml + .omo/_truth/registry/omo-governance-surfaces.yaml"
-  compliance: "partial"
-source: "model-driven/mof/ontology_extended.py + .omo/_truth/x4-consistency-rules.yaml + .omo/standards/omo-governance-surfaces.md"
-
+  - 'CS-01: 规划→设计一致性 (Spec 必须有 OKR)'
+  - 'CS-02: 设计→开发一致性 (代码模块必须有 Spec)'
+  - 'CS-03: 开发→部署一致性 (服务必须有 CI)'
+  - 'CS-04: 部署→运行一致性 (服务必须有告警)'
+  - 'CS-05: 运行→运维一致性 (事件必须有 runbook)'
+  - 'CS-06: gate_status 单一字段一致性 (plan.yaml 不得 self-add readiness/cadence 字段)'
+  - 'CS-07: 5repos 路径唯一一致性 (.omo/_delivery/audit-rollout/{date}-5repos.json)'
+  - 'CS-08: cron 触发窗口一致性 (manual 演练与 cron evidence 必须可区分)'
+  - 'CS-09: L4 域三源一致性 (L4 Registry、Vault-Paths、DOMAIN-INDEX 数量与内容必须绝对对齐)'
+  - 'CS-10: BOS URI 实现溯源一致性 (BOSRoute 必须通过 cross_references.realized_by 指定明确的上下游归属)'
+  - 'CS-11: C2G 编排一致性 (OpenSpec 转入 OMO Planned Task 必须通过未决项预检门控)'
+  - 'CS-12: C2G v2 柔性锚点一致性 (GSD 阶段必须具备可用的 context_uri 降维锚点，挂起任务必须进入 yield_to_ideation
+    循环)'
+  - 'CS-13: `.omo` 目录分类一致性 (INDEX / standard / registry / kernel path constants 口径一致)'
+  - 'CS-14: C2G 产物治理引用一致性 (planned task 应携带 governance_refs)'
+  validator: model-driven/ssot/lifecycle_ssot.py + .omo/_truth/x4-consistency-rules.yaml
+    + .omo/_truth/registry/omo-governance-surfaces.yaml
+  compliance: partial
+source: model-driven/mof/ontology_extended.py + .omo/_truth/x4-consistency-rules.yaml
+  + .omo/standards/omo-governance-surfaces.md
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - GOV-CHECK-X4-CONSISTENCY
+  provides:
+  - MODEL-GOVERNANCE

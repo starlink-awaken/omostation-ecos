@@ -19,6 +19,10 @@ cross_references:
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/bosroute/
 state_history:
-  - state: proposal_only
-    timestamp: '2026-08-04T00:00:00Z'
-    reason: agt_external_adapter_proposal
+- state: proposal_only
+  timestamp: '2026-08-04T00:00:00Z'
+  reason: agt_external_adapter_proposal
+relations:
+  depends_on:
+  - BOSROUTE-AGT-HYPERVISOR
+  provides: []

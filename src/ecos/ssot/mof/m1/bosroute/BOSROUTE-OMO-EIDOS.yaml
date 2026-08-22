@@ -1,8 +1,7 @@
 id: BOSROUTE-OMO-EIDOS
 type: Component
-name: "bos://omo/eidos/* \u2192 Eidos Schema \u7EA6\u675F"
-description: "bos://omo/eidos/* \u2192 kairon/eidos\uFF0CSchema \u7EA6\u675F\u4E0E\
-  \u8BED\u4E49\u6821\u9A8C"
+name: bos://omo/eidos/* → Eidos Schema 约束
+description: bos://omo/eidos/* → kairon/eidos，Schema 约束与语义校验
 domain: omo
 layer: I0
 status: active
@@ -23,11 +22,13 @@ cross_references:
     entrypoint: src/eidos/
   related_workflows:
   - WORKFLOW-EIDOS-PIPELINE
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - BOSROUTE-KAIRON-eidos
+  provides: []

@@ -2,7 +2,7 @@ id: BOSROUTE-KAIRON-kairon-utils
 type: Component
 subtype: BOSRoute
 name: bos://kairon/kairon-utils
-description: "Kairon \u5B50\u5305: kairon-utils"
+description: 'Kairon 子包: kairon-utils'
 status: active
 domain: infra
 created: '2026-06-06'
@@ -16,11 +16,31 @@ cross_references:
   realized_by:
     project: kairon
     entrypoint: packages/utils/
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - BOSROUTE-KAIRON-core-models
+  - BOSROUTE-KAIRON-engine-core
+  - BOSROUTE-KAIRON-health-profile
+  - BOSROUTE-KAIRON-kairon-lib-events
+  - BOSROUTE-KAIRON-kairon-observability
+  - BOSROUTE-KAIRON-kairon-pipeline
+  - BOSROUTE-KAIRON-kairon-plugin-sdk
+  provides:
+  - BOSROUTE-KAIRON-llm-gateway-kernel
+  - BOSROUTE-KAIRON-protocols-layer
+  - BOSROUTE-KAIRON-shared-lib
+  - BOSROUTE-KAIRON-sharedbrain-bridge
+  - BOSROUTE-KAIRON-sot-bridge
+  - BOSROUTE-KAIRON-ssot
+  - BOSROUTE-KAIRON-symphony-protocol
+  - COMP-SUB-agora-src-agora
+  - COMP-SUB-cockpit-src-cockpit
+  - COMP-SUB-ecos-src-ecos
+  - COMP-SUB-kairon-src-kairon
+  - COMP-SUB-runtime-src-runtime

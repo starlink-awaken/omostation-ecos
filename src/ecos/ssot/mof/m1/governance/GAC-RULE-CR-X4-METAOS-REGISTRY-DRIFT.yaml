@@ -1,6 +1,3 @@
-# M1 GacRule instance — DERIVED by gac-m1-sync.py
-# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
-# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
 id: GAC-RULE-CR-X4-METAOS-REGISTRY-DRIFT
 type: GacRule
 name: GaC 规则 CR-X4-METAOS-REGISTRY-DRIFT
@@ -36,3 +33,10 @@ state_history:
 - state: active
   timestamp: '2026-07-26T00:00:00Z'
   reason: M1 实例由 gac-m1-sync.py 从 registry 派生
+relations:
+  depends_on:
+  - GAC-RULE-CR-ADVERSARIAL-EFFECTIVENESS
+  - GAC-RULE-CR-X4-DOC-CLAIMS
+  - GAC-RULE-CR-X4-MCPTOOL-IMPL-DRIFT
+  provides:
+  - GAC-RULE-CR-X4-MOF-CAPABILITIES-DRIFT

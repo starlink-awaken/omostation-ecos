@@ -1,6 +1,3 @@
-# M1 GacRule instance — DERIVED by gac-m1-sync.py
-# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
-# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
 id: GAC-RULE-CR-P76-8-3-DEAD-PATH-TOOL-FALLBACK
 type: GacRule
 name: 工具双路 fallback
@@ -37,3 +34,7 @@ state_history:
 - state: active
   timestamp: '2026-07-08T00:00:00Z'
   reason: M1 实例由 gac-m1-sync.py 从 registry 派生
+relations:
+  depends_on:
+  - GAC-RULE-CR-P76-7-2-TIER-GRACEFUL-FALLBACK
+  provides: []

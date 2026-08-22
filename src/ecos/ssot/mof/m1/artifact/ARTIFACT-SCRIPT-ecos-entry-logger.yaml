@@ -1,7 +1,3 @@
-# M1 Node: ARTIFACT-SCRIPT-ecos-entry-logger
-# Type: Artifact
-# Generated: 2026-06-06T13:08:34.000587+00:00
-
 id: ARTIFACT-SCRIPT-ecos-entry-logger
 type: Artifact
 subtype: Script
@@ -17,11 +13,13 @@ properties:
   size: 5264
   mtime: '2026-06-06T15:12:39.116740'
 layer: L4
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - ARTIFACT-SCRIPT-ecos-sla-tracker

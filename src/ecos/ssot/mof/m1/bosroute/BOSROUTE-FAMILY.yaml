@@ -1,9 +1,8 @@
-# M1 Node: BOSROUTE-FAMILY
 id: BOSROUTE-FAMILY
 type: Component
 subtype: BOSRoute
 name: bos://family/**
-description: "\u5BB6\u5EAD\u57DF\u8DEF\u7531"
+description: 家庭域路由
 status: active
 domain: persona
 created: '2026-06-07'
@@ -17,11 +16,13 @@ cross_references:
   realized_by:
     project: family-hub
     entrypoint: mcp_server.py
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - BOSROUTE-PERSONAL

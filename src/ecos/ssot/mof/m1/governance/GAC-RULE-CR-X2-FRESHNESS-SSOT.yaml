@@ -1,6 +1,3 @@
-# M1 GacRule instance — DERIVED by gac-m1-sync.py
-# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
-# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
 id: GAC-RULE-CR-X2-FRESHNESS-SSOT
 type: GacRule
 name: X2 新鲜度规则 SSOT (GaC 索引)
@@ -40,3 +37,9 @@ state_history:
 - state: active
   timestamp: '2026-06-27T00:00:00Z'
   reason: M1 实例由 gac-m1-sync.py 从 registry 派生
+relations:
+  depends_on:
+  - GAC-RULE-CR-L0-CONSTRAINTS-SSOT
+  - GAC-RULE-CR-X1-POLICIES-SSOT
+  provides:
+  - GAC-RULE-CR-X4-CONSISTENCY-SSOT

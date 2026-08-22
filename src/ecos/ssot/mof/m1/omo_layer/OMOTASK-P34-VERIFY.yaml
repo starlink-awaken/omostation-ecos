@@ -4,7 +4,7 @@ subtype: Task
 name: P34 验收 — 6 wave 全完成, 40 URI 真活, 5/5 真实场景 ok
 description: 'P34 整体收官: 7 wave (URI 扩/spawn 升级/实战化/多仓库/修 audit/真实场景/验收) 全完成.'
 status: done
-title: "P34 验收 — 6 wave 全完成, 40 URI 真活, 5/5 真实场景 ok"
+title: P34 验收 — 6 wave 全完成, 40 URI 真活, 5/5 真实场景 ok
 gate: none
 gate_status: passed
 priority: P2
@@ -15,11 +15,15 @@ properties:
   - .omo/tasks/planned/P34-VERIFY.yaml
   signals:
   - task-P34-VERIFY-running
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - OMOTASK-P33-VERIFY
+  provides:
+  - OMOTASK-P34-W2-ANALYSIS-EXEC
+  - OMOTASK-P35-VERIFY

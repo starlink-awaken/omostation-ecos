@@ -1,6 +1,3 @@
-# M1 GacRule instance — DERIVED by gac-m1-sync.py
-# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
-# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
 id: GAC-RULE-CR-EVIDENCE-DECLARED
 type: GacRule
 name: ADR closeout 引用 ≥1 evidence path
@@ -41,3 +38,8 @@ state_history:
 - state: active
   timestamp: '2026-07-07T00:00:00Z'
   reason: M1 实例由 gac-m1-sync.py 从 registry 派生
+relations:
+  depends_on:
+  - GAC-RULE-CR-BASELINE-REPLAYED
+  provides:
+  - GAC-RULE-CR-P76-7-4-EVIDENCE-HONEST-CLOSURE

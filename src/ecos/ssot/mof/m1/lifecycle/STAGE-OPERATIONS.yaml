@@ -1,48 +1,56 @@
-id: "STAGE-OPERATIONS"
+id: STAGE-OPERATIONS
 type: Stage
-subtype: "StandardStage"
-name: "运维态"
-description: "运维规范化、Runbook、SLA 治理 — 7 阶段标准生命周期第 6 阶段"
-status: "active"
-domain: "meta"
-layer: "L0"
-created: "2026-06-13"
-version: "1.0.0"
+subtype: StandardStage
+name: 运维态
+description: 运维规范化、Runbook、SLA 治理 — 7 阶段标准生命周期第 6 阶段
+status: active
+domain: meta
+layer: L0
+created: '2026-06-13'
+version: 1.0.0
 properties:
   order: 5
-  stage: "operations"
-  m3_parent: "LifecycleElement.Stage"
+  stage: operations
+  m3_parent: LifecycleElement.Stage
   model_driven_ref:
-    - "projects/model-driven/src/model_driven/mof/m3_extended.py:STANDARD_STAGES[LifecycleStage.OPERATIONS]"
+  - projects/model-driven/src/model_driven/mof/m3_extended.py:STANDARD_STAGES[LifecycleStage.OPERATIONS]
   entry_criteria:
-    - "SLA 达标 ≥ 30 天"
-    - "无 P0/P1 事故"
+  - SLA 达标 ≥ 30 天
+  - 无 P0/P1 事故
   exit_criteria:
-    - "Runbook 100% 覆盖"
-    - "On-call 轮值成熟"
-    - "事故 MTTR < 30 分钟"
+  - Runbook 100% 覆盖
+  - On-call 轮值成熟
+  - 事故 MTTR < 30 分钟
   core_activities:
-    - "Runbook 编写与维护"
-    - "On-call 轮值调度"
-    - "事故复盘与改进"
-    - "运维 SOP 优化"
-    - "成本优化"
+  - Runbook 编写与维护
+  - On-call 轮值调度
+  - 事故复盘与改进
+  - 运维 SOP 优化
+  - 成本优化
   deliverables:
-    - "Runbook 库"
-    - "On-call 手册"
-    - "事故 postmortem 库"
-    - "运维 SOP 文档"
+  - Runbook 库
+  - On-call 手册
+  - 事故 postmortem 库
+  - 运维 SOP 文档
   stakeholders:
-    - "SRE 工程师"
-    - "DevOps 工程师"
-    - "技术负责人"
+  - SRE 工程师
+  - DevOps 工程师
+  - 技术负责人
   duration_target_days: 180
-source: "model-driven/mof/m3_extended.py:STANDARD_STAGES"
-
+source: model-driven/mof/m3_extended.py:STANDARD_STAGES
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: "active"
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - DOMAIN-LIFECYCLE-STANDARD
+  - STAGE-BUSINESS-OPS
+  - STAGE-DEPLOYMENT
+  - STAGE-DESIGN
+  - STAGE-DEVELOPMENT
+  - STAGE-MODEL-DRIVEN-PLANNING
+  provides:
+  - STAGE-RUNTIME

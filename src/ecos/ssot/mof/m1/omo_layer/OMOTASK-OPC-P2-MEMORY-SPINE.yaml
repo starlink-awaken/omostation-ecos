@@ -4,7 +4,7 @@ subtype: RoadmapPhase
 name: 'OPC-P2: Personal Memory Spine'
 description: Design the personal memory spine for OPC. Define memory boundaries,
 status: done
-title: "'OPC-P2: Personal Memory Spine'"
+title: '''OPC-P2: Personal Memory Spine'''
 gate_status: passed
 priority: P2
 domain: opc
@@ -43,11 +43,13 @@ properties:
   m3_parent: ManagementElement.OMOTask
   model_driven_ref:
   - .omo/tasks/planned/OPC-P2-MEMORY-SPINE.yaml
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - OMOTASK-OPC-PHASE-PLAN

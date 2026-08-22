@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase9-wave2-closeout
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase9-wave2-closeout
 type: Lesson
 subtype: OMORetro
@@ -18,11 +15,31 @@ properties:
     space boundary, with explicit ownership and routing references into the new P'
   source: Workspace/.omo/_knowledge/summaries/phase9/phase9-wave2-closeout.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-phase10-wave4-closeout
+  - LESSON-OMO-phase11-wave3-closeout
+  - LESSON-OMO-phase15-closeout
+  - LESSON-OMO-phase5-wave2-retrospective
+  - LESSON-OMO-phase6-closeout-retrospective
+  - LESSON-OMO-phase6-ratification-kickoff
+  - LESSON-OMO-phase6-wave1-closeout
+  - LESSON-OMO-phase6-wave2-closeout
+  - LESSON-OMO-phase6-wave3-closeout
+  - LESSON-OMO-phase7-planning-ratification
+  - LESSON-OMO-phase7-wave1-closeout
+  - LESSON-OMO-phase7-wave2-closeout
+  - LESSON-OMO-phase7-wave3-closeout
+  - LESSON-OMO-phase8-planning-ratification
+  - LESSON-OMO-phase8-wave1-closeout
+  - LESSON-OMO-phase8-wave2-closeout
+  - LESSON-OMO-phase8-wave3-closeout
+  provides:
+  - LESSON-OMO-phase9-wave3-closeout
+  - LESSON-OMO-phase9-wave4-closeout

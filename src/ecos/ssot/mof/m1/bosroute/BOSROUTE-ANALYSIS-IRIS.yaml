@@ -2,7 +2,7 @@ id: BOSROUTE-ANALYSIS-IRIS
 type: Component
 subtype: BOSRoute
 name: bos://analysis/iris/*
-description: "iris \u522B\u540D \u2014 connect, transform, validate"
+description: iris 别名 — connect, transform, validate
 status: active
 domain: infra
 created: '2026-06-08'
@@ -16,11 +16,14 @@ cross_references:
   realized_by:
     project: agora
     entrypoint: src/
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - BOSROUTE-ANALYSIS-CODEANALYZE
+  provides:
+  - BOSROUTE-MOF-VALIDATE

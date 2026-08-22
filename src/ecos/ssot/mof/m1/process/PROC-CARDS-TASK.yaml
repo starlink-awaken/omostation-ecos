@@ -1,5 +1,3 @@
-# M1 Node: PROC-CARDS-TASK
-
 id: PROC-CARDS-TASK
 type: Process
 subtype: CARDS
@@ -21,11 +19,14 @@ properties:
     name: 创建
   - order: 2
     name: 流转
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - PROC-CARDS-DEBT
+  - PROC-CARDS-IDEA
+  provides: []

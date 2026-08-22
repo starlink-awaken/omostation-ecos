@@ -1,29 +1,32 @@
-id: "TRIGGER-AGORA-WATCHDOG"
+id: TRIGGER-AGORA-WATCHDOG
 type: Trigger
-name: "Agora Watchdog"
-description: "Agora 服务健康监控 — 每 10 秒检查，连续 3 次失败自动重启"
-status: "active"
-domain: "meta"
-layer: "I0"
-created: "2026-06-09"
-version: "1.0.0"
+name: Agora Watchdog
+description: Agora 服务健康监控 — 每 10 秒检查，连续 3 次失败自动重启
+status: active
+domain: meta
+layer: I0
+created: '2026-06-09'
+version: 1.0.0
 properties:
-  trigger_type: "watchdog"
-  trigger_source: "while True sleep(10s)"
-  trigger_action: "health check + auto kill/restart"
-  schedule: "every 10s"
+  trigger_type: watchdog
+  trigger_source: while True sleep(10s)
+  trigger_action: health check + auto kill/restart
+  schedule: every 10s
   interval_seconds: 10
   dependencies:
-    - "TRIGGER-AGORA-LAUNCHD"
+  - TRIGGER-AGORA-LAUNCHD
   retry_policy:
     max_retries: 3
-    backoff_strategy: "fixed_15s"
-source: "agora/agora_watchdog.py"
-
+    backoff_strategy: fixed_15s
+source: agora/agora_watchdog.py
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: "active"
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - RUNTIME-SCHEDULER
+  provides:
+  - TRIGGER-SCHEDULER

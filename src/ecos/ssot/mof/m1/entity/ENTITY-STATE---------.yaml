@@ -1,7 +1,3 @@
-# M1 Node: ENTITY-STATE---------
-# Type: Entity
-# Modeled: 2026-06-06T13:31:04
-
 id: ENTITY-STATE---------
 type: Entity
 subtype: StateSnapshot
@@ -18,11 +14,17 @@ properties:
   - 学习进化/2-knowledge/渠道传播/控制面/STATE.md
   identity:
     path: 学习进化/2-knowledge/渠道传播/控制面/STATE.md
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - ENTITY-STATE------L1-----
+  - ENTITY-STATE------_control
+  - SPEC-CLAUDE---------------
+  - SPEC-CLAUDE------KEMS
+  - SPEC-CLAUDE------OMO

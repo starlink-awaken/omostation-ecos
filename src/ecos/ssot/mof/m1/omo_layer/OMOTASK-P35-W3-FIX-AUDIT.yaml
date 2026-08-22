@@ -4,7 +4,7 @@ subtype: Task
 name: 修 P35 任务 YAML 描述债务 — audit 100 (A+ 守)
 description: 修 P35-W1-W2-COMBO 任务 YAML deliverables 描述式 -> 真实路径.
 status: done
-title: "修 P35 任务 YAML 描述债务 — audit 100 (A+ 守)"
+title: 修 P35 任务 YAML 描述债务 — audit 100 (A+ 守)
 gate: none
 gate_status: passed
 priority: P2
@@ -15,11 +15,13 @@ properties:
   - .omo/tasks/planned/P35-W3-FIX-AUDIT.yaml
   signals:
   - task-P35-W3-FIX-AUDIT-running
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - OMOTASK-P34-W4-FIX-AUDIT
+  provides: []

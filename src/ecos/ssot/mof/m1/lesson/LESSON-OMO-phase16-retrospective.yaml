@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase16-retrospective
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase16-retrospective
 type: Lesson
 subtype: OMORetro
@@ -22,11 +19,15 @@ properties:
     - External OMO should continue adding patterns only fro'
   source: Workspace/.omo/_knowledge/summaries/phase16/phase16-retrospective.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-phase15-closeout
+  - LESSON-OMO-phase15-retrospective
+  - LESSON-OMO-phase16-closeout
+  provides: []

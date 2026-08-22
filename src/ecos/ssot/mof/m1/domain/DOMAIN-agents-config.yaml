@@ -1,7 +1,3 @@
-# M1 Node: DOMAIN-agents-config
-# Type: Domain | Subtype: ConfigDomain
-# Generated: 2026-06-07
-
 id: DOMAIN-agents-config
 type: Domain
 name: ~/.agents
@@ -21,11 +17,13 @@ properties:
   - config.read
   - agent.manage
 subtype: ConfigDomain
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - WORKFLOW-TEST-SWARM

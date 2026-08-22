@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase5-wave3-retrospective
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase5-wave3-retrospective
 type: Lesson
 subtype: OMORetro
@@ -19,11 +16,17 @@ properties:
     other Phase 5 execution, which closes the gap between worker operations and p
   source: Workspace/.omo/_knowledge/summaries/phase5/phase5-wave3-retrospective.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-phase11-retrospective
+  - LESSON-OMO-phase11-wave2-adr-ontoderive-s
+  - LESSON-OMO-phase5-wave1-retrospective
+  provides:
+  - LESSON-OMO-phase6-wave3-closeout
+  - LESSON-OMO-phase8-wave1-closeout

@@ -19,3 +19,9 @@ state_history:
 - state: proposed
   timestamp: '2026-06-28T00:00:00Z'
   reason: synced_from_omo_tasks
+relations:
+  depends_on:
+  - OMOTASK-QUEST-5
+  - OMOTASK-QUEST-6
+  - OMOTASK-QUEST-7
+  provides: []

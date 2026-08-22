@@ -1,6 +1,3 @@
-# M1 Node: LESSON-OMO-phase15-closeout
-# Extracted from .omo/ retros
-
 id: LESSON-OMO-phase15-closeout
 type: Lesson
 subtype: OMORetro
@@ -18,11 +15,21 @@ properties:
     read-only user-value scenario for a governed execution pilot.
   source: Workspace/.omo/_knowledge/summaries/phase15/phase15-closeout.md
   severity: medium
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: recorded
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: recorded
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - LESSON-OMO-phase12-pilot-closeout
+  - LESSON-OMO-phase12-retrospective
+  - LESSON-OMO-phase14-closeout
+  provides:
+  - LESSON-OMO-phase15-retrospective
+  - LESSON-OMO-phase16-closeout
+  - LESSON-OMO-phase16-retrospective
+  - LESSON-OMO-phase5-closeout-retrospective
+  - LESSON-OMO-phase5-wave0-closeout-retrospe
+  - LESSON-OMO-phase9-wave2-closeout

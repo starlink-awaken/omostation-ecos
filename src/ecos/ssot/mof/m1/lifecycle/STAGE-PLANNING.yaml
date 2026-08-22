@@ -1,40 +1,48 @@
-id: "STAGE-MODEL-DRIVEN-PLANNING"
+id: STAGE-MODEL-DRIVEN-PLANNING
 type: Stage
-subtype: "StandardStage"
-name: "规划态"
-description: "目标设定、需求分析、路线图规划 — 7 阶段标准生命周期第 1 阶段"
-status: "active"
-domain: "meta"
-layer: "L0"
-created: "2026-06-09"
-version: "1.0.0"
+subtype: StandardStage
+name: 规划态
+description: 目标设定、需求分析、路线图规划 — 7 阶段标准生命周期第 1 阶段
+status: active
+domain: meta
+layer: L0
+created: '2026-06-09'
+version: 1.0.0
 properties:
   order: 0
-  stage: "planning"
+  stage: planning
   entry_criteria:
-    - "OKR 已起草"
-    - "需求已收集"
+  - OKR 已起草
+  - 需求已收集
   exit_criteria:
-    - "OKR 已审批"
-    - "Spec 已起草"
-    - "关键 ADR 已记录"
+  - OKR 已审批
+  - Spec 已起草
+  - 关键 ADR 已记录
   core_activities:
-    - "OKR 制定"
-    - "需求分析"
-    - "技术选型"
-    - "路线图规划"
+  - OKR 制定
+  - 需求分析
+  - 技术选型
+  - 路线图规划
   deliverables:
-    - "OKR 文档"
-    - "需求文档"
-    - "技术选型报告"
-    - "路线图"
+  - OKR 文档
+  - 需求文档
+  - 技术选型报告
+  - 路线图
   duration_target_days: 14
-source: "model-driven/mof/m3_extended.py"
-
+source: model-driven/mof/m3_extended.py
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: "active"
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - DOMAIN-LIFECYCLE-STANDARD
+  - STAGE-BUSINESS-OPS
+  - STAGE-DEPLOYMENT
+  - STAGE-DESIGN
+  - STAGE-DEVELOPMENT
+  provides:
+  - STAGE-OPERATIONS
+  - STAGE-RUNTIME

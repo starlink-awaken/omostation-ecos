@@ -1,6 +1,3 @@
-# M1 Node: ENTITY-OMO-DEBT-BYPASS-008
-# Extracted from .omo/ debts
-
 id: ENTITY-OMO-DEBT-BYPASS-008
 type: Entity
 subtype: OMODebt
@@ -17,11 +14,17 @@ properties:
     omo_debt_id: BYPASS-008
   sources:
   - Workspace/.omo/debt/items/BYPASS-008.yaml
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - ENTITY-OMO-DEBT-BYPASS-002
+  - ENTITY-OMO-DEBT-BYPASS-004
+  - ENTITY-OMO-DEBT-BYPASS-005
+  provides:
+  - ENTITY-OMO-DEBT-BYPASS-009
+  - SKILL-FORGE-asset_cli

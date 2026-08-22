@@ -2,7 +2,7 @@ id: BOSROUTE-ANALYSIS-CODEANALYZE
 type: Component
 subtype: BOSRoute
 name: bos://analysis/codeanalyze/*
-description: "codeanalyze \u522B\u540D \u2014 scan, report, lint"
+description: codeanalyze 别名 — scan, report, lint
 status: active
 domain: infra
 created: '2026-06-08'
@@ -16,11 +16,13 @@ cross_references:
   realized_by:
     project: agora
     entrypoint: src/
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - BOSROUTE-ANALYSIS-IRIS

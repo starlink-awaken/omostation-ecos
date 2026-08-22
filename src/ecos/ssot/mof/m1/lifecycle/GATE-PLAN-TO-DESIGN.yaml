@@ -1,35 +1,39 @@
-id: "GATE-PLAN-TO-DESIGN"
+id: GATE-PLAN-TO-DESIGN
 type: Gate
-subtype: "StandardGate"
-name: "规划→设计 门禁"
-description: "规划态到设计态的质量门禁检查点"
-status: "active"
-domain: "meta"
-layer: "L0"
-created: "2026-06-09"
-version: "1.0.0"
+subtype: StandardGate
+name: 规划→设计 门禁
+description: 规划态到设计态的质量门禁检查点
+status: active
+domain: meta
+layer: L0
+created: '2026-06-09'
+version: 1.0.0
 properties:
-  from_stage: "planning"
-  to_stage: "design"
+  from_stage: planning
+  to_stage: design
   checks:
-    - name: "OKR 审批"
-      type: "approval"
-      required: true
-    - name: "Spec 草案完成"
-      type: "document"
-      required: true
-    - name: "关键 ADR 记录"
-      type: "document"
-      required: true
+  - name: OKR 审批
+    type: approval
+    required: true
+  - name: Spec 草案完成
+    type: document
+    required: true
+  - name: 关键 ADR 记录
+    type: document
+    required: true
   required_approvals:
-    - "技术负责人"
-    - "产品负责人"
-source: "model-driven/mof/m3_extended.py"
-
+  - 技术负责人
+  - 产品负责人
+source: model-driven/mof/m3_extended.py
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: "active"
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - GATE-DEPLOY-TO-RUN
+  - GATE-DESIGN-TO-DEV
+  - GATE-DEV-TO-DEPLOY
+  provides: []

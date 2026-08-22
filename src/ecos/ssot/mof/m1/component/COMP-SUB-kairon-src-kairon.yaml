@@ -11,11 +11,32 @@ layer: L2
 properties:
   layer: L2
   runtime: active
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - BOSROUTE-KAIRON-core-models
+  - BOSROUTE-KAIRON-engine-core
+  - BOSROUTE-KAIRON-health-profile
+  - BOSROUTE-KAIRON-kairon-lib-events
+  - BOSROUTE-KAIRON-kairon-observability
+  - BOSROUTE-KAIRON-kairon-pipeline
+  - BOSROUTE-KAIRON-kairon-plugin-sdk
+  - BOSROUTE-KAIRON-kairon-utils
+  - BOSROUTE-KAIRON-llm-gateway-kernel
+  - BOSROUTE-KAIRON-protocols-layer
+  - BOSROUTE-KAIRON-shared-lib
+  - BOSROUTE-KAIRON-sharedbrain-bridge
+  - BOSROUTE-KAIRON-sot-bridge
+  - BOSROUTE-KAIRON-ssot
+  - BOSROUTE-KAIRON-symphony-protocol
+  - COMP-SUB-agora-extras-web
+  - COMP-SUB-agora-src-agora
+  - COMP-SUB-cockpit-src-cockpit
+  - COMP-SUB-ecos-src-ecos
+  provides:
+  - COMP-SUB-runtime-src-runtime

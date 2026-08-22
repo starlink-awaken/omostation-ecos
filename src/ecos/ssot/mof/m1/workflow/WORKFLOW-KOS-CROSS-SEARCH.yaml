@@ -81,15 +81,9 @@ execution:
   on_failure: abort
   audit_enabled: true
 relations:
-- type: triggers
-  target: bos://analysis/query
-  note: 分析查询触发 KOS 跨域搜索
-- type: data_flows
-  target: bos://analysis/results
-  note: 搜索结果返回分析消费端
-- type: depends_on
-  target: WORKFLOW-KRONOS-INGEST
-  note: KOS 搜索依赖 Kronos 摄取的知识索引
+  depends_on:
+  - BOSROUTE-MEMORY-KOS
+  provides: []
 sla:
   max_execution_time: 600
   expected_completion_rate: 0.95
@@ -102,11 +96,9 @@ maintained_by: kairon/kos
 last_reviewed: '2026-06-07'
 properties:
   workflow_name: KOS 跨域搜索管线
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling

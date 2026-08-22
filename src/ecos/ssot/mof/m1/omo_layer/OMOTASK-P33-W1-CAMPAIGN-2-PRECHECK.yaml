@@ -5,7 +5,7 @@ name: '战役 2 前置: 5 Domain 边界 + BOS URI 命名约定 (ADR-0007)'
 description: '战役 2 前置: 定义 5 Domain (Memory/Governance/Analysis/Persona/Capability)
   与 kairon 19 个活跃包'
 status: done
-title: "'战役 2 前置: 5 Domain 边界 + BOS URI 命名约定 (ADR-0007)'"
+title: '''战役 2 前置: 5 Domain 边界 + BOS URI 命名约定 (ADR-0007)'''
 gate: none
 gate_status: passed
 priority: P2
@@ -16,11 +16,14 @@ properties:
   - .omo/tasks/planned/P33-W1-CAMPAIGN-2-PRECHECK.yaml
   signals:
   - task-P33-W1-CAMPAIGN-2-PRECHECK-running
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: done
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: done
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - OMOTASK-P33-W2-DOMAINS-3
+  - OMOTASK-P35-W0-DOMAIN-CHAIN

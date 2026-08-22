@@ -13,11 +13,39 @@ properties:
   - OMO 管理
   scope:
   - OMO
-
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on:
+  - SPEC-OMO-MGMT-5-3-1-full-audit-2026-06-06
+  - SPEC-OMO-MGMT-5-3-1-layer-deep-architecture
+  - SPEC-OMO-MGMT-ARCH-AUDIT-2026-05
+  - SPEC-OMO-MGMT-ARCH-AUDIT-v2
+  - SPEC-OMO-MGMT-ARCH-REVIEW
+  - SPEC-OMO-MGMT-DEBT-ANALYSIS
+  - SPEC-OMO-MGMT-KOS_MIGRATION_IMPACT
+  - SPEC-OMO-MGMT-architecture-complete-plan
+  - SPEC-OMO-MGMT-architecture-final-state-v1
+  - SPEC-OMO-MGMT-architecture-final-state-v2
+  provides:
+  - SPEC-OMO-MGMT-architecture-health-snapshot-p
+  - SPEC-OMO-MGMT-architecture-migration-playboo
+  - SPEC-OMO-MGMT-architecture-pure-analysis
+  - SPEC-OMO-MGMT-code-quality-baseline-phase16
+  - SPEC-OMO-MGMT-debt-governance-round3-report
+  - SPEC-OMO-MGMT-debt-systems-analysis-and-gove
+  - SPEC-OMO-MGMT-decision-p30-architecture-fina
+  - SPEC-OMO-MGMT-dependency-audit-post-phase16
+  - SPEC-OMO-MGMT-design-dashboard-cockpit
+  - SPEC-OMO-MGMT-design-freshness
+  - SPEC-OMO-MGMT-design-red-team
+  - SPEC-OMO-MGMT-design-smart-notify
+  - SPEC-OMO-MGMT-design-taskobject-live
+  - SPEC-OMO-MGMT-eCOS-v5-Architecture-SSOT
+  - SPEC-OMO-MGMT-ecos-layer-audit-2026-06-05
+  - SPEC-OMO-MGMT-ecos-v5-deep-analysis-2026-06-
+  - SPEC-OMO-MGMT-global-governance-charter-v1

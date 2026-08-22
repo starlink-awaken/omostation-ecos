@@ -1,28 +1,36 @@
-id: "DOMAIN-LIFECYCLE-STANDARD"
+id: DOMAIN-LIFECYCLE-STANDARD
 type: DomainLifecycle
-name: "标准域生命周期"
-description: "21 域的标准生命周期状态机: proposed→active→degraded→frozen→archived→removed"
-status: "active"
-domain: "meta"
-layer: "L4"
-created: "2026-06-09"
-version: "1.0.0"
+name: 标准域生命周期
+description: '21 域的标准生命周期状态机: proposed→active→degraded→frozen→archived→removed'
+status: active
+domain: meta
+layer: L4
+created: '2026-06-09'
+version: 1.0.0
 properties:
-  domain_id: "all"
+  domain_id: all
   stateMachine:
-    - "proposed → active"
-    - "active → degraded"
-    - "active → frozen"
-    - "frozen → active"
-    - "degraded → active"
-    - "frozen → archived"
-    - "archived → removed"
-source: "l4-kernel/lifecycle.py"
-
+  - proposed → active
+  - active → degraded
+  - active → frozen
+  - frozen → active
+  - degraded → active
+  - frozen → archived
+  - archived → removed
+source: l4-kernel/lifecycle.py
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
-
 state_history:
-  - state: "active"
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+- state: active
+  timestamp: '2026-06-19T00:00:00Z'
+  reason: initial_modeling
+relations:
+  depends_on: []
+  provides:
+  - STAGE-BUSINESS-OPS
+  - STAGE-DEPLOYMENT
+  - STAGE-DESIGN
+  - STAGE-DEVELOPMENT
+  - STAGE-MODEL-DRIVEN-PLANNING
+  - STAGE-OPERATIONS
+  - STAGE-RUNTIME
