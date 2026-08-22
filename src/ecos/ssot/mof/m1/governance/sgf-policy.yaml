@@ -111,6 +111,11 @@ gates:
     command: ["bin/gac/state-freshness-check.py", "--json"]
     ci_only: true
     ci_skip: true  # local env 无完整 state 快照, CI strict 跑
+  - id: "p74-silent-workflows"
+    command:
+      - "bin/gac/check-silent-workflows.py"
+    ci_only: true
+    description: "ADR-0130 P74 lock — silently-healthy workflow detection as executable gate"
   - id: "check-dashboard-registry-consistency"
     command: ["bin/ssot/check-dashboard-registry-consistency.py"]
   - id: "check-toolbox-ssot"
