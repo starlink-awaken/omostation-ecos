@@ -33,7 +33,7 @@ CONSTRAINTS_FILE = Path(__file__).resolve().parent.parent / "registry" / "L0-con
 NODES_DIR = MOF_ROOT / "generated" / "nodes"
 
 # 合规 status 枚举 (来自 m3.yaml Element.status)
-VALID_STATUSES = {"draft", "active", "deprecated", "superseded", "archived", "proposed", "accepted", "done", "running", "identified", "scored", "scored_active", "aging", "resolved", "recorded", "adopted", "validated", "published", "planned", "stopped", "documented"}
+VALID_STATUSES = {"draft", "active", "deprecated", "superseded", "archived", "proposed", "accepted", "done", "running", "identified", "scored", "scored_active", "aging", "resolved", "recorded", "adopted", "validated", "published", "planned", "stopped", "documented", "standalone", "emitted", "betted", "tracking", "predicting", "valid"}
 
 
 def now():
