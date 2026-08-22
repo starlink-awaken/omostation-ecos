@@ -1,5 +1,6 @@
 id: M1-PRED-001
 type: PredictiveGovernance
+status: active
 name: 债务风险预测
 PredictiveGovernance:
   prediction_id: PRED-DEBT-RISK-2026-07-14

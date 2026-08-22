@@ -1,6 +1,7 @@
 id: RP-COST-FIRST
 name: RP-COST-FIRST
 type: RoutingPolicy
+status: active
 strategy: cost_first
 weights:
   cost: 0.7

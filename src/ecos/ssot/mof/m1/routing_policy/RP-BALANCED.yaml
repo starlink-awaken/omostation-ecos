@@ -1,6 +1,7 @@
 id: RP-BALANCED
 name: RP-BALANCED
 type: RoutingPolicy
+status: active
 strategy: balanced
 weights:
   cost: 0.35

@@ -1,6 +1,7 @@
 id: AC-DEEPSEEK
 name: DeepSeek API 可用性检查
 type: AvailabilityCheck
+status: active
 provider: deepseek
 probe_type: https
 probe_url: https://api.deepseek.com/v1/models

@@ -1,5 +1,6 @@
 id: NET-SCANNER
 type: ConstraintMgmt
+status: active
 scan_methods:
   mdns:
     enabled: true

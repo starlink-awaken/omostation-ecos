@@ -2,43 +2,78 @@
 """
 织星 MOF — M1 节点扫描器 (mof-scan)
 =====================================
-自动扫描系统资产，生成 M1 节点声明。
-基于 M2 元模型定义，为每个发现的要素创建结构化的 M1 节点 YAML。
+扫描 MOF 实际实例目录 (src/ecos/ssot/mof/m1/) 并产出状态分布报告。
+基于 M2 元模型定义，校验 M1 实例的 status 合规性。
 
-扫描源:
-  1. @驾驶舱/scripts/*.py          → Artifact
-  2. L0-constraints.yaml           → Protocol + Specification
-  3. CARDS SQLite                  → Entity (卡片)
-  4. 5+4+1+1架构全景.md              → Architecture
-  5. 领域知识库/**/实体/*.md        → Entity (领域实体)
-  6. CLAUDE.md 文件                → Specification (Agent契约)
+扫描源 (主):
+  - src/ecos/ssot/mof/m1/**/*.yaml   → 全量 M1 实例 (1400+)
+  - src/ecos/ssot/registry/L0-constraints.yaml → Protocol + Specification
+  - src/ecos/ssot/mof/m2/*.yaml      → M2 schema 引用
 
 用法:
-    python3 mof-scan.py                    # 扫描+输出到 nodes/
+    python3 mof-scan.py                    # 扫描+输出报告
     python3 mof-scan.py --summary          # 仅输出摘要
     python3 mof-scan.py --json             # JSON 输出
     python3 mof-scan.py --type=Protocol    # 仅扫描指定类型
+    python3 mof-scan.py --check-status     # 校验 status 枚举合规性
 """
 
 import argparse
 import json
 import sqlite3
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── 路径 ──
-DOCS = Path.home() / "Documents"
-SCRIPTS_DIR = DOCS / "驾驶舱" / "scripts"
-NODES_DIR = DOCS / "驾驶舱" / "元模型" / "nodes"
-M2_FILE = DOCS / "驾驶舱" / "元模型" / "M2-元模型.yaml"
-CONSTRAINTS_FILE = DOCS / "学习进化" / "2-knowledge" / "基建架构" / "L0-constraints.yaml"
-CARDS_DB = Path.home() / "Workspace" / "data" / "cards" / "cards.db"
-ARCH_FILE = DOCS / "驾驶舱" / "5+4+1+1架构全景.md"
-ENTITY_DIR = DOCS / "领域知识库"
+# ── 路径 (实际 MOF 目录) ──
+MOF_ROOT = Path(__file__).resolve().parent.parent / "mof"
+M1_DIR = MOF_ROOT / "m1"
+M2_DIR = MOF_ROOT / "m2"
+CONSTRAINTS_FILE = Path(__file__).resolve().parent.parent / "registry" / "L0-constraints.yaml"
+NODES_DIR = MOF_ROOT / "generated" / "nodes"
+
+# 合规 status 枚举 (来自 m3.yaml Element.status)
+VALID_STATUSES = {"draft", "active", "deprecated", "superseded", "archived", "proposed", "accepted", "done", "running", "identified", "scored", "scored_active", "aging", "resolved", "recorded", "adopted", "validated", "published", "planned", "stopped", "documented"}
 
 
 def now():
     return datetime.now(timezone.utc).isoformat()
+
+
+def scan_m1_instances() -> list[dict]:
+    """扫描实际 M1 实例目录 → 全量实例报告"""
+    nodes = []
+    if not M1_DIR.exists():
+        return nodes
+    for f in sorted(M1_DIR.rglob("*.yaml")):
+        try:
+            import yaml
+            with open(f) as fh:
+                data = yaml.safe_load(fh)
+            if not isinstance(data, dict):
+                continue
+            status = data.get("status", "unknown")
+            nodes.append({
+                "id": data.get("id", f.stem),
+                "type": data.get("type", "Unknown"),
+                "name": data.get("name", f.stem),
+                "status": str(status).strip('"'),
+                "path": str(f.relative_to(MOF_ROOT)),
+                "subtype": data.get("subtype", ""),
+            })
+        except Exception:
+            continue
+    return nodes
+
+
+def check_status_compliance(nodes: list[dict]) -> list[dict]:
+    """校验 status 值是否在合规枚举内"""
+    violations = []
+    for n in nodes:
+        st = n.get("status", "").lower().strip()
+        if st and st not in VALID_STATUSES:
+            violations.append({"id": n["id"], "status": n["status"], "path": n.get("path", "")})
+    return violations
 
 
 def scan_scripts() -> list[dict]:
@@ -341,58 +376,47 @@ def save_nodes(nodes: list[dict], node_type: str = "all"):
 
 def main():
     parser = argparse.ArgumentParser(description="织星 MOF M1 节点扫描器")
-    parser.add_argument("--summary", action="store_true")
+    parser.add_argument("--summary", action="store_true", default=True)
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--type", type=str, default="all")
-    parser.add_argument("--save", action="store_true", default=True)
+    parser.add_argument("--save", action="store_true", default=False)
+    parser.add_argument("--check-status", action="store_true")
     args = parser.parse_args()
 
-    all_nodes = []
-    scanners = {
-        "Artifact": scan_scripts,
-        "Protocol": scan_protocols,
-        "Entity": lambda: scan_cards() + scan_entities(),
-        "Architecture": scan_architecture,
-    }
+    # 主扫描源: 实际 M1 实例目录
+    m1_nodes = scan_m1_instances()
 
-    if args.type != "all":
-        scanner = scanners.get(args.type)
-        if scanner:
-            all_nodes = scanner()
-    else:
-        for name, scanner in scanners.items():
-            nodes = scanner()
-            all_nodes.extend(nodes)
-            if args.summary:
-                print(f"  [{name:15s}] {len(nodes):3d} 节点")
+    if args.check_status:
+        violations = check_status_compliance(m1_nodes)
+        print(f"\n── Status 合规校验 ──")
+        print(f"  总实例: {len(m1_nodes)}")
+        print(f"  不合规: {len(violations)}")
+        if violations:
+            for v in violations[:20]:
+                print(f"    ⚠️ {v['id']}: status={v['status']} ({v['path']})")
+        return
+
+    # status 分布统计
+    status_counts = Counter(n.get("status", "unknown") for n in m1_nodes)
+    type_counts = Counter(n.get("type", "Unknown") for n in m1_nodes)
 
     if args.summary:
-        # Count by type
-        type_counts = {}
-        for n in all_nodes:
-            t = n["type"]
-            type_counts[t] = type_counts.get(t, 0) + 1
-        print("\n── 扫描汇总 ──")
-        print(f"  总计: {len(all_nodes)} M1 节点")
-        for t, c in sorted(type_counts.items()):
-            print(f"  {t:20s}: {c:3d}")
-        # Check M2 coverage
-        m2_types = [
-            "Model",
-            "Architecture",
-            "Mechanism",
-            "Protocol",
-            "Pattern",
-            "Specification",
-            "Process",
-            "Entity",
-        ]
-        print("\n── M2 类型覆盖 ──")
-        for mt in m2_types:
-            count = sum(1 for n in all_nodes if n["type"] == mt)
-            icon = "✅" if count >= 2 else ("⚠️" if count >= 1 else "❌")
-            print(f"  {icon} {mt:20s}: {count} M1节点")
+        print("\n── MOF M1 实例扫描 ──")
+        print(f"  总实例: {len(m1_nodes)}")
+        print(f"\n  状态分布 (Top 10):")
+        for st, c in status_counts.most_common(10):
+            print(f"    {st:20s}: {c}")
+        print(f"\n  类型分布 (Top 10):")
+        for tp, c in type_counts.most_common(10):
+            print(f"    {tp:20s}: {c}")
+
+        # status 合规校验
+        violations = check_status_compliance(m1_nodes)
+        print(f"\n  状态合规: {len(m1_nodes) - len(violations)}/{len(m1_nodes)} (不合规 {len(violations)})")
         return
+
+    if args.json:
+        print(json.dumps(m1_nodes, ensure_ascii=False, indent=2))
 
     if args.save:
         saved = save_nodes(all_nodes, args.type)
