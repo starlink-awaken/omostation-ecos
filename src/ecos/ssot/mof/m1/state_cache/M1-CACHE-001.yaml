@@ -1,6 +1,6 @@
 id: M1-CACHE-001
 type: StateCache
-status: active
+status: valid
 name: 治理状态缓存
 StateCache:
   cache_id: governance_state_cache

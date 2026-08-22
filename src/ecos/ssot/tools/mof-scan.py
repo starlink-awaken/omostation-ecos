@@ -388,7 +388,7 @@ def main():
 
     if args.check_status:
         violations = check_status_compliance(m1_nodes)
-        print(f"\n── Status 合规校验 ──")
+        print("\n── Status 合规校验 ──")
         print(f"  总实例: {len(m1_nodes)}")
         print(f"  不合规: {len(violations)}")
         if violations:
@@ -403,10 +403,10 @@ def main():
     if args.summary:
         print("\n── MOF M1 实例扫描 ──")
         print(f"  总实例: {len(m1_nodes)}")
-        print(f"\n  状态分布 (Top 10):")
+        print("\n  状态分布 (Top 10):")
         for st, c in status_counts.most_common(10):
             print(f"    {st:20s}: {c}")
-        print(f"\n  类型分布 (Top 10):")
+        print("\n  类型分布 (Top 10):")
         for tp, c in type_counts.most_common(10):
             print(f"    {tp:20s}: {c}")
 
