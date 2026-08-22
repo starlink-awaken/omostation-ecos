@@ -18,6 +18,7 @@ mof-bridge-match — M1 OMOTask ↔ .omo/tasks 内容匹配
 """
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
