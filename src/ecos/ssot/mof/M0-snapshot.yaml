@@ -1,32 +1,9 @@
 daemon:
-  cycles: 24
+  cycles: 57
   healthy: true
   last_exit: 0
-generated_at: '2026-06-17T08:28:40.691464+00:00'
-protocols:
-  A2A:
-    age_days: 1
-    decay: 0.01
-    remaining_pct: 99.4
-    status: fresh
-  ACP:
-    age_days: 1
-    decay: 0.01
-    remaining_pct: 99.4
-    status: fresh
-  BOS_URI:
-    age_days: 1
-    decay: 0.01
-    remaining_pct: 99.4
-    status: fresh
-  L0_YAML:
-    age_days: 1
-    decay: 0.01
-    remaining_pct: 99.4
-    status: fresh
-  MCP:
-    age_days: 1
-    decay: 0.0
-    remaining_pct: 99.7
-    status: fresh
-version: 1.0.0
+generated_at: '2026-08-22T11:17:00.042585+00:00'
+m1_summary:
+  active: 1096
+  total_instances: 1400
+protocols: {}

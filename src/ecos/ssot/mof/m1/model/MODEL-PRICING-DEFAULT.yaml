@@ -1,5 +1,9 @@
 # M1 Pricing Nodes — 模型定价数据
 # 覆盖 AetherForge 内置默认值。文件名为 MODEL-PRICING-* 以便 M1Loader 识别。
+id: MODEL-PRICING-DEFAULT
+type: Model
+name: 模型定价默认值
+status: active
 
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/

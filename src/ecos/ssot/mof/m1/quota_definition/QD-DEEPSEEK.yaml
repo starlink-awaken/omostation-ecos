@@ -1,6 +1,7 @@
 id: QD-DEEPSEEK
 name: DeepSeek Token 配额
 type: QuotaDefinition
+status: active
 provider: deepseek
 quota_model: prepaid
 unit: CNY

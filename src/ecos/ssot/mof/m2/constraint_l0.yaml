@@ -1,6 +1,6 @@
 # M2: ConstraintL0
 # M4 元模型闭环 — Phase 1 (ADR-0132 P1-S1)
-# 继承 ConstraintMgmt,添加 L0-constraints 1065 条专用字段集 (12 字段)
+# 继承 ConstraintMgmt,添加 L0-constraints 专用字段集 (12 字段)
 
 m2_type: ConstraintL0
 version: 1.0.0

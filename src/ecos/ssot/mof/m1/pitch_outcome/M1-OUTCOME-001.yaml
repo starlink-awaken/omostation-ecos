@@ -1,5 +1,6 @@
 id: M1-OUTCOME-001
 type: PitchOutcome
+status: active
 name: M4 集成成果追踪
 PitchOutcome:
   outcome_id: M4-OUTCOME-2026
