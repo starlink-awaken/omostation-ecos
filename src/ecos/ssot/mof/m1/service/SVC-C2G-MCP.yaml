@@ -4,22 +4,26 @@ m3_parent: StructuralElement.Component
 name: c2g-mcp
 service_name: c2g-mcp
 description: C2G MCP Server — 战略需求引擎
-project: c2g
+project: omo
 port: stdio
 protocol: stdio
 status: running
 runtime_status: running
 
 model_driven_refs:
-  source_file: projects/c2g/pyproject.toml
+  source_file: projects/omo/src/omo/_vendored/c2g/mcp_server.py
+  package_entry: projects/omo/pyproject.toml
 
 relations:
-  provided_by: c2g
+  provided_by: COMP-WS-c2g
 
 state_history:
   - state: running
     timestamp: '2026-06-19T00:00:00Z'
     reason: initial_modeling
+  - state: running
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: converge service authority on the OMO-vendored C2G runtime
 
 cost_model:
   infrastructure: low

@@ -1,10 +1,10 @@
-id: MCPTOOL-C2G-bet
+id: MCPTOOL-C2G-gc
 type: MCPTool
 m3_parent: BehavioralElement.Protocol
-name: c2g_bet
-tool_name: c2g_bet
+name: c2g_gc
+tool_name: c2g_gc
 server: c2g
-description: 将 Pitch 转为受治理的 Bet 和 Task。
+description: 清理衰减的 Sandbox pitches。
 project: omo
 transport: stdio
 status: active
@@ -16,5 +16,5 @@ relations:
 
 state_history:
   - state: active
-    timestamp: '2026-06-19T00:00:00Z'
-    reason: initial_modeling
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: split aggregate C2G MCP registration into canonical tool nodes
