@@ -10,16 +10,15 @@
 from __future__ import annotations
 
 import json
-import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 REPO = Path(__file__).resolve().parents[5]  # projects/ecos/src/ecos/observability → Workspace
 ECOS = REPO / "projects" / "ecos"
-METRICS_DIR = REPO / ".omo" / "_log" / "metrics"
-TRACE_DIR = REPO / ".omo" / "_delivery" / "traces"
+# 观测数据写入 ecos 自身缓存目录, 避免直接污染 .omo/ 状态平面 (gatekeeper 规则)
+METRICS_DIR = ECOS / ".ecos-cache" / "metrics"
+TRACE_DIR = ECOS / ".ecos-cache" / "traces"
 
 
 def _now() -> str:
@@ -39,6 +38,7 @@ def metrics() -> dict:
     total_constraints = 0
     if constraints_file.exists():
         import yaml
+
         data = yaml.safe_load(constraints_file.read_text()) or {}
         total_constraints = len(data.get("constraints", []))
 
@@ -50,6 +50,7 @@ def metrics() -> dict:
         for f in m1_dir.rglob("*.yaml"):
             try:
                 import yaml
+
                 d = yaml.safe_load(f.read_text())
                 if isinstance(d, dict):
                     total_m1 += 1
@@ -64,6 +65,7 @@ def metrics() -> dict:
     active_scenes = 0
     if scene_dir.exists():
         import yaml
+
         for f in scene_dir.glob("*.yaml"):
             try:
                 text = f.read_text()
@@ -189,6 +191,7 @@ def report(format: str = "text") -> str:
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="eCOS Observability")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--health", action="store_true")
