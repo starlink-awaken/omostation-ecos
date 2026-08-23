@@ -305,7 +305,9 @@ def cmd_documents(args: argparse.Namespace) -> int:
                 results.append({"script": script, "status": "DRY_RUN_OK", "mode": script_mode})
             else:
                 try:
-                    res = subprocess.run([sys.executable, str(p), script_mode], capture_output=True, text=True, timeout=10)
+                    res = subprocess.run(
+                        [sys.executable, str(p), script_mode], capture_output=True, text=True, timeout=10
+                    )
                     status = "OK" if res.returncode == 0 else "FAILED"
                     results.append(
                         {
@@ -432,14 +434,20 @@ def cmd_policy(args: argparse.Namespace) -> int:
             print(f"❌ 未找到政策规则: {args.policy_id}", file=sys.stderr)
             return 1
         if args.json:
-            print(json.dumps({
-                "rule_id": info.rule_id,
-                "domain": info.domain,
-                "title": info.title,
-                "severity": info.severity,
-                "description": info.description,
-                "remediation": info.remediation,
-            }, ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "rule_id": info.rule_id,
+                        "domain": info.domain,
+                        "title": info.title,
+                        "severity": info.severity,
+                        "description": info.description,
+                        "remediation": info.remediation,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 0
         print(f"\n╭─ 领域政策规则: {info.rule_id} ─────────────────────────────")
         print(f"│ 标  题: {info.title}")
@@ -452,12 +460,21 @@ def cmd_policy(args: argparse.Namespace) -> int:
     if action == "list":
         rules = inspector.list_policies(domain=getattr(args, "domain", None))
         if args.json:
-            print(json.dumps([{
-                "rule_id": r.rule_id,
-                "domain": r.domain,
-                "title": r.title,
-                "severity": r.severity,
-            } for r in rules], ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    [
+                        {
+                            "rule_id": r.rule_id,
+                            "domain": r.domain,
+                            "title": r.title,
+                            "severity": r.severity,
+                        }
+                        for r in rules
+                    ],
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 0
         print(f"\n📋 领域 Policy-as-Code 规则列表 (共 {len(rules)} 条):")
         for r in rules:
@@ -520,13 +537,19 @@ def cmd_pitfall(args: argparse.Namespace) -> int:
             print(f"❌ 未找到踩坑条目: {args.pitfall_id}", file=sys.stderr)
             return 1
         if args.json:
-            print(json.dumps({
-                "pitfall_id": p.pitfall_id,
-                "title": p.title,
-                "severity": p.severity,
-                "lesson_learned": p.lesson_learned,
-                "safe_recipe": p.safe_pattern_recipe,
-            }, ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "pitfall_id": p.pitfall_id,
+                        "title": p.title,
+                        "severity": p.severity,
+                        "lesson_learned": p.lesson_learned,
+                        "safe_recipe": p.safe_pattern_recipe,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 0
         print(f"\n╭─ Agent 踩坑与反模式: {p.pitfall_id} ────────────────────────")
         print(f"│ 标  题: {p.title}  [严重度: {p.severity}]")
@@ -538,12 +561,21 @@ def cmd_pitfall(args: argparse.Namespace) -> int:
     if action == "list":
         pitfalls = inspector.list_pitfalls()
         if args.json:
-            print(json.dumps([{
-                "pitfall_id": p.pitfall_id,
-                "title": p.title,
-                "severity": p.severity,
-                "lesson_learned": p.lesson_learned,
-            } for p in pitfalls], ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    [
+                        {
+                            "pitfall_id": p.pitfall_id,
+                            "title": p.title,
+                            "severity": p.severity,
+                            "lesson_learned": p.lesson_learned,
+                        }
+                        for p in pitfalls
+                    ],
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 0
         print(f"\n🕳️ Agent 架构避坑知识库列表 (共 {len(pitfalls)} 条):")
         for p in pitfalls:
@@ -564,20 +596,29 @@ def cmd_pitfall(args: argparse.Namespace) -> int:
                 matches.extend(res.matches)
 
         if args.json:
-            print(json.dumps({
-                "target": str(target),
-                "total_matches": len(matches),
-                "passed": len(matches) == 0,
-                "matches": [{
-                    "pitfall_id": m.pitfall_id,
-                    "title": m.title,
-                    "severity": m.severity,
-                    "line": m.line_number,
-                    "snippet": m.matched_snippet,
-                    "lesson": m.lesson,
-                    "recipe": m.recipe,
-                } for m in matches],
-            }, ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "target": str(target),
+                        "total_matches": len(matches),
+                        "passed": len(matches) == 0,
+                        "matches": [
+                            {
+                                "pitfall_id": m.pitfall_id,
+                                "title": m.title,
+                                "severity": m.severity,
+                                "line": m.line_number,
+                                "snippet": m.matched_snippet,
+                                "lesson": m.lesson,
+                                "recipe": m.recipe,
+                            }
+                            for m in matches
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 1 if (len(matches) > 0 and args.strict) else 0
 
         print(f"\n🔍 架构避坑扫描: {target}")
@@ -751,7 +792,9 @@ def cmd_intent(args: argparse.Namespace) -> int:
         cb = spec.compute_budget
         print("├─ ⚡️ 算力与 Token 预算分配 (Compute & Token Budget):")
         print(f"│  • 推荐档位: {cb.recommended_model_tier}")
-        print(f"│  • 预估上下文: ~{cb.estimated_context_tokens} tokens (安全裕量: {int(cb.safe_headroom_ratio*100)}%)")
+        print(
+            f"│  • 预估上下文: ~{cb.estimated_context_tokens} tokens (安全裕量: {int(cb.safe_headroom_ratio * 100)}%)"
+        )
         print(f"│  • 本地 Speculative 投机草稿: {'已启用' if cb.speculative_draft_enabled else '未启用'}")
     print("╰─────────────────────────────────────────────────────────────────\n")
     return 0
@@ -794,6 +837,7 @@ def cmd_challenge(args: argparse.Namespace) -> int:
         if args.output:
             out_p = Path(args.output).expanduser().resolve()
             import os
+
             os.makedirs(str(out_p.parent), exist_ok=True)
             with open(str(out_p), "w", encoding="utf-8") as f:
                 f.write(report.patched_text)
@@ -934,7 +978,9 @@ def main(argv: list[str] | None = None) -> int:
     p_facts_validate.add_argument("--json", action="store_true", help="以 JSON 输出")
 
     p_facts_template = p_facts_sub.add_parser("template", help="生成标准领域事实 YAML 模板")
-    p_facts_template.add_argument("--domain", default="work-weijian", choices=["work-weijian", "work-transfer", "generic"], help="目标领域")
+    p_facts_template.add_argument(
+        "--domain", default="work-weijian", choices=["work-weijian", "work-transfer", "generic"], help="目标领域"
+    )
 
     p_facts_serve = p_facts_sub.add_parser("serve", help="启动 Dual-Plane Truth Canvas Web 事实大盘 (ADR-0194)")
     p_facts_serve.add_argument("--host", default="127.0.0.1", help="监听地址 (默认 127.0.0.1)")
@@ -949,7 +995,9 @@ def main(argv: list[str] | None = None) -> int:
 
     p_policy_audit = p_policy_sub.add_parser("audit", help="对文档、方案或文本进行领域政策红线合规审计")
     p_policy_audit.add_argument("target", help="目标文档文件路径或输入文本")
-    p_policy_audit.add_argument("--domain", default="auto", choices=["auto", "work-weijian", "work-transfer", "all"], help="业务领域")
+    p_policy_audit.add_argument(
+        "--domain", default="auto", choices=["auto", "work-weijian", "work-transfer", "all"], help="业务领域"
+    )
     p_policy_audit.add_argument("--strict", action="store_true", help="存在警告或违规时退出码非 0")
     p_policy_audit.add_argument("--json", action="store_true", help="以 JSON 输出")
 
@@ -994,7 +1042,9 @@ def main(argv: list[str] | None = None) -> int:
     p_challenge = subparsers.add_parser("challenge", help="双 Agent 影子红蓝对抗审议与自动打补丁引擎 (ADR-0196)")
     p_challenge.add_argument("target", help="待审议的方案、文本或文件路径")
     p_challenge.add_argument("--domain", default="auto", help="指定领域 (默认 auto)")
-    p_challenge.add_argument("--auto-patch", action="store_true", default=True, help="发现漏洞时自动合成合规补丁 (默认开启)")
+    p_challenge.add_argument(
+        "--auto-patch", action="store_true", default=True, help="发现漏洞时自动合成合规补丁 (默认开启)"
+    )
     p_challenge.add_argument("--no-patch", dest="auto_patch", action="store_false", help="仅审查不生成补丁")
     p_challenge.add_argument("--output", help="将打好补丁的文本保存到指定文件")
     p_challenge.add_argument("--strict", action="store_true", help="存在重大缺陷时返回非 0 退出码")
@@ -1031,4 +1081,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

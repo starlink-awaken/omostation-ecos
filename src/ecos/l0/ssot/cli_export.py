@@ -131,6 +131,7 @@ def cmd_export(args):
 
     if out:
         import os
+
         out_p = Path(out).expanduser().resolve()
         os.makedirs(str(out_p.parent), exist_ok=True)
         with open(str(out_p), "w", encoding="utf-8") as f:

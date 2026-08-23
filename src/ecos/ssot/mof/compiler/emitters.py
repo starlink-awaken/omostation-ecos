@@ -207,11 +207,7 @@ def emit_json_schema(schemas: list["M2Schema"], m2_dir: Path) -> str:
                         "properties": {forbiddance.property_name: {"const": forbiddance.equals}},
                         "required": [forbiddance.property_name],
                     },
-                    "then": {
-                        "not": {
-                            "anyOf": [{"required": [name]} for name in forbiddance.forbidden_names]
-                        }
-                    },
+                    "then": {"not": {"anyOf": [{"required": [name]} for name in forbiddance.forbidden_names]}},
                 }
                 for forbiddance in s.conditional_forbiddances
             )
@@ -324,7 +320,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                     lines.append(f"            if set(self.{field_name}) != set({allowed!r}):")
                     lines.append(f'                raise ValueError("{prop.name} must contain exactly {allowed!r}")')
                 for child in prop.inline_properties:
-                    child_expr = f'self.{field_name}.get({json.dumps(child.name)})'
+                    child_expr = f"self.{field_name}.get({json.dumps(child.name)})"
                     if child.required:
                         lines.append(f"            if {child_expr} is None:")
                         lines.append(f'                raise ValueError("{prop.name}.{child.name} is required")')
@@ -373,8 +369,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                         f"        if self.{_py_field_name(forbiddance.property_name)} == {json.dumps(forbiddance.equals)} and self.{_py_field_name(forbidden_name)} is not None:"
                     )
                     message = (
-                        f"{forbidden_name} is forbidden when "
-                        f"{forbiddance.property_name} equals {forbiddance.equals}"
+                        f"{forbidden_name} is forbidden when {forbiddance.property_name} equals {forbiddance.equals}"
                     )
                     lines.append(f"            raise ValueError({json.dumps(message)})")
             lines.append("        return self")
@@ -481,8 +476,7 @@ def emit_zod(schemas: list["M2Schema"], m2_dir: Path) -> str:
             for forbiddance in s.conditional_forbiddances:
                 for forbidden_name in forbiddance.forbidden_names:
                     message = (
-                        f"{forbidden_name} is forbidden when "
-                        f"{forbiddance.property_name} equals {forbiddance.equals}"
+                        f"{forbidden_name} is forbidden when {forbiddance.property_name} equals {forbiddance.equals}"
                     )
                     checks.extend(
                         [

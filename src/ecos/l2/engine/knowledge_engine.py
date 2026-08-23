@@ -28,13 +28,15 @@ class L2KnowledgeEngine:
 
     def _load_yaml(self, path: Path) -> dict | list:
         import yaml
+
         try:
             return yaml.safe_load(path.read_text()) or {}
         except Exception:
             return {}
 
-    def query_m1(self, node_id: str | None = None, node_type: str | None = None,
-                 domain: str | None = None) -> list[dict]:
+    def query_m1(
+        self, node_id: str | None = None, node_type: str | None = None, domain: str | None = None
+    ) -> list[dict]:
         """查询 M1 实例."""
         m1_dir = ECOS_SSOT / "mof" / "m1"
         results = []

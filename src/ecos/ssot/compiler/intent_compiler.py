@@ -110,9 +110,26 @@ class IntentSpecCompiler:
 
         # 1. Domain Detection
         if detected_domain == "auto":
-            if any(k in text for k in ["卫生", "医疗", "卫健", "医院", "互联互通", "等保", "DRG", "健康", "信息化", "疾控", "电子病历"]):
+            if any(
+                k in text
+                for k in [
+                    "卫生",
+                    "医疗",
+                    "卫健",
+                    "医院",
+                    "互联互通",
+                    "等保",
+                    "DRG",
+                    "健康",
+                    "信息化",
+                    "疾控",
+                    "电子病历",
+                ]
+            ):
                 detected_domain = "work-weijian"
-            elif any(k in text for k in ["转化", "专利", "技术成熟度", "TRL", "赋权", "作价入股", "中试", "产业化", "国转"]):
+            elif any(
+                k in text for k in ["转化", "专利", "技术成熟度", "TRL", "赋权", "作价入股", "中试", "产业化", "国转"]
+            ):
                 detected_domain = "work-transfer"
             elif any(k in text for k in ["代码", "重构", "算法", "CLI", "TUI", "架构", "测试", "API"]):
                 detected_domain = "engineering"

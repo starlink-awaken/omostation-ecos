@@ -110,7 +110,9 @@ class FactInspector:
             return FactInspectionResult(
                 file_path=str(p),
                 passed=False,
-                errors=[FactValidationError(field="root", message="事实文件根节点必须为映射字典", code="E-FACT-NOT-DICT")],
+                errors=[
+                    FactValidationError(field="root", message="事实文件根节点必须为映射字典", code="E-FACT-NOT-DICT")
+                ],
             )
 
         # 模式 A: 聚合事实表列表格式 (List-based Fact Table, 如 00-budget.yaml)
@@ -119,10 +121,18 @@ class FactInspector:
             latest_date_str = None
             for idx, item in enumerate(fact_items):
                 if not isinstance(item, dict):
-                    errors.append(FactValidationError(field=f"facts[{idx}]", message="事实项必须为字典", code="E-FACT-INVALID-ITEM"))
+                    errors.append(
+                        FactValidationError(
+                            field=f"facts[{idx}]", message="事实项必须为字典", code="E-FACT-INVALID-ITEM"
+                        )
+                    )
                     continue
                 if "fid" not in item:
-                    errors.append(FactValidationError(field=f"facts[{idx}].fid", message="缺少事实 ID (fid)", code="E-FACT-MISSING-FID"))
+                    errors.append(
+                        FactValidationError(
+                            field=f"facts[{idx}].fid", message="缺少事实 ID (fid)", code="E-FACT-MISSING-FID"
+                        )
+                    )
                 v_at = item.get("verified_at")
                 if v_at:
                     if not latest_date_str or str(v_at) > str(latest_date_str):
@@ -138,7 +148,9 @@ class FactInspector:
                     age_days = max(0, (datetime.now(timezone.utc) - updated_date).days)
                     if age_days > self.max_age_days:
                         is_fresh = False
-                        freshness_warning = f"聚合事实最新验证时间为 {dt_str} (距今 {age_days} 天)，超过 {self.max_age_days} 天保鲜 SLA"
+                        freshness_warning = (
+                            f"聚合事实最新验证时间为 {dt_str} (距今 {age_days} 天)，超过 {self.max_age_days} 天保鲜 SLA"
+                        )
                 except ValueError:
                     pass
 

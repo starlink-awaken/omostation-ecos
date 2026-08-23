@@ -37,8 +37,16 @@ mof-contract-agent = "ecos.ssot.agents.mof_contract_agent:main"
 [tool.ruff]
 target-version = "py313"
 line-length = 120
+# generated/ 是生成器产物(mof_control_models.py 等), 以生成器输出为准,
+# 手工 format 会让 test_generated_control_dir_is_clean 判"不干净"
+exclude = ["src/ecos/ssot/mof/generated"]
 
 [tool.ruff.lint]
+# 2026-08-23: 显式钉死规则集。ruff 0.16 起默认集大幅扩容(BLE/DTZ/UP/SIM 等
+# 转正进默认), 存量代码在同一份配置下从 0 错误爆出 1113 个"伪债"挡死
+# pre-push 门禁。工具升级不应隐式收紧仓库标准 —— 规则集必须是一份显式
+# 契约; 要扩规则走 PR 逐条评审, 不吃默认集漂移的暗亏。
+select = ["E4", "E7", "E9", "F"]
 ignore = ["E501", "E402", "F403"]
 per-file-ignores = {"tests/*" = ["N806"]}
 

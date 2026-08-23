@@ -31,6 +31,7 @@ class L1Scheduler:
         """通过 L0 bus 协议发射事件."""
         try:
             from ecos.l0.bus.protocol import OmniEnvelope
+
             envelope = OmniEnvelope(
                 trace_id=uuid.uuid4().hex,
                 plane=plane,

@@ -21,13 +21,17 @@ def reasoning_status() -> dict:
     import subprocess
     import sys
     from pathlib import Path
+
     TOOLS = Path(__file__).resolve().parent.parent / "ssot" / "tools"
     status = {"timestamp": datetime.now(timezone.utc).isoformat()}
     for tool in ["mof-reason", "mof-derive", "mof-gate"]:
         r = subprocess.run(
-            [sys.executable, str(TOOLS / f"{tool}.py"), "--json"] if tool == "mof-derive"
+            [sys.executable, str(TOOLS / f"{tool}.py"), "--json"]
+            if tool == "mof-derive"
             else [sys.executable, str(TOOLS / f"{tool}.py"), "impact", "OMOTASK-P35-W1-W2-COMBO"],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
         status[tool] = {"ok": r.returncode == 0, "output_len": len(r.stdout)}
     return status
@@ -38,12 +42,16 @@ def constraint_status() -> dict:
     import subprocess
     import sys
     from pathlib import Path
+
     TOOLS = Path(__file__).resolve().parent.parent / "ssot" / "tools"
     r = subprocess.run(
         [sys.executable, str(TOOLS / "ecos-constraint-compiler.py"), "--enforce", "--json"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     import json
+
     try:
         data = json.loads(r.stdout)
         return {"ok": r.returncode == 0, "data": data}
@@ -56,10 +64,13 @@ def m1_status() -> dict:
     import subprocess
     import sys
     from pathlib import Path
+
     TOOLS = Path(__file__).resolve().parent.parent / "ssot" / "tools"
     r = subprocess.run(
         [sys.executable, str(TOOLS / "mof-scan.py"), "--check-status"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     # parse violations count
     violations = 0

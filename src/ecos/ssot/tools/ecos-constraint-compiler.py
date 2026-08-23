@@ -32,6 +32,7 @@ DEFAULT_OUTPUT = Path("/tmp") / "ecos-compiled-constraints.py"
 
 def load_yaml(path: Path) -> dict:
     import yaml
+
     with open(path, "r") as f:
         return yaml.safe_load(f) or {}
 
@@ -60,9 +61,11 @@ def compile_constraints(data: dict) -> str:
         violation = c.get("violation", "")
         dimension = c.get("dimension", "")
         applies = c.get("applies_to", [])
-        entry = ('    {"id": "' + cid + '", "type": "' + ctype + '", "dimension": "' + dimension + '",\n'
-                 '     "description": "' + desc + '", "rule": "' + rule + '",\n'
-                 '     "violation": "' + violation + '", "applies_to": ' + str(applies) + ' },')
+        entry = (
+            '    {"id": "' + cid + '", "type": "' + ctype + '", "dimension": "' + dimension + '",\n'
+            '     "description": "' + desc + '", "rule": "' + rule + '",\n'
+            '     "violation": "' + violation + '", "applies_to": ' + str(applies) + " },"
+        )
         lines.append(entry)
     lines.append("]")
     lines.append("")
@@ -95,7 +98,7 @@ def compile_constraints(data: dict) -> str:
             lines.append('    detail = f"entry: {entry}"')
         elif rule == "protocol.version != null":
             lines.append('    ver = state.get("protocol", {}).get("version")')
-            lines.append('    passed = ver is not None')
+            lines.append("    passed = ver is not None")
             lines.append('    detail = f"version: {ver}"')
         elif rule == "claude_md.age_days <= 60":
             lines.append('    age = state.get("claude_md", {}).get("age_days", 0)')
