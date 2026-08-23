@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Any
 
 JOURNEY_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "docs" / "journey-specs"
 

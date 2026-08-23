@@ -12,7 +12,6 @@
 from __future__ import annotations
 
 import threading
-from typing import Any
 
 # 内置默认角色
 DEFAULT_ROLES = {
