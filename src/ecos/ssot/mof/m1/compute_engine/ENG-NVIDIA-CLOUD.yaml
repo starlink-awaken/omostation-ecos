@@ -1,0 +1,18 @@
+id: ENG-NVIDIA-CLOUD
+type: ComputeEngine
+node_ref: NODE-CLOUD
+engine_type: cloud_api
+base_url: "https://integrate.api.nvidia.com/v1"
+supported_protocols: ["openai"]
+auth_source: credentials
+cost_multiplier: 0.0
+status: active
+description: "NVIDIA NIM 免费层(40 RPM级), OpenAI 兼容, 凭据来自 credentials.db(nvidia); 清单实时查询"
+
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m1/
+
+state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: 接线孤儿凭据(key 已在 credentials.db 但无引擎, 2026-08-23 实测 /v1/models 200)
