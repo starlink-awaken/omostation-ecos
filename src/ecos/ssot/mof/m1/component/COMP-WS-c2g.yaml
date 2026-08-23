@@ -15,9 +15,6 @@ subcomponents:
 dependencies: []
 dependents: []
 entry_points:
-  - type: cli
-    command: c2g
-    module: omo._vendored.c2g.cli:main
   - type: mcp
     command: c2g-mcp
     module: omo._vendored.c2g.mcp_server:mcp

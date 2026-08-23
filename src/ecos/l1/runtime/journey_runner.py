@@ -13,7 +13,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-JOURNEY_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "docs" / "journey-specs"
+JOURNEY_DIR = Path(__file__).resolve().parents[6] / "docs" / "journey-specs"
 
 
 class JourneyRunner:
@@ -59,7 +59,17 @@ class JourneyRunner:
         if not journey:
             return {"error": f"Journey {journey_id} not found"}
 
-        steps = journey.get("steps", [])
+        # Support both 'steps' and 'states' formats
+        steps = journey.get("steps") or journey.get("states") or []
+        # Convert states (name/next) to scheduler steps
+        scheduler_steps = []
+        for s in steps:
+            if isinstance(s, dict):
+                scheduler_steps.append({"name": s.get("name", "unnamed"), "action": s.get("action", "transition")})
+            else:
+                scheduler_steps.append({"name": str(s)})
+        steps = scheduler_steps
+
         start = time.time()
         results = []
         for step in steps:

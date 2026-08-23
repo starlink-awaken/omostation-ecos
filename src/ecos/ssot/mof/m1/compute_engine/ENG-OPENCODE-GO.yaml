@@ -1,0 +1,18 @@
+id: ENG-OPENCODE-GO
+type: ComputeEngine
+node_ref: NODE-CLOUD
+engine_type: cloud_api
+base_url: "https://opencode.ai/zen/go/v1"
+supported_protocols: ["openai"]
+auth_source: credentials
+cost_multiplier: 0.0
+status: active
+description: "OpenCode Go 扁平订阅网关(已付费), OpenAI 兼容 /v1, 29 个模型含 minimax/kimi/glm 系与 ox-alpha-free 免费档; 扁平订阅按量边际成本为 0, 故 cost_multiplier=0"
+
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m1/
+
+state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: 接线已付费订阅(此前 key 已在 credentials.db 但无 compute_engine, 2026-08-23 实测 /v1/models 200)

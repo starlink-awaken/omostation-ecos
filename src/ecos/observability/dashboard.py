@@ -175,11 +175,35 @@ def render_text(data: dict) -> str:
     return "\n".join(lines)
 
 
+def check_alerts(data: dict) -> list[dict]:
+    """检查告警条件, 返回告警列表."""
+    alerts = []
+    # P0: M1 violations
+    if data["governance"]["m1"]["violations"] > 0:
+        alerts.append({"level": "P0", "msg": f"M1 violations: {data['governance']['m1']['violations']}"})
+    # P0: Constraint failed
+    if data["governance"]["constraints"]["failed_required"] > 0:
+        alerts.append({"level": "P0", "msg": f"Constraint failed: {data['governance']['constraints']['failed_required']}"})
+    # P1: Agent silent > half
+    if data["agents"]["running"] < data["agents"]["total"] // 2:
+        alerts.append({"level": "P1", "msg": f"Agents silent: {data['agents']['total'] - data['agents']['running']}/{data['agents']['total']}"})
+    # P1: Reasoning engine fail
+    for tool, status in data["governance"]["reasoning"].items():
+        if status == "fail":
+            alerts.append({"level": "P1", "msg": f"Reasoning engine fail: {tool}"})
+    # P2: Execute component fail
+    for comp, status in data["execute"]["components"].items():
+        if status.startswith("fail"):
+            alerts.append({"level": "P2", "msg": f"Execute component fail: {comp}"})
+    return alerts
+
+
 def main():
     parser = argparse.ArgumentParser(description="eCOS Unified Dashboard")
     parser.add_argument("panel", nargs="?", choices=["agents", "governance", "execute"])
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--watch", type=int, default=0, help="刷新间隔(秒)")
+    parser.add_argument("--check", action="store_true", help="CI 模式: P0/P1 退出码 1")
     args = parser.parse_args()
 
     def gather():
@@ -190,21 +214,42 @@ def main():
             "execute": panel_execute(),
         }
 
+    data = gather()
+    alerts = check_alerts(data)
+
+    if args.check:
+        # CI 模式: 有 P0/P1 告警则 exit 1
+        critical = [a for a in alerts if a["level"] in ("P0", "P1")]
+        if critical:
+            for a in critical:
+                print(f"[{a['level']}] {a['msg']}", file=sys.stderr)
+            sys.exit(1)
+        print("OK: no P0/P1 alerts")
+        sys.exit(0)
+
     if args.watch > 0:
         while True:
             data = gather()
             if args.json:
-                print(json.dumps(data, ensure_ascii=False, indent=2))
+                print(json.dumps({"data": data, "alerts": check_alerts(data)}, ensure_ascii=False, indent=2))
             else:
-                print("\033[2J\033[H")  # clear screen
+                print("\033[2J\033[H")
                 print(render_text(data))
+                alerts = check_alerts(data)
+                if alerts:
+                    print(f"\n  ⚠️  {len(alerts)} alert(s):")
+                    for a in alerts:
+                        print(f"    [{a['level']}] {a['msg']}")
             time.sleep(args.watch)
     else:
-        data = gather()
         if args.json:
-            print(json.dumps(data, ensure_ascii=False, indent=2))
+            print(json.dumps({"data": data, "alerts": alerts}, ensure_ascii=False, indent=2))
         else:
             print(render_text(data))
+            if alerts:
+                print(f"\n  ⚠️  {len(alerts)} alert(s):")
+                for a in alerts:
+                    print(f"    [{a['level']}] {a['msg']}")
 
 
 if __name__ == "__main__":
