@@ -89,8 +89,8 @@ def panel_governance() -> dict:
     rc_r, _ = _run([sys.executable, str(TOOLS / "mof-reason.py"), "impact", "ACTION-ACP-IMPLEMENT"])
     reasoning["mof-reason"] = "ok" if rc_r == 0 else "fail"
     # mof-derive: full report
-    rc_d, out_d = _run([sys.executable, str(TOOLS / "mof-derive.py"), "--stages"])
-    reasoning["mof-derive"] = "ok" if rc_d == 0 and "覆盖率" in out_d else "fail"
+    rc_d, out_d = _run([sys.executable, str(TOOLS / "mof-derive.py")])
+    reasoning["mof-derive"] = "ok" if rc_d == 0 and ("覆盖率" in out_d or "coverage" in out_d.lower()) else "fail"
     # mof-gate: gate check
     rc_g, out_g = _run([sys.executable, str(TOOLS / "mof-gate.py")])
     reasoning["mof-gate"] = "ok" if rc_g == 0 and "违规: 0" in out_g else "fail"
