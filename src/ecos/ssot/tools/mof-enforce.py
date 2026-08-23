@@ -37,8 +37,23 @@ BOUNDARY_FILE = WS / "projects" / "ecos" / "src" / "ecos" / "ssot" / "registry" 
 CARDS_DB = WS / "data" / "cards" / "cards.db"
 
 
+def _resolve_boundary_file() -> Path | None:
+    """解析边界规则文件路径, 支持多环境回退."""
+    # 1. 硬编码路径 (开发环境)
+    if BOUNDARY_FILE.exists():
+        return BOUNDARY_FILE
+    # 2. 相对于脚本位置 (CI / 子模块)
+    script_relative = Path(__file__).resolve().parents[2] / "ssot" / "registry" / "layer-boundary.yaml"
+    if script_relative.exists():
+        return script_relative
+    return None
+
+
 def load_boundary() -> dict:
-    with open(BOUNDARY_FILE) as f:
+    path = _resolve_boundary_file()
+    if path is None:
+        return {}
+    with open(path) as f:
         return yaml.safe_load(f)
 
 
