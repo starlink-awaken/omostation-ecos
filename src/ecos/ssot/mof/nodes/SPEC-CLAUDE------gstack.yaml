@@ -1,0 +1,23 @@
+# M1 Node: SPEC-CLAUDE------gstack
+# Type: Specification
+# Modeled: 2026-08-23T07:53:42
+
+id: SPEC-CLAUDE------gstack
+type: Specification
+subtype: CLAUDE.md
+name: '学习进化: gstack development'
+description: Agent 操作契约 — 学习进化 域
+status: active
+domain: 学习进化
+created: '2026-08-23'
+version: 1.0.0
+layer: L4
+properties:
+  path: '@学习进化/_external/toolbox-staging/gstack/CLAUDE.md'
+  format: markdown
+  constraints:
+  - SSOT声明
+  - 快速路由
+  - 维护周期
+  scope:
+  - 学习进化

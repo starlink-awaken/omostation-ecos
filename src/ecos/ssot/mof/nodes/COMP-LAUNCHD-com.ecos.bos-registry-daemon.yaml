@@ -1,0 +1,18 @@
+# M1 Node: COMP-LAUNCHD-com.ecos.bos-registry-daemon
+# Type: Component
+# Registered by mof-register-tasks
+
+id: COMP-LAUNCHD-com.ecos.bos-registry-daemon
+type: Component
+subtype: Daemon
+name: com.ecos.bos-registry-daemon
+description: 'launchd 守护进程: com.ecos.bos-registry-daemon'
+status: active
+domain: infra
+created: '2026-07-31'
+version: 1.0.0
+layer: L1
+properties:
+  layer: L1
+  runtime: active
+  protocol: launchd

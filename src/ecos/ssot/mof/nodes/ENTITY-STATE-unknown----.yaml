@@ -1,0 +1,20 @@
+# M1 Node: ENTITY-STATE-unknown----
+# Type: Entity
+# Modeled: 2026-08-23T07:53:42
+
+id: ENTITY-STATE-unknown----
+type: Entity
+subtype: StateSnapshot
+name: 'STATE: unknown/控制面'
+description: 域状态快照 — @创意创作/_knowledge/渠道/控制面/STATE.md
+status: active
+domain: unknown
+created: '2026-08-23'
+version: 1.0.0
+layer: L4
+properties:
+  entity_type: document
+  sources:
+  - '@创意创作/_knowledge/渠道/控制面/STATE.md'
+  identity:
+    path: '@创意创作/_knowledge/渠道/控制面/STATE.md'

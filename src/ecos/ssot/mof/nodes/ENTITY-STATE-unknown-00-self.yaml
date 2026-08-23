@@ -1,0 +1,20 @@
+# M1 Node: ENTITY-STATE-unknown-00-self
+# Type: Entity
+# Modeled: 2026-08-23T07:53:42
+
+id: ENTITY-STATE-unknown-00-self
+type: Entity
+subtype: StateSnapshot
+name: 'STATE: unknown/00-self'
+description: 域状态快照 — @个人/_knowledge/00-self/STATE.md
+status: active
+domain: unknown
+created: '2026-08-23'
+version: 1.0.0
+layer: L4
+properties:
+  entity_type: document
+  sources:
+  - '@个人/_knowledge/00-self/STATE.md'
+  identity:
+    path: '@个人/_knowledge/00-self/STATE.md'

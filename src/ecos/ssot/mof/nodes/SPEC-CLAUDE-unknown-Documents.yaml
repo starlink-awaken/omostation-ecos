@@ -1,0 +1,23 @@
+# M1 Node: SPEC-CLAUDE-unknown-Documents
+# Type: Specification
+# Modeled: 2026-08-23T07:53:42
+
+id: SPEC-CLAUDE-unknown-Documents
+type: Specification
+subtype: CLAUDE.md
+name: 'unknown: Documents — L4 域网关'
+description: Agent 操作契约 — unknown 域
+status: active
+domain: unknown
+created: '2026-08-23'
+version: 1.0.0
+layer: L4
+properties:
+  path: CLAUDE.md
+  format: markdown
+  constraints:
+  - SSOT声明
+  - 快速路由
+  - 维护周期
+  scope:
+  - unknown

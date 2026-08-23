@@ -1,0 +1,20 @@
+# M1 Node: PROTOCOL-WS-port-hardcode-baseline
+# Type: Protocol
+# Modeled: 2026-08-23T07:53:42
+
+id: PROTOCOL-WS-port-hardcode-baseline
+type: Protocol
+subtype: ProtocolImpl
+name: port-hardcode-baseline
+description: ''
+status: active
+domain: infra
+created: '2026-08-23'
+version: 1.0.0
+layer: L0
+properties:
+  version_spec: 1.0.0
+  introduced: ''
+  half_life: 180
+  registered: true
+  value_tier: 3

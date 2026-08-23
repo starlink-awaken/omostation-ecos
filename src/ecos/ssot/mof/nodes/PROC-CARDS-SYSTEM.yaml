@@ -1,0 +1,29 @@
+# M1 Node: PROC-CARDS-SYSTEM
+# Type: Process
+# Modeled: 2026-08-23T07:53:42
+
+id: PROC-CARDS-SYSTEM
+type: Process
+subtype: TrackingSystem
+name: CARDS 统一追踪体系
+description: 想法→研究→任务→债务→交付的全生命周期追踪
+status: active
+domain: meta
+created: '2026-06-05'
+version: 2.0.0
+layer: L4
+properties:
+  states:
+  - flash→incubating→promoted
+  - planned→active→done
+  - draft→published→maintained
+  steps:
+  - order: 1
+    name: 创建
+  - order: 2
+    name: 执行
+  - order: 3
+    name: 交付
+  sla:
+    incubating_max_days: 14
+    active_max: 50

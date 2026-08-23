@@ -1,0 +1,21 @@
+# M1 Node: MECH-SCHEDULED-sunday-domain-reviews
+# Type: Mechanism
+# Registered by mof-register-tasks
+
+id: MECH-SCHEDULED-sunday-domain-reviews
+type: Mechanism
+subtype: ScheduledTask
+name: Sunday Domain Reviews
+description: '定时任务: sunday-domain-reviews'
+status: active
+domain: meta
+created: '2026-08-19'
+version: 1.0.0
+layer: L4
+properties:
+  trigger: scheduled (weekly)
+  action: 执行 SKILL.md 中定义的指令
+  interval: 604800
+  feedback: task-runlog.md (手动)
+  sla_target:
+    max_stale_hours: 240

@@ -1,0 +1,18 @@
+# M1 Node: COMP-LAUNCHD-com.ecos.pasw-worktree-cleanup
+# Type: Component
+# Registered by mof-register-tasks
+
+id: COMP-LAUNCHD-com.ecos.pasw-worktree-cleanup
+type: Component
+subtype: Daemon
+name: com.ecos.pasw-worktree-cleanup
+description: 'launchd 守护进程: com.ecos.pasw-worktree-cleanup'
+status: active
+domain: infra
+created: '2026-08-03'
+version: 1.0.0
+layer: L1
+properties:
+  layer: L1
+  runtime: active
+  protocol: launchd

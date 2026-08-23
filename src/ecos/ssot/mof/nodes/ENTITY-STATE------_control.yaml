@@ -1,0 +1,20 @@
+# M1 Node: ENTITY-STATE------_control
+# Type: Entity
+# Modeled: 2026-08-23T07:53:42
+
+id: ENTITY-STATE------_control
+type: Entity
+subtype: StateSnapshot
+name: 'STATE: @驾驶舱/_control'
+description: 域状态快照 — @驾驶舱/_control/STATE.md
+status: active
+domain: '@驾驶舱'
+created: '2026-08-23'
+version: 1.0.0
+layer: L4
+properties:
+  entity_type: document
+  sources:
+  - '@驾驶舱/_control/STATE.md'
+  identity:
+    path: '@驾驶舱/_control/STATE.md'
