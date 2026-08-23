@@ -1,0 +1,18 @@
+id: ENG-VOLCANO-CLOUD
+type: ComputeEngine
+node_ref: NODE-CLOUD
+engine_type: cloud_api
+base_url: "https://ark.cn-beijing.volces.com/api/coding/v1"
+supported_protocols: ["anthropic"]
+auth_source: credentials
+cost_multiplier: 0.0
+status: active
+description: "字节火山方舟 Coding Plan(Anthropic 兼容, 仅认 Bearer 鉴权), doubao 系模型; 凭据来自 credentials.db(火山agentplan); 清单实时查询并过滤 Shutdown 条目"
+
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m1/
+
+state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: 接线孤儿凭据(key 已在 credentials.db 但无引擎, 2026-08-23 实测 Bearer /v1/models 200)
