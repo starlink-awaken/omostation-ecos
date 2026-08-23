@@ -199,3 +199,13 @@ gates:
   # D5 retro 强制: done bet 缺复盘 → gate 红 (bet-ledger retro-due)
   - id: "bet-retro-due-check"
     command: ["bin/plan/bet-ledger.py", "retro-due"]
+  # CR-RESIDENT (ADR-0396 / BET-Y1Q3-T1-10): resident 常驻 agent 体系三向接线 gate
+  # STATUS-01: daemon 水位活性 (≤30min; never_ticked 豁免) — cron --once 每 2min 推进
+  - id: "resident-status-check"
+    command: ["bin/gac/check-resident-status.py"]
+  # MOF-SYNC-01: roles.py 与 m1/agent/AGENT-RESIDENT-ROLES.yaml 双份角色零漂移
+  - id: "resident-mof-sync-check"
+    command: ["bin/gac/check-resident-mof-sync.py"]
+  # BOS-01: resident 接口经 bos://resident/* 路由 (bos-services ↔ bos-registry ↔ allowlist)
+  - id: "resident-bos-check"
+    command: ["bin/gac/check-resident-bos.py"]

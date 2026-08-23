@@ -1,0 +1,117 @@
+# M1: AGENT-RESIDENT-ROLES — resident 常驻 agent 五类角色 (MOF 双份对齐)
+#
+# 与 projects/omo/src/omo/resident/roles.py 的 ROLES dict 保持零漂移 (CR-RESIDENT-MOF-SYNC-01)。
+# 本文件是 multi-doc list 格式: 每个 doc 是 DigitalAgent list, 每个 agent 的
+# properties.resident_role 取值必须 ∈ {sediment, decision, execute, monitor, heartbeat}。
+#
+# 角色 → event_type 子集 → 目标 handler:
+#   sediment 记忆沉淀 成功/关闭事件 → knowledge_sediment
+#   decision 大脑决策 失败事件   → decision_agent
+#   execute  手执行   执行请求   → execution_agent
+#   monitor  眼睛监控 可观测/告警 → alert
+#   heartbeat 心脏心跳 存活/心跳 → heartbeat (预留)
+- id: AGENT-RESIDENT-sediment
+  type: Agent
+  subtype: AgentDef
+  name: resident-sediment
+  description: 'resident 常驻角色: 记忆沉淀 — 成功运行/个人信号 → 知识草稿'
+  status: active
+  domain: system
+  created: '2026-08-23'
+  version: 1.0.0
+  layer: L3
+  properties:
+    agent_name: resident-sediment
+    resident_role: sediment
+    role: '记忆沉淀 — 成功运行/个人信号 → 知识草稿'
+    projector: resident-sediment
+    topic_filter: [WorkflowClosed, WorkflowSucceeded, PersonalSignal]
+    handler: knowledge_sediment
+  state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: resident_roles_modeling
+- id: AGENT-RESIDENT-decision
+  type: Agent
+  subtype: AgentDef
+  name: resident-decision
+  description: 'resident 常驻角色: 大脑决策 — 失败事件 → 决策提案'
+  status: active
+  domain: system
+  created: '2026-08-23'
+  version: 1.0.0
+  layer: L3
+  properties:
+    agent_name: resident-decision
+    resident_role: decision
+    role: '大脑决策 — 失败事件 → 决策提案'
+    projector: resident-decision
+    topic_filter: [WorkflowFailed, StepFailed, StepTimeout]
+    handler: decision_agent
+  state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: resident_roles_modeling
+- id: AGENT-RESIDENT-execute
+  type: Agent
+  subtype: AgentDef
+  name: resident-execute
+  description: 'resident 常驻角色: 手执行 — 执行请求 → pi-worker (非 safe, 需批准门)'
+  status: active
+  domain: system
+  created: '2026-08-23'
+  version: 1.0.0
+  layer: L3
+  properties:
+    agent_name: resident-execute
+    resident_role: execute
+    role: '手执行 — 执行请求 → pi-worker (非 safe, 需批准门)'
+    projector: resident-execute
+    topic_filter: [ExecutionRequested, WorkPacketDispatched]
+    handler: execution_agent
+  state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: resident_roles_modeling
+- id: AGENT-RESIDENT-monitor
+  type: Agent
+  subtype: AgentDef
+  name: resident-monitor
+  description: 'resident 常驻角色: 眼睛监控 — 可观测/告警事件 → 告警通道'
+  status: active
+  domain: system
+  created: '2026-08-23'
+  version: 1.0.0
+  layer: L3
+  properties:
+    agent_name: resident-monitor
+    resident_role: monitor
+    role: '眼睛监控 — 可观测/告警事件 → 告警通道'
+    projector: resident-monitor
+    topic_filter: [system.health, 'governance:gate_failed', alert]
+    handler: alert
+  state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: resident_roles_modeling
+- id: AGENT-RESIDENT-heartbeat
+  type: Agent
+  subtype: AgentDef
+  name: resident-heartbeat
+  description: 'resident 常驻角色: 心脏心跳 — 存活/心跳事件 (预留)'
+  status: active
+  domain: system
+  created: '2026-08-23'
+  version: 1.0.0
+  layer: L3
+  properties:
+    agent_name: resident-heartbeat
+    resident_role: heartbeat
+    role: '心脏心跳 — 存活/心跳事件 (预留)'
+    projector: resident-heartbeat
+    topic_filter: [heartbeat, system.alive]
+    handler: heartbeat
+  state_history:
+  - state: active
+    timestamp: '2026-08-23T00:00:00Z'
+    reason: resident_roles_modeling
