@@ -40,13 +40,13 @@ def tokenize(text: str) -> Set[str]:
     # 中文按字/词 (2-4 gram), 英文按单词
     tokens = set()
     # 英文 tokens
-    tokens.update(re.findall(r'[a-z][a-z0-9_-]{1,}', text))
+    tokens.update(re.findall(r"[a-z][a-z0-9_-]{1,}", text))
     # 中文 bigrams
-    chinese = re.findall(r'[\u4e00-\u9fff]+', text)
+    chinese = re.findall(r"[\u4e00-\u9fff]+", text)
     for phrase in chinese:
         for n in (2, 3, 4):
             for i in range(len(phrase) - n + 1):
-                tokens.add(phrase[i:i + n])
+                tokens.add(phrase[i : i + n])
     return tokens
 
 
@@ -65,18 +65,21 @@ def load_m1_tasks() -> list[dict]:
     if not M1_DIR.exists():
         return tasks
     import yaml
+
     for f in sorted(M1_DIR.glob("*.yaml")):
         try:
             d = yaml.safe_load(f.read_text()) or {}
             if not isinstance(d, dict):
                 continue
             text = " ".join(str(d.get(k, "")) for k in ("name", "title", "description"))
-            tasks.append({
-                "id": d.get("id", f.stem),
-                "status": d.get("status", ""),
-                "tokens": tokenize(text),
-                "raw": text[:100],
-            })
+            tasks.append(
+                {
+                    "id": d.get("id", f.stem),
+                    "status": d.get("status", ""),
+                    "tokens": tokenize(text),
+                    "raw": text[:100],
+                }
+            )
         except Exception:
             continue
     return tasks
@@ -88,6 +91,7 @@ def load_omo_tasks() -> list[dict]:
     if not OMO_TASKS_ROOT.exists():
         return tasks
     import yaml
+
     for f in sorted(OMO_TASKS_ROOT.rglob("*.yaml")):
         try:
             text = f.read_text(encoding="utf-8")
@@ -97,13 +101,15 @@ def load_omo_tasks() -> list[dict]:
                 continue
             content = " ".join(str(data.get(k, "")) for k in ("title", "desc", "description", "name"))
             rel_dir = f.parent.relative_to(OMO_TASKS_ROOT).parts[0] if f.parent != OMO_TASKS_ROOT else "root"
-            tasks.append({
-                "id": data.get("id", f.stem),
-                "dir": str(rel_dir),
-                "status": data.get("status", ""),
-                "tokens": tokenize(content),
-                "raw": content[:100],
-            })
+            tasks.append(
+                {
+                    "id": data.get("id", f.stem),
+                    "dir": str(rel_dir),
+                    "status": data.get("status", ""),
+                    "tokens": tokenize(content),
+                    "raw": content[:100],
+                }
+            )
         except Exception:
             continue
     return tasks
@@ -124,14 +130,16 @@ def match_tasks(m1_tasks: list[dict], omo_tasks: list[dict], threshold: float) -
                 best_score = score
                 best_omo = i
         if best_omo is not None and best_score >= threshold:
-            pairs.append({
-                "m1_id": m1["id"],
-                "m1_status": m1["status"],
-                "omo_id": omo_tasks[best_omo]["id"],
-                "omo_dir": omo_tasks[best_omo]["dir"],
-                "omo_status": omo_tasks[best_omo]["status"],
-                "score": round(best_score, 3),
-            })
+            pairs.append(
+                {
+                    "m1_id": m1["id"],
+                    "m1_status": m1["status"],
+                    "omo_id": omo_tasks[best_omo]["id"],
+                    "omo_dir": omo_tasks[best_omo]["dir"],
+                    "omo_status": omo_tasks[best_omo]["status"],
+                    "score": round(best_score, 3),
+                }
+            )
             used_omo.add(best_omo)
     return pairs
 

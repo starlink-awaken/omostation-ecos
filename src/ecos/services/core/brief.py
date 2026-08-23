@@ -363,6 +363,7 @@ def main():
         )
     elif args.output:
         import os
+
         out_p = Path(args.output).expanduser().resolve()
         try:
             os.makedirs(str(out_p.parent), exist_ok=True)

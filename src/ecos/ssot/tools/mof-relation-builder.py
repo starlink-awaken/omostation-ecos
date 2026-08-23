@@ -31,12 +31,12 @@ def tokenize(text: str) -> Set[str]:
     if not text:
         return set()
     text = text.lower()
-    tokens = set(re.findall(r'[a-z][a-z0-9_-]{2,}', text))
-    chinese = re.findall(r'[\u4e00-\u9fff]+', text)
+    tokens = set(re.findall(r"[a-z][a-z0-9_-]{2,}", text))
+    chinese = re.findall(r"[\u4e00-\u9fff]+", text)
     for phrase in chinese:
         for n in (2, 3):
             for i in range(len(phrase) - n + 1):
-                tokens.add(phrase[i:i + n])
+                tokens.add(phrase[i : i + n])
     return tokens
 
 
@@ -46,6 +46,7 @@ def load_m1_nodes() -> dict:
     if not M1_DIR.exists():
         return nodes
     import yaml
+
     for f in sorted(M1_DIR.rglob("*.yaml")):
         try:
             d = yaml.safe_load(f.read_text()) or {}
@@ -96,7 +97,10 @@ def build_relations(nodes: dict) -> dict:
                 if other_nid == nid:
                     continue
                 # 其他节点的描述/trigger 包含我的 signal
-                if sig.lower() in " ".join(other_info["data"].get(k, "") for k in ("name", "title", "description")).lower():
+                if (
+                    sig.lower()
+                    in " ".join(other_info["data"].get(k, "") for k in ("name", "title", "description")).lower()
+                ):
                     relations[nid]["provides"].add(other_nid)
                     relations[other_nid]["depends_on"].add(nid)
 
@@ -124,12 +128,15 @@ def build_relations(nodes: dict) -> dict:
                     relations[other_nod]["depends_on"].add(nid)
 
     # 转换为有序列表
-    return {nid: {"depends_on": sorted(v["depends_on"]), "provides": sorted(v["provides"])} for nid, v in relations.items()}
+    return {
+        nid: {"depends_on": sorted(v["depends_on"]), "provides": sorted(v["provides"])} for nid, v in relations.items()
+    }
 
 
 def apply_relations(nodes: dict, relations: dict, dry_run: bool = True) -> int:
     """将 relations 写入 M1 节点"""
     import yaml
+
     written = 0
     for nid, rel in relations.items():
         if not rel["depends_on"] and not rel["provides"]:
@@ -166,7 +173,18 @@ def main():
     nodes_with_edges = sum(1 for v in relations.values() if v["depends_on"] or v["provides"])
 
     if args.json:
-        print(json.dumps({"nodes": len(nodes), "edges": total_edges, "nodes_with_edges": nodes_with_edges, "relations": relations}, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "nodes": len(nodes),
+                    "edges": total_edges,
+                    "nodes_with_edges": nodes_with_edges,
+                    "relations": relations,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return
 
     print("=" * 60)

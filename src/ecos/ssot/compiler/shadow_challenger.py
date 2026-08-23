@@ -175,7 +175,9 @@ class ShadowChallenger:
     def _synthesize_patch(self, original_text: str, domain: str, challenges: list[ChallengeIssue]) -> str:
         patch_blocks: list[str] = []
         for c in challenges:
-            patch_blocks.append(f"> **【影子对抗合规强化补丁 — {c.perspective}】**\n> 规避缺陷: {c.flaw_title}\n> 强化声明: {c.patch_prescription}\n")
+            patch_blocks.append(
+                f"> **【影子对抗合规强化补丁 — {c.perspective}】**\n> 规避缺陷: {c.flaw_title}\n> 强化声明: {c.patch_prescription}\n"
+            )
 
         header = "\n\n## 🛡️ 影子红蓝对抗合规补强与审查批注 (Shadow Certified Addendum)\n\n"
         return original_text + header + "\n".join(patch_blocks)

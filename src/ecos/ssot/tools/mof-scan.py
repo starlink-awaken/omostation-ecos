@@ -28,7 +28,35 @@ M1_DIR = MOF_ROOT / "m1"
 NODES_DIR = MOF_ROOT / "generated" / "nodes"
 
 # 合规 status 枚举 (来自 m3.yaml Element.status)
-VALID_STATUSES = {"draft", "active", "deprecated", "superseded", "archived", "proposed", "accepted", "done", "running", "identified", "scored", "scored_active", "aging", "resolved", "recorded", "adopted", "validated", "published", "planned", "stopped", "documented", "standalone", "emitted", "betted", "tracking", "predicting", "valid"}
+VALID_STATUSES = {
+    "draft",
+    "active",
+    "deprecated",
+    "superseded",
+    "archived",
+    "proposed",
+    "accepted",
+    "done",
+    "running",
+    "identified",
+    "scored",
+    "scored_active",
+    "aging",
+    "resolved",
+    "recorded",
+    "adopted",
+    "validated",
+    "published",
+    "planned",
+    "stopped",
+    "documented",
+    "standalone",
+    "emitted",
+    "betted",
+    "tracking",
+    "predicting",
+    "valid",
+}
 
 
 def now():
@@ -43,19 +71,22 @@ def scan_m1_instances() -> list[dict]:
     for f in sorted(M1_DIR.rglob("*.yaml")):
         try:
             import yaml
+
             with open(f) as fh:
                 data = yaml.safe_load(fh)
             if not isinstance(data, dict):
                 continue
             status = data.get("status", "unknown")
-            nodes.append({
-                "id": data.get("id", f.stem),
-                "type": data.get("type", "Unknown"),
-                "name": data.get("name", f.stem),
-                "status": str(status).strip('"'),
-                "path": str(f.relative_to(MOF_ROOT)),
-                "subtype": data.get("subtype", ""),
-            })
+            nodes.append(
+                {
+                    "id": data.get("id", f.stem),
+                    "type": data.get("type", "Unknown"),
+                    "name": data.get("name", f.stem),
+                    "status": str(status).strip('"'),
+                    "path": str(f.relative_to(MOF_ROOT)),
+                    "subtype": data.get("subtype", ""),
+                }
+            )
         except Exception:
             continue
     return nodes

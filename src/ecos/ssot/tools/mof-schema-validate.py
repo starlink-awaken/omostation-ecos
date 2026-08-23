@@ -154,11 +154,17 @@ def check_m1_node(
                 issues.append(f"  - type mismatch: {issue}")
 
     # 校验 4 (Phase 3): stateMachine 转移合法性
-    if check_transitions and status and sm and status in (
-        "archived",
-        "deprecated",
-        "discarded",
-        "superseded",
+    if (
+        check_transitions
+        and status
+        and sm
+        and status
+        in (
+            "archived",
+            "deprecated",
+            "discarded",
+            "superseded",
+        )
     ):
         # 看 sibling 节点历史 status 推断合法转移
         # 简化: 仅检查 archive 状态不能再转出 (硬约束)

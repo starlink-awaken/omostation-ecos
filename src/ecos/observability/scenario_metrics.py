@@ -17,6 +17,7 @@ SCENE_DIR = Path(__file__).resolve().parents[5] / "docs" / "scene-cards"
 def scan_scene_cards() -> list[dict]:
     """扫描所有 scene-card 状态."""
     import yaml
+
     scenes = []
     if not SCENE_DIR.exists():
         return scenes
@@ -29,15 +30,17 @@ def scan_scene_cards() -> list[dict]:
                 if end > 0:
                     fm = yaml.safe_load(text[3:end])
                     if isinstance(fm, dict):
-                        scenes.append({
-                            "id": fm.get("scene_id") or f.stem,
-                            "title": fm.get("title", ""),
-                            "status": fm.get("status", "unknown"),
-                            "lifecycle": fm.get("lifecycle", ""),
-                            "owner": fm.get("owner", ""),
-                            "last_reviewed": fm.get("last-reviewed", ""),
-                            "outcome_metric": fm.get("outcome_metric", ""),
-                        })
+                        scenes.append(
+                            {
+                                "id": fm.get("scene_id") or f.stem,
+                                "title": fm.get("title", ""),
+                                "status": fm.get("status", "unknown"),
+                                "lifecycle": fm.get("lifecycle", ""),
+                                "owner": fm.get("owner", ""),
+                                "last_reviewed": fm.get("last-reviewed", ""),
+                                "outcome_metric": fm.get("outcome_metric", ""),
+                            }
+                        )
         except Exception:
             continue
     return scenes

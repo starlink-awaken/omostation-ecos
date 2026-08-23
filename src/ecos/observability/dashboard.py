@@ -48,11 +48,13 @@ def panel_agents() -> dict:
     for name, keyword in checks:
         rc, out = _run(["pgrep", "-fl", keyword])
         running = rc == 0 and out.strip()
-        agents.append({
-            "name": name,
-            "status": "running" if running else "silent",
-            "pid": out.strip().split("\n")[0].split()[0] if running else None,
-        })
+        agents.append(
+            {
+                "name": name,
+                "status": "running" if running else "silent",
+                "pid": out.strip().split("\n")[0].split()[0] if running else None,
+            }
+        )
     running_count = sum(1 for a in agents if a["status"] == "running")
     return {
         "agents": agents,
@@ -78,6 +80,7 @@ def panel_governance() -> dict:
     rc2, out2 = _run([sys.executable, str(TOOLS / "ecos-constraint-compiler.py"), "--enforce", "--json"])
     try:
         import json as _json
+
         cc_data = _json.loads(out2)
         cc_failed = cc_data.get("constraint_compiler", {}).get("failed_required", 0)
     except Exception:
@@ -109,6 +112,7 @@ def panel_execute() -> dict:
     # L1 Scheduler
     try:
         from ecos.l1.runtime.scheduler import L1Scheduler
+
         s = L1Scheduler()
         s.schedule_step({"name": "ping"})
         checks["l1_scheduler"] = "ok"
@@ -118,6 +122,7 @@ def panel_execute() -> dict:
     # L2 Engine
     try:
         from ecos.l2.engine.knowledge_engine import L2KnowledgeEngine
+
         engine = L2KnowledgeEngine()
         count = len(engine.query_m1())
         checks["l2_engine"] = f"ok ({count} nodes)"
@@ -127,6 +132,7 @@ def panel_execute() -> dict:
     # L3 Entry
     try:
         from ecos.l3.entry.api import L3Entry
+
         h = L3Entry().health()
         checks["l3_entry"] = f"ok ({h['status']})"
     except Exception as e:
@@ -183,10 +189,17 @@ def check_alerts(data: dict) -> list[dict]:
         alerts.append({"level": "P0", "msg": f"M1 violations: {data['governance']['m1']['violations']}"})
     # P0: Constraint failed
     if data["governance"]["constraints"]["failed_required"] > 0:
-        alerts.append({"level": "P0", "msg": f"Constraint failed: {data['governance']['constraints']['failed_required']}"})
+        alerts.append(
+            {"level": "P0", "msg": f"Constraint failed: {data['governance']['constraints']['failed_required']}"}
+        )
     # P1: Agent silent > half
     if data["agents"]["running"] < data["agents"]["total"] // 2:
-        alerts.append({"level": "P1", "msg": f"Agents silent: {data['agents']['total'] - data['agents']['running']}/{data['agents']['total']}"})
+        alerts.append(
+            {
+                "level": "P1",
+                "msg": f"Agents silent: {data['agents']['total'] - data['agents']['running']}/{data['agents']['total']}",
+            }
+        )
     # P1: Reasoning engine fail
     for tool, status in data["governance"]["reasoning"].items():
         if status == "fail":

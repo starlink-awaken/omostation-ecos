@@ -131,14 +131,18 @@ class PolicyComplianceInspector:
         # Domain deduction if auto
         detected_domain = domain
         if detected_domain == "auto":
-            if any(k in text for k in ["卫生", "医疗", "卫健", "医院", "互联互通", "等保", "DRG", "健康", "信息化", "疾控"]):
+            if any(
+                k in text for k in ["卫生", "医疗", "卫健", "医院", "互联互通", "等保", "DRG", "健康", "信息化", "疾控"]
+            ):
                 detected_domain = "work-weijian"
             elif any(k in text for k in ["转化", "专利", "技术成熟度", "TRL", "赋权", "中试", "产业化"]):
                 detected_domain = "work-transfer"
             else:
                 detected_domain = "general"
 
-        applicable_rules = [p for p in self._policies.values() if detected_domain == "all" or p.domain == detected_domain]
+        applicable_rules = [
+            p for p in self._policies.values() if detected_domain == "all" or p.domain == detected_domain
+        ]
 
         # 1. 卫健委预算门禁 (E-POL-WJ-001)
         if any(r.rule_id == "E-POL-WJ-001" for r in applicable_rules):
@@ -161,7 +165,9 @@ class PolicyComplianceInspector:
 
         # 2. 卫健委等保与互联互通门禁 (E-POL-WJ-002)
         if any(r.rule_id == "E-POL-WJ-002" for r in applicable_rules):
-            if any(k in text for k in ["临床", "诊疗", "电子病历", "健康档案", "全员人口", "区域平台", "HIS", "公有云"]):
+            if any(
+                k in text for k in ["临床", "诊疗", "电子病历", "健康档案", "全员人口", "区域平台", "HIS", "公有云"]
+            ):
                 if not any(k in text for k in ["等保三级", "三级等保", "等保3级", "第三级"]):
                     rule = self._policies["E-POL-WJ-002"]
                     violations.append(

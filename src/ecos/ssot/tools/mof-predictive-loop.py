@@ -45,6 +45,7 @@ def load_m0() -> dict:
     """加载 M0 快照"""
     try:
         import yaml
+
         return yaml.safe_load(M0_FILE.read_text()) or {}
     except Exception:
         return {}
@@ -55,7 +56,9 @@ def predict_actions(constraints_result: dict, m0: dict, scan_violations: int) ->
     actions = []
 
     # 约束违规 → 立即行动
-    failed = [c for c in constraints_result.get("constraints", []) if not c.get("passed") and c.get("type") == "required"]
+    failed = [
+        c for c in constraints_result.get("constraints", []) if not c.get("passed") and c.get("type") == "required"
+    ]
     for f in failed:
         actions.append(f"[IMMEDIATE] Fix {f['id']}: {f.get('description', '')[:50]}")
 
@@ -87,9 +90,7 @@ def main():
     now = datetime.now(timezone.utc).isoformat()
 
     # 1. 约束编译 (用相对路径, 避免 uv run 绝对路径问题)
-    rc, cout, cerr = run_tool(
-        ["uv", "run", "python3", "src/ecos/ssot/tools/ecos-constraint-compiler.py", "--json"]
-    )
+    rc, cout, cerr = run_tool(["uv", "run", "python3", "src/ecos/ssot/tools/ecos-constraint-compiler.py", "--json"])
     try:
         constraint_result = json.loads(cout) if cout.strip() else {"error": cerr or "no output"}
     except json.JSONDecodeError:
@@ -115,7 +116,13 @@ def main():
         "generated_at": now,
         "constraint_compiler": {
             "status": "ok" if rc == 0 else "fail",
-            "failed_required": len([c for c in constraint_result.get("constraints", []) if not c.get("passed") and c.get("type") == "required"]),
+            "failed_required": len(
+                [
+                    c
+                    for c in constraint_result.get("constraints", [])
+                    if not c.get("passed") and c.get("type") == "required"
+                ]
+            ),
         },
         "m1_health": {
             "violations": scan_violations,
@@ -136,7 +143,9 @@ def main():
         print("  MOF 预测治理闭环报告")
         print("=" * 60)
         print(f"  时间: {now}")
-        print(f"  约束编译: {'PASS' if rc == 0 else 'FAIL'} ({report['constraint_compiler']['failed_required']} required violations)")
+        print(
+            f"  约束编译: {'PASS' if rc == 0 else 'FAIL'} ({report['constraint_compiler']['failed_required']} required violations)"
+        )
         print(f"  M1 健康:  {'OK' if scan_violations == 0 else f'{scan_violations} violations'}")
         print(f"  M0 协议:  {report['m0_snapshot']['protocols']} protocols tracked")
         print(f"  总体:     {report['overall_status']}")
