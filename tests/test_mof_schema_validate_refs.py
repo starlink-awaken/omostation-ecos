@@ -35,8 +35,12 @@ def test_check_refs_reads_source_file_map_from_workspace_root(tmp_path: Path) ->
     sibling.write_text("# sibling repo file", encoding="utf-8")
 
     namespace = _validator()
-    namespace["__file__"] = str(fake_validator)
     check_m1_node = namespace["check_m1_node"]
+    # 注意: runpy.run_path 返回的 dict 是 globals 的拷贝(ns is f.__globals__
+    # 实测为 False), 改 namespace["__file__"] 不影响函数 —— 必须改函数对象
+    # 自带的 __globals__ 才真正生效(第一版改错了地方, 本地因真实兄弟仓存在
+    # 而假阳性, CI 上立刻露馅)。
+    check_m1_node.__globals__["__file__"] = str(fake_validator)
 
     issues = check_m1_node(
         {
