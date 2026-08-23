@@ -114,8 +114,7 @@ gates:
   - id: "p74-silent-workflows"
     command:
       - "bin/gac/check-silent-workflows.py"
-    ci_only: true
-    description: "ADR-0130 P74 lock — silently-healthy workflow detection as executable gate"
+    description: "ADR-0130 P74 lock — silently-healthy workflow detection as executable gate (always runs, was ci_only)"
   - id: "check-dashboard-registry-consistency"
     command: ["bin/ssot/check-dashboard-registry-consistency.py"]
   - id: "check-toolbox-ssot"
