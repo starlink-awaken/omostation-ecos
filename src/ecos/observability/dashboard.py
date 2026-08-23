@@ -184,9 +184,13 @@ def check_alerts(data: dict) -> list[dict]:
     # P0: Constraint failed
     if data["governance"]["constraints"]["failed_required"] > 0:
         alerts.append({"level": "P0", "msg": f"Constraint failed: {data['governance']['constraints']['failed_required']}"})
-    # P1: Agent silent > half
-    if data["agents"]["running"] < data["agents"]["total"] // 2:
-        alerts.append({"level": "P1", "msg": f"Agents silent: {data['agents']['total'] - data['agents']['running']}/{data['agents']['total']}"})
+    # P1: Core agents (signal-poller, agent-tick) silent
+    core = ["signal-poller", "agent-tick-daemon"]
+    core_silent = [a for a in data["agents"]["agents"] if a["name"] in core and a["status"] != "running"]
+    if len(core_silent) == len(core):
+        alerts.append({"level": "P1", "msg": "Core agents silent: " + ", ".join(a["name"] for a in core_silent)})
+    elif data["agents"]["running"] == 0:
+        alerts.append({"level": "P2", "msg": "All agents silent"})
     # P1: Reasoning engine fail
     for tool, status in data["governance"]["reasoning"].items():
         if status == "fail":
