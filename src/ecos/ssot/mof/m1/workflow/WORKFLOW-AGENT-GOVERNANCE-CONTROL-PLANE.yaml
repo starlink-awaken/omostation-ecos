@@ -47,8 +47,8 @@ execution:
   audit_enabled: true
 relations:
   - type: realizes
-    target: .omo/_truth/registry/agent-workflows.yaml
-    note: Workflow registry remains the SSOT for agent profiles, lanes, locks, diff checks, integrations, and adapters.
+    target: .omo/_truth/registry/agent-workflows/
+    note: The canonical workflow directory is the sole writer authority; the legacy flat YAML is only a generated compatibility projection.
   - type: enforces
     target: .omo/_truth/registry/governance-checks.yaml
     note: GaC remains the governance rule SSOT and gate authority.
@@ -56,8 +56,8 @@ relations:
     target: projects/omo
     note: OMO remains the governed state mutation authority.
   - type: routes_strategy
-    target: projects/c2g
-    note: C2G remains the strategy/spec ingress authority.
+    target: projects/omo/src/omo/_vendored/c2g
+    note: OMO-vendored C2G is the strategy/spec ingress implementation authority.
   - type: models
     target: .omo/_truth/registry/mof-capabilities.yaml
     note: MOF remains the model registry and state bridge authority.

@@ -46,6 +46,26 @@ M2_DIR = ROOT / "m2"
 M1_DIR = ROOT / "m1"
 
 
+def _model_driven_ref_paths(value):
+    """Return workspace-relative source paths declared by model-driven refs.
+
+    Historical M1 nodes used a string or list directly.  Current M1 nodes use
+    a metadata map (for example ``{source_file: projects/...}``), so inspect
+    that canonical map shape as well without treating timestamps or labels as
+    filesystem paths.
+    """
+    if isinstance(value, str):
+        return [value] if value.startswith("projects/") else []
+    if isinstance(value, list):
+        paths = []
+        for item in value:
+            paths.extend(_model_driven_ref_paths(item))
+        return paths
+    if isinstance(value, dict):
+        return _model_driven_ref_paths(value.get("source_file"))
+    return []
+
+
 def load_m2_schemas():
     """加载 M2 schemas, 支持 PascalCase + snake_case + lowercase section 命名.
 
@@ -134,12 +154,16 @@ def check_m1_node(
                 issues.append(f"  - type mismatch: {issue}")
 
     # 校验 4 (Phase 3): stateMachine 转移合法性
-    if check_transitions and status and sm:
+    if check_transitions and status and sm and status in (
+        "archived",
+        "deprecated",
+        "discarded",
+        "superseded",
+    ):
         # 看 sibling 节点历史 status 推断合法转移
         # 简化: 仅检查 archive 状态不能再转出 (硬约束)
-        if status in ("archived", "deprecated", "discarded", "superseded"):
-            # OK, 终态
-            pass
+        # OK, 终态
+        pass
 
     # 校验 5 (Phase 3): m3_parent / model_driven_refs 引用路径
     if check_refs:
@@ -149,20 +173,13 @@ def check_m1_node(
             # 只检查包含点的引用 (排除 DescriptiveElement.Model 这种纯命名空间)
             pass  # m3_parent 是命名空间, 不需文件存在性检查
         mdr = props.get("model_driven_refs") or props.get("model_driven_ref") or data.get("model_driven_refs")
-        if isinstance(mdr, list):
-            for p in mdr:
-                if isinstance(p, str) and p.startswith("projects/"):
-                    # 路径形如 projects/.../foo.py:ClassName — 取 : 前路径
-                    path_only = p.split(":")[0]
-                    ref_paths.append(path_only)
-        elif isinstance(mdr, str) and mdr.startswith("projects/"):
-            path_only = mdr.split(":")[0]
-            ref_paths.append(path_only)
+        # 路径形如 projects/.../foo.py:ClassName — 取 : 前路径。
+        ref_paths.extend(p.split(":")[0] for p in _model_driven_ref_paths(mdr))
         # 检查路径 (跨仓引用: projects/<other-repo>/...)
         # 工具路径: src/ecos/ssot/tools/mof-schema-validate.py
         # 用 resolve() 转绝对路径
         # repo_root: ~/Workspace/projects/ecos (5 层 parent)
-        # workspace_root: ~/Workspace (再升 1 层, projects/ 平级)
+        # workspace_root: ~/Workspace (projects/ 的父级，跨子模块引用的锚点)
         repo_root = Path(__file__).resolve().parent.parent.parent.parent.parent
         workspace_root = repo_root.parent.parent
         for p in ref_paths:
@@ -204,9 +221,8 @@ def _check_field_type(field_name, value, declared_type, field_schema):
     elif declared_type == "list":
         if not isinstance(value, list):
             return f"{field_name} 应为 list, 实际 {type(value).__name__}"
-    elif declared_type == "map":
-        if not isinstance(value, dict):
-            return f"{field_name} 应为 map, 实际 {type(value).__name__}"
+    elif declared_type == "map" and not isinstance(value, dict):
+        return f"{field_name} 应为 map, 实际 {type(value).__name__}"
     return None
 
 
@@ -445,10 +461,10 @@ def main():
                     issues = check_m1_node(data, schemas[t], t)
                     flag = "OK" if not issues else "; ".join(issues)
                     if not args.json_output:
-                        print(f"  {nid:40} {str(t):20} {str(s):12} {flag}")
+                        print(f"  {nid:40} {t!s:20} {s!s:12} {flag}")
                 else:
                     if not args.json_output:
-                        print(f"  {nid:40} {str(t):20} -- TYPE NOT IN M2 --")
+                        print(f"  {nid:40} {t!s:20} -- TYPE NOT IN M2 --")
 
     # JSON 输出模式
     if args.json_output:
@@ -515,11 +531,18 @@ def _validate_specific_files(files, args):
             drift.append((nid, t or "NO_TYPE", str(f)))
             continue
 
-        issues = check_m1_node(data, matched_schema, t)
+        issues = check_m1_node(
+            data,
+            matched_schema,
+            t,
+            check_types=args.check_types,
+            check_transitions=args.check_transitions,
+            check_refs=args.check_refs,
+        )
         for issue in issues:
             if "missing required" in issue:
                 missing_req.append((nid, t, issue.strip(), str(f)))
-            if "stateMachine" in issue:
+            if "stateMachine" in issue or "type mismatch" in issue or "ref path" in issue:
                 invalid_sm.append((nid, t, issue.strip(), str(f)))
 
     if drift or missing_req or invalid_sm:
