@@ -18,8 +18,24 @@ def _validator() -> dict[str, object]:
     return runpy.run_path(str(VALIDATOR))
 
 
-def test_check_refs_reads_source_file_map_from_workspace_root() -> None:
+def test_check_refs_reads_source_file_map_from_workspace_root(tmp_path: Path) -> None:
+    # validator 从 __file__ 上溯推导 repo_root/workspace_root, 跨仓 ref 在
+    # workspace_root(projects/ 的父级)下解析。CI runner 只 checkout ecos
+    # 自身, 真实兄弟仓 projects/omo 不存在 —— 本测试原先隐式依赖开发者
+    # 本机布局, 在 CI 上必红(自 ba5128d 引入起 main CI 持续 failure)。
+    # 这里在 tmp_path 构造完整的假 workspace 布局, 并把 namespace 的
+    # __file__ 重定向过去(runpy namespace 即被测函数的全局作用域)。
+    fake_validator = (
+        tmp_path / "ws" / "projects" / "ecos" / "src" / "ecos" / "ssot" / "tools" / "mof-schema-validate.py"
+    )
+    fake_validator.parent.mkdir(parents=True)
+    fake_validator.write_text("# location anchor", encoding="utf-8")
+    sibling = tmp_path / "ws" / "projects" / "omo" / "src" / "omo" / "_vendored" / "c2g" / "mcp_server.py"
+    sibling.parent.mkdir(parents=True)
+    sibling.write_text("# sibling repo file", encoding="utf-8")
+
     namespace = _validator()
+    namespace["__file__"] = str(fake_validator)
     check_m1_node = namespace["check_m1_node"]
 
     issues = check_m1_node(
