@@ -159,5 +159,4 @@ def main():
 
 
 if __name__ == "__main__":
-    import json as _json
     sys.exit(main())

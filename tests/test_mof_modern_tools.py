@@ -32,6 +32,13 @@ class TestMofScan:
         assert rc == 0
         assert "总实例" in out or "total" in out.lower()
 
+    def test_json_type_filter(self):
+        rc, out = _run("mof-scan.py", "--json", "--type", "Protocol")
+        assert rc == 0
+        data = json.loads(out)
+        assert data
+        assert all(node["type"] == "Protocol" for node in data)
+
     def test_all_compliant(self):
         """All 1400 instances should be compliant."""
         rc, out = _run("mof-scan.py", "--check-status")
