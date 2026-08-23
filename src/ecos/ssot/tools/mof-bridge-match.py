@@ -15,17 +15,21 @@ mof-bridge-match — M1 OMOTask ↔ .omo/tasks 内容匹配
     python3 mof-bridge-match.py                # 匹配报告
     python3 mof-bridge-match.py --json         # JSON 输出
     python3 mof-bridge-match.py --threshold 0.3  # 自定义阈值
+    WORKSPACE_ROOT=/path/to/workspace python3 mof-bridge-match.py
 """
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
 from typing import Set
 
 M1_DIR = Path(__file__).resolve().parent.parent / "mof" / "m1" / "omo_layer"
-OMO_TASKS_ROOT = Path(__file__).resolve().parents[6] / ".omo" / "tasks"
+DEFAULT_WORKSPACE_ROOT = Path(__file__).resolve().parents[6]
+WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_ROOT") or DEFAULT_WORKSPACE_ROOT).expanduser().resolve()
+OMO_TASKS_ROOT = WORKSPACE_ROOT / ".omo" / "tasks"
 
 
 def tokenize(text: str) -> Set[str]:
