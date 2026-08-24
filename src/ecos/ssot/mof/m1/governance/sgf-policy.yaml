@@ -27,6 +27,9 @@ settings:
 gates:
   - id: "gac-validate"
     command: ["bin/gac/gac-validate.py", "--gate"]
+  - id: "script-registry-validate"
+    description: "Ensure all bin and project bin scripts are registered in script registry"
+    command: ["python3", "bin/ssot/script-registry.py", "validate"]
   - id: "gac-drift"
     command: ["bin/gac/gac-drift.py"]
   - id: "write-owner-audit"
