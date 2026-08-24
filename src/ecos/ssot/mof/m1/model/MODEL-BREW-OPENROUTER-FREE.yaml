@@ -3,38 +3,141 @@ status: active
 engine_ref: ENG-OPENROUTER-CLOUD
 model_driven_refs:
   source: openrouter_api_free_tier
-  synced_at: '2026-08-09T00:00:00Z'
+  synced_at: '2026-08-24T07:57:03Z'
 governance:
   owner: aetherforge-gateway
-  steward: user-provided-key
+  steward: free-pool-refresh
 models:
+- model_id: cohere/north-mini-code:free
+  display_name: 'Cohere: North Mini Code (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 256000
+  capabilities:
+  - chat
+- model_id: dots-studio/dots-3-note-preview:free
+  display_name: 'Dots Studio: Dots3-Note Preview (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 512000
+  capabilities:
+  - chat
 - model_id: google/gemma-4-26b-a4b-it:free
-  display_name: Gemma 4 26B (Free)
+  display_name: 'Google: Gemma 4 26B A4B  (free) (Free)'
   cost_per_1k_input: 0
   cost_per_1k_output: 0
-  context_window: 131072
-  capabilities: [chat]
+  context_window: 262144
+  capabilities:
+  - chat
 - model_id: google/gemma-4-31b-it:free
-  display_name: Gemma 4 31B (Free)
+  display_name: 'Google: Gemma 4 31B (free) (Free)'
   cost_per_1k_input: 0
   cost_per_1k_output: 0
-  context_window: 131072
-  capabilities: [chat]
+  context_window: 262144
+  capabilities:
+  - chat
+- model_id: liquid/lfm-2.5-2.6b:free
+  display_name: 'LiquidAI: LFM2.5-2.6B (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 65536
+  capabilities:
+  - chat
 - model_id: nvidia/nemotron-3-nano-30b-a3b:free
-  display_name: Nemotron 3 Nano 30B (Free)
+  display_name: 'NVIDIA: Nemotron 3 Nano 30B A3B (free) (Free)'
   cost_per_1k_input: 0
   cost_per_1k_output: 0
-  context_window: 131072
-  capabilities: [chat]
+  context_window: 256000
+  capabilities:
+  - chat
+- model_id: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  display_name: 'NVIDIA: Nemotron 3 Nano Omni (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 256000
+  capabilities:
+  - chat
 - model_id: nvidia/nemotron-3-super-120b-a12b:free
-  display_name: Nemotron 3 Super 120B (Free)
+  display_name: 'NVIDIA: Nemotron 3 Super (free) (Free)'
   cost_per_1k_input: 0
   cost_per_1k_output: 0
-  context_window: 131072
-  capabilities: [chat]
+  context_window: 262144
+  capabilities:
+  - chat
 - model_id: nvidia/nemotron-3-ultra-550b-a55b:free
-  display_name: Nemotron 3 Ultra 550B (Free)
+  display_name: 'NVIDIA: Nemotron 3 Ultra (free) (Free)'
   cost_per_1k_input: 0
   cost_per_1k_output: 0
-  context_window: 131072
-  capabilities: [chat]
+  context_window: 1000000
+  capabilities:
+  - chat
+- model_id: nvidia/nemotron-3.5-lightning:free
+  display_name: 'NVIDIA: Nemotron 3.5 Lightning (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 1000000
+  capabilities:
+  - chat
+- model_id: nvidia/nemotron-nano-12b-v2-vl:free
+  display_name: 'NVIDIA: Nemotron Nano 12B 2 VL (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 128000
+  capabilities:
+  - chat
+- model_id: nvidia/nemotron-nano-9b-v2:free
+  display_name: 'NVIDIA: Nemotron Nano 9B V2 (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 128000
+  capabilities:
+  - chat
+- model_id: openrouter/free
+  display_name: Free Models Router (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 200000
+  capabilities:
+  - chat
+- model_id: poolside/laguna-s-2.1:free
+  display_name: 'Poolside: Laguna S 2.1 (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 262144
+  capabilities:
+  - chat
+- model_id: poolside/laguna-xs-2.1:free
+  display_name: 'Poolside: Laguna XS 2.1 (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 262144
+  capabilities:
+  - chat
+- model_id: stealth/ox-alpha
+  display_name: Ox Alpha (Free)
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 1048576
+  capabilities:
+  - chat
+- model_id: thinkingmachines/inkling-small:free
+  display_name: 'Thinking Machines: Inkling Small (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 262144
+  capabilities:
+  - chat
+- model_id: thinkingmachines/inkling:free
+  display_name: 'Thinking Machines: Inkling (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 262144
+  capabilities:
+  - chat
+- model_id: z-ai/glm-5.2:free
+  display_name: 'Z.ai: GLM 5.2 (free) (Free)'
+  cost_per_1k_input: 0
+  cost_per_1k_output: 0
+  context_window: 256000
+  capabilities:
+  - chat
