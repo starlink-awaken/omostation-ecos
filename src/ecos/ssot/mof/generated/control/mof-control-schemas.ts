@@ -324,7 +324,7 @@ export const GacRule = z.object({
   id: z.string().regex(new RegExp("^[A-Z][A-Z0-9_-]+$")),
   dimension: z.enum(["X1", "X2", "X3", "X4"]),
   layer: z.enum(["M0", "L0", "L1", "L2", "L3", "L4", "I0", "X", "meta"]),
-  check_type: z.enum(["ssot_pointer", "ssot_lint", "mof_stage_gate", "bos_resolve", "task_field", "drift_audit", "freshness", "value_roi", "audit_chain", "direct_io_gate", "hygiene_zero_byte", "hygiene_case", "legacy_index", "schema_integrity", "yaml_bypass", "sensitive_write", "mutation_surface", "registry_integrity", "internal_write_profile", "state_plane_asset", "ingress_boundary", "ingress_artifact", "mutation_ledger", "doc_lifecycle", "doc_archival", "self_evolution_approval", "task_policy", "god_module", "test_coverage", "mesh_routing", "memory_rag", "ingress_precheck", "consistency_drift", "eval_exec", "mutable_default", "placeholder"]),
+  check_type: z.enum(["ssot_pointer", "ssot_lint", "mof_stage_gate", "bos_resolve", "task_field", "drift_audit", "freshness", "value_roi", "audit_chain", "direct_io_gate", "hygiene_zero_byte", "hygiene_case", "legacy_index", "schema_integrity", "yaml_bypass", "sensitive_write", "mutation_surface", "registry_integrity", "internal_write_profile", "state_plane_asset", "ingress_boundary", "ingress_artifact", "mutation_ledger", "doc_lifecycle", "doc_archival", "self_evolution_approval", "task_policy", "god_module", "test_coverage", "mesh_routing", "memory_rag", "ingress_precheck", "consistency_drift", "eval_exec", "mutable_default", "placeholder", "file_exists"]),
   executor: z.array(z.string()),
   lifecycle: z.enum(["draft", "active", "deprecated", "superseded", "removed"]),
   version: z.string(),
