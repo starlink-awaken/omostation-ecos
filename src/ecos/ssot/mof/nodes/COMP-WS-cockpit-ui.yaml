@@ -18,3 +18,5 @@ properties:
   has_pyproject: true
   has_package_json: true
   has_tests: true
+  sfop_slot: H
+  dao_layer: qi

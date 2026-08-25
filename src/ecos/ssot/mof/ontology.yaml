@@ -1,6 +1,30 @@
 m2_ontology:
   version: 1.0.0
   equivalences:
+  - a: 道
+    b: M3.Element
+    relation: EquivalentTo
+    note: 道法术器·道 = 什么可以存在；与 Plan 北极星同层，无独立实现
+  - a: 法
+    b: M2.Constraint
+    relation: EquivalentTo
+    note: 道法术器·法 = M2 类型 + L0-constraints + SFOP 八律
+  - a: 术
+    b: M3.Process
+    relation: EquivalentTo
+    note: 道法术器·术 = Process/Mechanism/Workflow/Pattern
+  - a: 器
+    b: M3.Component
+    relation: EquivalentTo
+    note: 道法术器·器 = Component/Artifact/MCPTool
+  - a: SFOP.Slot
+    b: Component.sfop_slot
+    relation: EquivalentTo
+    note: 运行时槽位是 Component 的分类属性，不是新的 M3 根
+  - a: SFOP.F
+    b: Layer.I0
+    relation: EquivalentTo
+    note: 织层槽 F 是 I0/Agora 的运行时投影
   - a: M3.Element
     b: Element
     relation: EquivalentTo

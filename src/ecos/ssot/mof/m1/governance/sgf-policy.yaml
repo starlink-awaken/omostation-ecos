@@ -212,3 +212,10 @@ gates:
   # BOS-01: resident 接口经 bos://resident/* 路由 (bos-services ↔ bos-registry ↔ allowlist)
   - id: "resident-bos-check"
     command: ["bin/gac/check-resident-bos.py"]
+  # CR-SFOP-01/02 (DFSQ/v1): COMP-WS slot self-report + unique Mesh dispatcher.
+  # Also root-owned in gac-local-gate.py so ecos policy overwrite cannot drop it.
+  - id: "sfop-slots"
+    command: ["bin/gac/check-sfop-slots.py", "--json"]
+  - id: "execution-chain"
+    command: ["bin/gac/check-execution-chain.py", "--json"]
+    timeout: 45
