@@ -1,6 +1,6 @@
 # M1 Node: COMP-WS-ecos
 # Type: Component
-# Modeled: 2026-08-23T07:53:42
+# Modeled: 2026-08-25T05:36:40
 
 id: COMP-WS-ecos
 type: Component
@@ -9,7 +9,7 @@ name: ecos
 description: eCOS 核心 — 协议编织·SSB·涌现
 status: active
 domain: infra
-created: '2026-08-23'
+created: '2026-08-25'
 version: 1.0.0
 layer: L0
 properties:
@@ -18,3 +18,5 @@ properties:
   has_pyproject: true
   has_package_json: false
   has_tests: true
+  sfop_slot: K
+  dao_layer: fa

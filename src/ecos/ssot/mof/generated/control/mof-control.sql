@@ -200,7 +200,9 @@ CREATE TABLE IF NOT EXISTS component (
     "protocol" TEXT,
     -- reference →None (no FK target: no deterministic identity column)
     "port" INTEGER,
-    "has_tests" INTEGER
+    "has_tests" INTEGER,
+    "sfop_slot" TEXT CHECK ("sfop_slot" IN ('K', 'H', 'P', 'C', 'S', 'B', 'J', 'O', 'F')),
+    "dao_layer" TEXT CHECK ("dao_layer" IN ('dao', 'fa', 'shu', 'qi'))
 );
 
 CREATE TABLE IF NOT EXISTS concurrency_control (

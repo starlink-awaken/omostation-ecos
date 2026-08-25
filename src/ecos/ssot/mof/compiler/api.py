@@ -112,13 +112,6 @@ class M2Property:
     # a plain ``items: {type: map}`` would otherwise degrade to a loose object.
     items_inline_properties: tuple[M2Property, ...] = field(default_factory=tuple)
     items_closed_map: bool = False
-    format: str | None = None
-    items_type: str | None = None
-    ref_target: str | None = None
-    enum_values: tuple[str, ...] | None = None
-    inline_properties: tuple[M2Property, ...] = field(default_factory=tuple)
-    closed_map: bool = False
-    required: bool = False
 
 
 @dataclass(frozen=True)

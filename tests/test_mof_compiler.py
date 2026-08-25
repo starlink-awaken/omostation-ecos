@@ -8,6 +8,7 @@ executes), and the tamper-detection check mode.
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import json
 import sqlite3
@@ -33,6 +34,23 @@ W1_TYPES = ("EventEnvelope", "Signal", "Commitment", "Episode", "Outcome")
 @pytest.fixture()
 def compiler() -> MofCompiler:
     return MofCompiler(m2_dir=M2_DIR)
+
+
+def test_m2_property_declares_each_field_once() -> None:
+    """Dataclass annotations silently overwrite duplicate class fields."""
+    api_path = M2_DIR.parent / "compiler" / "api.py"
+    tree = ast.parse(api_path.read_text(encoding="utf-8"), filename=str(api_path))
+    m2_property = next(
+        node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "M2Property"
+    )
+    declared = [
+        node.target.id
+        for node in m2_property.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    ]
+    duplicates = sorted({name for name in declared if declared.count(name) > 1})
+
+    assert duplicates == []
 
 
 # ── model truth ─────────────────────────────────────────────────────

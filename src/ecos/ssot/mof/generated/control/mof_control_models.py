@@ -197,6 +197,8 @@ class Component(BaseModel):
     protocol: str | None = Field(None, description="\u4f7f\u7528\u7684\u534f\u8bae")
     port: int | None = Field(None, description="\u76d1\u542c\u7aef\u53e3")
     has_tests: bool | None = Field(None, description="\u662f\u5426\u6709\u6d4b\u8bd5")
+    sfop_slot: Literal["K", "H", "P", "C", "S", "B", "J", "O", "F"] | None = Field(None, description="SFOP/v1 \u8fd0\u884c\u65f6\u69fd\u4f4d\uff08\u5baa\u6cd5/\u4eba\u7c7b\u9762/\u611f\u77e5/\u8ba4\u77e5/\u810a\u67f1/\u540e\u7aef/\u6295\u5f71/\u7ed3\u679c/\u7ec7\u5c42\uff09")
+    dao_layer: Literal["dao", "fa", "shu", "qi"] | None = Field(None, description="\u9053\u6cd5\u672f\u5668\u5c42\u7ea7\uff08DFSQ/v1\uff1b\u5d4c\u5957 MOF\uff0c\u4e0d\u662f\u65b0\u6839\u7c7b\u578b\uff09")
 
 class ConcurrencyControl(BaseModel):
     """并发控制机制——文件锁、乐观锁、信号量等"""

@@ -50,10 +50,34 @@ Component:
     has_tests:
       type: boolean
       description: 是否有测试
+    sfop_slot:
+      type: enum
+      values:
+      - K
+      - H
+      - P
+      - C
+      - S
+      - B
+      - J
+      - O
+      - F
+      description: SFOP/v1 运行时槽位（宪法/人类面/感知/认知/脊柱/后端/投影/结果/织层）
+    dao_layer:
+      type: enum
+      values:
+      - dao
+      - fa
+      - shu
+      - qi
+      description: 道法术器层级（DFSQ/v1；嵌套 MOF，不是新根类型）
   validationRules:
   - rule: layer != null
     level: error
     message: 组件必须声明所属层
+  - rule: subtype == 'Project' and status == 'active' implies sfop_slot != null
+    level: warning
+    message: 活跃工作区项目应声明 SFOP 槽位（硬检查见 check-sfop-slots.py）
   examples:
   - id: COMP-WS-agora
     name: Agora Service Mesh
