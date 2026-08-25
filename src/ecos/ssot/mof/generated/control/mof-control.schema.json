@@ -1854,7 +1854,8 @@
             "consistency_drift",
             "eval_exec",
             "mutable_default",
-            "placeholder"
+            "placeholder",
+            "file_exists"
           ]
         },
         "created_at": {
