@@ -210,6 +210,33 @@ constraints:
   rule: task.imported_via startswith 'omo_bridge' implies len(task.governance_refs) > 0
   type: preferred
   violation: 'W-L0-008: C2G 产物缺少治理引用'
+- applies_to:
+  - L0
+  - L2
+  - L3
+  description: 每个 COMP-WS-* 工作区项目组件必须声明 sfop_slot 与 dao_layer（脊面槽位 + 道法术器）
+  dimension: X4
+  id: CR-SFOP-01
+  rule: component.id startswith 'COMP-WS-' implies (component.sfop_slot in [K,H,P,C,S,B,J,O,F] and component.dao_layer in [dao,fa,shu,qi])
+  type: required
+  violation: 'E-SFOP-001: 工作区组件未声明 SFOP 槽位或道法术器层级'
+- applies_to:
+  - L2
+  description: 活跃 Project 组件中 sfop_slot=S（唯一 dispatcher）至多一个，且必须是 COMP-WS-omo
+  dimension: X1
+  id: CR-SFOP-02
+  rule: count(component where subtype=='Project' and status=='active' and sfop_slot=='S') <= 1 and that id == 'COMP-WS-omo'
+  type: required
+  violation: 'E-SFOP-002: 出现第二 dispatcher 或 S 槽不属于 omo'
+- applies_to:
+  - L3
+  - L4
+  description: 治理观察量（GaC 绿、scorecard、BET done、PR 数）不得作为北极星分子
+  dimension: X3
+  id: CR-SFOP-03
+  rule: north_star.numerator subset_of human_verdict
+  type: preferred
+  violation: 'W-SFOP-003: 北极星分子混入治理自指量'
 execution:
   last_run: null
   mode: warn

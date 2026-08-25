@@ -1,6 +1,6 @@
 # M1 Node: COMP-WS-family-hub
 # Type: Component
-# Modeled: 2026-08-23T07:53:42
+# Modeled: 2026-08-25T05:36:40
 
 id: COMP-WS-family-hub
 type: Component
@@ -9,7 +9,7 @@ name: family-hub
 description: '项目: family-hub'
 status: active
 domain: infra
-created: '2026-08-23'
+created: '2026-08-25'
 version: 1.0.0
 layer: L2
 properties:
@@ -18,3 +18,5 @@ properties:
   has_pyproject: true
   has_package_json: true
   has_tests: true
+  sfop_slot: H
+  dao_layer: qi

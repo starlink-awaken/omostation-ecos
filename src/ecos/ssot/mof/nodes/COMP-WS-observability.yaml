@@ -1,6 +1,6 @@
 # M1 Node: COMP-WS-observability
 # Type: Component
-# Modeled: 2026-08-23T07:53:42
+# Modeled: 2026-08-25T05:36:40
 
 id: COMP-WS-observability
 type: Component
@@ -9,12 +9,14 @@ name: observability
 description: '项目: observability'
 status: active
 domain: infra
-created: '2026-08-23'
+created: '2026-08-25'
 version: 1.0.0
 layer: L2
 properties:
   layer: L2
   runtime: active
-  has_pyproject: true
+  has_pyproject: false
   has_package_json: false
-  has_tests: true
+  has_tests: false
+  sfop_slot: J
+  dao_layer: qi
