@@ -175,6 +175,8 @@ export const Component = z.object({
   protocol: z.string().describe("reference →?").optional(),
   port: z.number().int().optional(),
   has_tests: z.boolean().optional(),
+  sfop_slot: z.enum(["K", "H", "P", "C", "S", "B", "J", "O", "F"]).optional(),
+  dao_layer: z.enum(["dao", "fa", "shu", "qi"]).optional(),
 });
 
 export const ConcurrencyControl = z.object({
