@@ -31,7 +31,9 @@ fi
 echo "🔍 Pre-commit: $REPO_NAME (python: $PYTHON_LABEL)"
 
 # ── ruff check (staged .py only) ──────────────────────
-STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' 2>/dev/null | grep -v "__pycache__" | grep -v ".venv" || true)
+# generated/ 以编译器输出为准；显式传路径会绕过 pyproject exclude，
+# 手工 format 会让 test_generated_control_dir_is_clean 判不干净。
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' 2>/dev/null | grep -v "__pycache__" | grep -v ".venv" | grep -v '^src/ecos/ssot/mof/generated/' || true)
 if [ -n "$STAGED_PY" ] && command -v ruff &>/dev/null; then
     if ! ruff check $STAGED_PY 2>&1; then
         echo "❌ ruff check 失败"
