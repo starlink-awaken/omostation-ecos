@@ -14,8 +14,9 @@ properties:
   problem: Plan/分层/8D/AGE-v2/resident/BCOS 各自成体系，组件可同时自称内核、编排器与价值层
   context: 已有 MOF M3–M0、L0 约束、COMP-WS 节点与 GaC，缺的是槽位硬约束而非新元模型
   solution: >
-    1) 道=Plan证伪+M3 2) 法=M2+L0+SFOP八律 3) 术=Mesh/MOS/workflow
+    1) 道=Plan证伪+M3 2) 法=M2+L0+SFOP槽位律 3) 术=Mesh/MOS/workflow
     4) 器=Component 必须自报 sfop_slot/dao_layer 5) 活跃 Project 的 S 槽至多一个
+    6) P/O 允许空槽 7) H↛B 必须经 F 8) dao 不入 cron 9) qi 不写 L0 required
   anti_pattern: 为道法术器新建 M3 类型 DaoLayer，或把 AGE-v2 写成第二操作系统
   known_uses:
   - docs/architecture/os-operating-pattern-v1.md
