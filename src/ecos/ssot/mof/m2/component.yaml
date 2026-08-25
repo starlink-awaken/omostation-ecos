@@ -76,8 +76,11 @@ Component:
     level: error
     message: 组件必须声明所属层
   - rule: subtype == 'Project' and status == 'active' implies sfop_slot != null
-    level: warning
-    message: 活跃工作区项目应声明 SFOP 槽位（硬检查见 check-sfop-slots.py）
+    level: error
+    message: 活跃工作区项目必须声明 SFOP 槽位（硬检查 check-sfop-slots.py CR-SFOP-01）
+  - rule: subtype == 'Project' and status == 'active' implies dao_layer != null
+    level: error
+    message: 活跃工作区项目必须声明道法术器层级（硬检查 check-sfop-slots.py CR-SFOP-01）
   examples:
   - id: COMP-WS-agora
     name: Agora Service Mesh

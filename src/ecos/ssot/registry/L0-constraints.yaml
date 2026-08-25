@@ -229,14 +229,49 @@ constraints:
   type: required
   violation: 'E-SFOP-002: 出现第二 dispatcher 或 S 槽不属于 omo'
 - applies_to:
+  - L2
+  description: P（感知）与 O（结果）槽允许空置；空槽不是缺口，补 holder 是可选成长
+  dimension: X4
+  id: CR-SFOP-04
+  rule: vacant(sfop_slot in [P,O]) is allowed
+  type: preferred
+  violation: 'W-SFOP-004: 把允许空置的 P/O 槽误报为缺失'
+- applies_to:
+  - L3
+  - L1
+  description: H 槽不得直接 import B 槽项目；H↔B 唯一合法通道是 F（agora）
+  dimension: X1
+  id: CR-SFOP-05
+  rule: import(caller.sfop_slot==H, callee.sfop_slot==B) implies false unless via F
+  type: required
+  violation: 'E-SFOP-005: 人类面直连后端，未走织层 F'
+- applies_to:
+  - L4
+  - L1
+  description: dao_layer=dao 的组件不得出现在 cron 执行账本
+  dimension: X1
+  id: CR-DFSQ-01
+  rule: cron.command path_to_project dao_layer != dao
+  type: required
+  violation: 'E-DFSQ-001: 道层组件进入了执行账本'
+- applies_to:
+  - L0
+  - L3
+  description: dao_layer=qi 的项目树不得编写 L0 type=required 约束
+  dimension: X4
+  id: CR-DFSQ-02
+  rule: qi project tree has no L0 required constraint documents
+  type: required
+  violation: 'E-DFSQ-002: 器层项目编写了 L0 必遵守约束'
+- applies_to:
   - L3
   - L4
-  description: 治理观察量（GaC 绿、scorecard、BET done、PR 数）不得作为北极星分子
+  description: 治理观察量（GaC 绿、scorecard、BET done、PR 数）不得作为北极星分子（已迁出 SFOP 族）
   dimension: X3
-  id: CR-SFOP-03
+  id: CR-X3-NS-001
   rule: north_star.numerator subset_of human_verdict
   type: preferred
-  violation: 'W-SFOP-003: 北极星分子混入治理自指量'
+  violation: 'W-X3-001: 北极星分子混入治理自指量'
 execution:
   last_run: null
   mode: warn
