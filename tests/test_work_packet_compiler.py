@@ -363,6 +363,59 @@ class TestDetectPacketChanges:
         assert res["new_hash"].startswith("sha256:")
 
 
+# ── Task 1: exact capability_requirements ──
+_REQ_SKILL = {"capability_id": "skill:git-discipline", "operation": "load", "effect": "read_only"}
+_REQ_WORKFLOW = {"capability_id": "workflow:bet-execution", "operation": "load", "effect": "read_only"}
+
+
+def _req_packet(*requirements):
+    return _v2_packet(capability_requirements=list(requirements))
+
+
+class TestCapabilityRequirements:
+    def test_different_ordered_list_changes_hash(self):
+        base = canonicalize(_req_packet(_REQ_SKILL, _REQ_WORKFLOW))
+        reordered = canonicalize(_req_packet(_REQ_WORKFLOW, _REQ_SKILL))
+        assert compute_packet_hash(base) != compute_packet_hash(reordered)
+
+    @pytest.mark.parametrize(
+        "requirements",
+        [
+            [_REQ_SKILL, _REQ_SKILL],
+            [{"capability_id": "skill:*", "operation": "load", "effect": "read_only"}],
+            [
+                {
+                    "capability_id": "skill:git-discipline",
+                    "operation": "load",
+                    "effect": "read_only",
+                    "extra": "unexpected",
+                }
+            ],
+            [{"capability_id": "skill:git-discipline", "operation": "invoke", "effect": "effectful"}],
+            [{"capability_id": "skill:git-discipline", "operation": "run", "effect": "read_only"}],
+            [{"capability_id": "skill:git-discipline", "operation": "load", "effect": "write"}],
+            [{"capability_id": "git-discipline", "operation": "load", "effect": "read_only"}],
+        ],
+    )
+    def test_rejects_invalid_requirements(self, requirements):
+        with pytest.raises(ValueError):
+            canonicalize(_req_packet(*requirements))
+
+    def test_valid_requirements_round_trip(self):
+        canonical = canonicalize(_req_packet(_REQ_SKILL, _REQ_WORKFLOW))
+        assert '"capability_requirements":[' in canonical
+        assert '"capability_id":"skill:git-discipline"' in canonical
+        assert '"capability_id":"workflow:bet-execution"' in canonical
+
+    def test_packet_without_field_remains_readable(self):
+        canonical = canonicalize(_v2_packet())
+        assert '"capability_requirements"' not in canonical
+
+    def test_v1_packet_without_field_remains_readable(self):
+        canonical = canonicalize(FIXED_PACKET)
+        assert '"capability_requirements"' not in canonical
+
+
 # ── SR-05 VerificationReceipt fixtures ──
 _FAKE_HASH = "sha256:" + "a" * 64
 _FAKE_HASH_2 = "sha256:" + "b" * 64

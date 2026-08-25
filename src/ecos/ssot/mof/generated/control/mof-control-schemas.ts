@@ -717,6 +717,11 @@ export const WorkPacket = z.object({
   }).strict().optional(),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  capability_requirements: z.array(z.object({
+    capability_id: z.string().regex(new RegExp("^(skill|workflow|mcp-server|mcp-tool|bos-service):[A-Za-z0-9._:@/-]+$")),
+    operation: z.enum(["find", "inspect", "load", "invoke"]),
+    effect: z.enum(["read_only", "effectful"]),
+  }).strict()).optional(),
 }).superRefine((value, ctx) => {
   if (value.schema_version === "work-packet/v2" && value.spec_binding === undefined) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["spec_binding"], message: "spec_binding is required when schema_version equals work-packet/v2" });

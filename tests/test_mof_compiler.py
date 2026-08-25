@@ -8,6 +8,7 @@ executes), and the tamper-detection check mode.
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import json
 import sqlite3
@@ -33,6 +34,23 @@ W1_TYPES = ("EventEnvelope", "Signal", "Commitment", "Episode", "Outcome")
 @pytest.fixture()
 def compiler() -> MofCompiler:
     return MofCompiler(m2_dir=M2_DIR)
+
+
+def test_m2_property_declares_each_field_once() -> None:
+    """Dataclass annotations silently overwrite duplicate class fields."""
+    api_path = M2_DIR.parent / "compiler" / "api.py"
+    tree = ast.parse(api_path.read_text(encoding="utf-8"), filename=str(api_path))
+    m2_property = next(
+        node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "M2Property"
+    )
+    declared = [
+        node.target.id
+        for node in m2_property.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    ]
+    duplicates = sorted({name for name in declared if declared.count(name) > 1})
+
+    assert duplicates == []
 
 
 # ── model truth ─────────────────────────────────────────────────────
@@ -453,6 +471,106 @@ def test_work_packet_v2_binding_is_generated_as_cross_language_contract(
     assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "spec_binding" IS NOT NULL)' in sqlite_ddl
     assert 'CHECK ("schema_version" <> \'work-packet/v2\' OR "instruction_binding" IS NOT NULL)' in sqlite_ddl
     assert 'CHECK ("schema_version" <> \'work-packet/v1\' OR "instruction_binding" IS NULL)' in sqlite_ddl
+
+
+def test_work_packet_capability_requirements_are_strict_cross_language_contract(
+    compiler: MofCompiler,
+) -> None:
+    """Task 1 RED→GREEN: exact capability_requirements are a strict cross-language contract.
+
+    The emitted JSON Schema, Pydantic validator and Zod schema must all carry
+    the item-level ``properties`` / ``required`` / ``additionalProperties:
+    false`` / ``pattern`` / ``enum`` shape — not a loose ``list[dict[str, Any]]``.
+    """
+    artifacts = compiler.compile()
+    schema = json.loads(artifacts["json-schema"])
+    work_packet = schema["$defs"]["WorkPacket"]
+    requirement = work_packet["properties"]["capability_requirements"]["items"]
+    assert set(requirement["required"]) == {"capability_id", "operation", "effect"}
+    assert requirement["additionalProperties"] is False
+    assert requirement["properties"]["capability_id"]["pattern"] == (
+        "^(skill|workflow|mcp-server|mcp-tool|bos-service):[A-Za-z0-9._:@/-]+$"
+    )
+    assert requirement["properties"]["operation"]["enum"] == ["find", "inspect", "load", "invoke"]
+    assert requirement["properties"]["effect"]["enum"] == ["read_only", "effectful"]
+    assert work_packet["properties"]["capability_requirements"]["type"] == "array"
+    assert "capability_requirements" in artifacts["pydantic"]
+    assert "capability_requirements" in artifacts["zod"]
+
+    # Pydantic must reject more than it declares: dynamically import the
+    # generated module and prove item-level validation is enforced.
+    with tempfile.TemporaryDirectory() as td:
+        mod_path = Path(td) / "mof_control_models_capreq.py"
+        mod_path.write_text(artifacts["pydantic"], encoding="utf-8")
+        spec = importlib.util.spec_from_file_location("mof_control_models_capreq", mod_path)
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["mof_control_models_capreq"] = module
+        spec.loader.exec_module(module)
+
+        base = {
+            "packet_id": "WP-CAP-0001",
+            "schema_version": "work-packet/v2",
+            "blueprint_ref": "blueprint://test",
+            "wave": "W1",
+            "bet_id": "BET-TEST",
+            "strategic_outcome": "test",
+            "objective": "test",
+            "why_now": "test",
+            "status": "active",
+            "authority": {},
+            "scope": {},
+            "dependencies": {},
+            "acceptance": {},
+            "budgets": {},
+            "rollback": {},
+            "circuit_breaker": {},
+            "assignment": {},
+            "spec_binding": {
+                "spec_ref": "registry://spec/demo",
+                "spec_version": "1.0.0",
+                "content_digest": "sha256:" + "a" * 64,
+                "decision_ref": "ADR-0001",
+            },
+            "instruction_binding": {
+                "instruction_ref": "repo://docs/operations/blueprint-agent-instruction-pack-v1.md",
+                "instruction_version": "blueprint-agent-instruction-pack/v1",
+                "content_digest": "sha256:" + "b" * 64,
+                "instruction_profile": "executor",
+            },
+        }
+        valid_requirements = [
+            {"capability_id": "skill:git-discipline", "operation": "load", "effect": "read_only"},
+            {"capability_id": "workflow:bet-execution", "operation": "load", "effect": "read_only"},
+        ]
+        module.WorkPacket.model_validate({**base, "capability_requirements": valid_requirements})
+
+        # Negative cases: extra field, missing required field, wildcard ID,
+        # invalid operation enum, invalid effect enum.
+        for invalid in (
+            [
+                {
+                    "capability_id": "skill:git-discipline",
+                    "operation": "load",
+                    "effect": "read_only",
+                    "extra": "unexpected",
+                }
+            ],
+            [{"capability_id": "skill:git-discipline", "effect": "read_only"}],
+            [{"capability_id": "skill:*", "operation": "load", "effect": "read_only"}],
+            [{"capability_id": "skill:git-discipline", "operation": "run", "effect": "read_only"}],
+            [{"capability_id": "skill:git-discipline", "operation": "load", "effect": "write"}],
+        ):
+            with pytest.raises(ValueError, match="capability_requirements"):
+                module.WorkPacket.model_validate({**base, "capability_requirements": invalid})
+
+    # Zod must lock the item shape, not just the field name.
+    zod = artifacts["zod"]
+    assert "capability_requirements: z.array(z.object({" in zod
+    assert "capability_id: z.string().regex(" in zod
+    assert 'operation: z.enum(["find", "inspect", "load", "invoke"])' in zod
+    assert 'effect: z.enum(["read_only", "effectful"])' in zod
+    assert "}).strict()).optional()" in zod
 
 
 def test_sqlite_ddl_executes(compiler: MofCompiler) -> None:

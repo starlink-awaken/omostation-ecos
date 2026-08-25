@@ -106,6 +106,12 @@ class M2Property:
     inline_properties: tuple[M2Property, ...] = field(default_factory=tuple)
     closed_map: bool = False
     required: bool = False
+    # List items that are themselves closed inline maps. Preserved so the
+    # emitters can keep item properties / required / pattern / enums and
+    # ``additionalProperties: false`` across JSON Schema, Pydantic and Zod —
+    # a plain ``items: {type: map}`` would otherwise degrade to a loose object.
+    items_inline_properties: tuple[M2Property, ...] = field(default_factory=tuple)
+    items_closed_map: bool = False
 
 
 @dataclass(frozen=True)
@@ -207,6 +213,45 @@ def _resolve_body(raw: dict, m2_type: str, path: Path) -> dict:
     raise CompilerError(f"{path.name}: schema '{m2_type}' has no resolvable body")
 
 
+def _parse_inline_map(
+    parent_label: str,
+    spec: dict,
+    model_names: set[str],
+    path: Path,
+) -> tuple[tuple[M2Property, ...], bool]:
+    """Parse a closed inline map's children from a ``spec`` mapping.
+
+    Returns ``(inline_properties, closed_map)``. When ``additionalProperties``
+    is not exactly ``False`` the map is open and nothing is parsed. A closed
+    map without well-formed ``properties`` / ``required`` fails closed with a
+    :class:`CompilerError`.
+    """
+    closed_map = spec.get("additionalProperties") is False
+    if not closed_map:
+        return (), False
+    raw_properties = spec.get("properties")
+    raw_required = spec.get("required") or []
+    if not isinstance(raw_properties, dict) or not raw_properties:
+        raise CompilerError(f"{path.name}: {parent_label}: closed map requires properties")
+    if not isinstance(raw_required, list):
+        raise CompilerError(f"{path.name}: {parent_label}: required must be a list")
+    required_names = {str(child_name) for child_name in raw_required}
+    unknown_required = required_names - {str(child_name) for child_name in raw_properties}
+    if unknown_required:
+        raise CompilerError(
+            f"{path.name}: {parent_label}: required references unknown properties {sorted(unknown_required)}"
+        )
+    parsed_children: list[M2Property] = []
+    for child_name, child_spec in raw_properties.items():
+        if not isinstance(child_spec, dict):
+            raise CompilerError(f"{path.name}: {parent_label}.{child_name} must be a mapping")
+        child_name = str(child_name)
+        parsed_children.append(
+            _parse_property(child_name, child_spec, child_name in required_names, model_names, path)
+        )
+    return tuple(parsed_children), True
+
+
 def _parse_property(name: str, spec: dict, required: bool, model_names: set[str], path: Path) -> M2Property:
     raw_type = str(spec.get("type", "string"))
     description = str(spec.get("description", "")).strip()
@@ -234,30 +279,14 @@ def _parse_property(name: str, spec: dict, required: bool, model_names: set[str]
         if not values:
             raise CompilerError(f"{path.name}: property '{name}': enum type requires explicit values")
         enum_values = tuple(str(v) for v in values)
-    inline_properties: tuple[M2Property, ...] = ()
-    closed_map = ptype == "map" and spec.get("additionalProperties") is False
-    if closed_map:
-        raw_properties = spec.get("properties")
-        raw_required = spec.get("required") or []
-        if not isinstance(raw_properties, dict) or not raw_properties:
-            raise CompilerError(f"{path.name}: property '{name}': closed map requires properties")
-        if not isinstance(raw_required, list):
-            raise CompilerError(f"{path.name}: property '{name}': required must be a list")
-        required_names = {str(child_name) for child_name in raw_required}
-        unknown_required = required_names - {str(child_name) for child_name in raw_properties}
-        if unknown_required:
-            raise CompilerError(
-                f"{path.name}: property '{name}': required references unknown properties {sorted(unknown_required)}"
-            )
-        parsed_children: list[M2Property] = []
-        for child_name, child_spec in raw_properties.items():
-            if not isinstance(child_spec, dict):
-                raise CompilerError(f"{path.name}: property '{name}.{child_name}' must be a mapping")
-            child_name = str(child_name)
-            parsed_children.append(
-                _parse_property(child_name, child_spec, child_name in required_names, model_names, path)
-            )
-        inline_properties = tuple(parsed_children)
+    if ptype == "map":
+        inline_properties, closed_map = _parse_inline_map(name, spec, model_names, path)
+    else:
+        inline_properties, closed_map = (), False
+    items_inline_properties: tuple[M2Property, ...] = ()
+    items_closed_map = False
+    if ptype == "list" and items_type == "map":
+        items_inline_properties, items_closed_map = _parse_inline_map(f"{name}.items", items, model_names, path)
     return M2Property(
         name=name,
         type=ptype,
@@ -270,6 +299,8 @@ def _parse_property(name: str, spec: dict, required: bool, model_names: set[str]
         inline_properties=inline_properties,
         closed_map=closed_map,
         required=required,
+        items_inline_properties=items_inline_properties,
+        items_closed_map=items_closed_map,
     )
 
 

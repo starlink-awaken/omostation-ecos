@@ -93,6 +93,17 @@ def _prop_json_schema(prop: "M2Property", compiled: set[str]) -> dict:
                 "items": {"type": "string"},
                 "description": f"list of references →{prop.ref_target or '?'}",
             }
+        if prop.items_type == "map" and prop.items_inline_properties:
+            items_spec: dict = {
+                "type": "object",
+                "properties": {
+                    child.name: _prop_json_schema(child, compiled) for child in prop.items_inline_properties
+                },
+                "required": [child.name for child in prop.items_inline_properties if child.required],
+            }
+            if prop.items_closed_map:
+                items_spec["additionalProperties"] = False
+            return {"type": "array", "items": items_spec}
         items_spec: dict = {"type": _JSON_TYPES.get(prop.items_type or "string", "string")}
         if prop.items_type == "map":
             items_spec = {"type": "object"}
@@ -338,6 +349,46 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                             f'                raise ValueError("{prop.name}.{child.name} has an invalid format")'
                         )
             lines.append("        return self")
+        inline_lists = [p for p in s.properties if p.type == "list" and p.items_inline_properties]
+        if inline_lists:
+            lines.extend(
+                [
+                    "",
+                    '    @model_validator(mode="after")',
+                    "    def _enforce_inline_list_contracts(self):",
+                ]
+            )
+            for prop in inline_lists:
+                field_name = _py_field_name(prop.name)
+                lines.append(f"        if self.{field_name} is not None:")
+                lines.append(f"            for _item in self.{field_name}:")
+                if prop.items_closed_map:
+                    allowed = sorted(child.name for child in prop.items_inline_properties)
+                    lines.append(f"                if set(_item) != set({allowed!r}):")
+                    lines.append(
+                        f'                    raise ValueError("{prop.name} items must contain exactly {allowed!r}")'
+                    )
+                for child in prop.items_inline_properties:
+                    child_expr = f"_item.get({json.dumps(child.name)})"
+                    if child.required:
+                        lines.append(f"                if {child_expr} is None:")
+                        lines.append(f'                    raise ValueError("{prop.name}.{child.name} is required")')
+                    if child.type == "string":
+                        lines.append(f"                if not isinstance({child_expr}, str):")
+                        lines.append(
+                            f'                    raise ValueError("{prop.name}.{child.name} must be a string")'
+                        )
+                    elif child.type == "enum":
+                        lines.append(f"                if {child_expr} not in {list(child.enum_values or ())!r}:")
+                        lines.append(
+                            f'                    raise ValueError("{prop.name}.{child.name} has an invalid value")'
+                        )
+                    if child.pattern:
+                        lines.append(f"                if re.fullmatch({json.dumps(child.pattern)}, {child_expr}) is None:")
+                        lines.append(
+                            f'                    raise ValueError("{prop.name}.{child.name} has an invalid format")'
+                        )
+            lines.append("        return self")
         if s.conditional_requirements:
             lines.extend(
                 [
@@ -394,6 +445,16 @@ def _zod_type(prop: "M2Property", compiled: set[str]) -> str:
             return f"z.lazy(() => {prop.ref_target})"
         return f'z.string().describe("reference →{prop.ref_target or "?"}")'
     if ptype == "list":
+        if prop.items_type == "map" and prop.items_inline_properties:
+            fields: list[str] = []
+            for child in prop.items_inline_properties:
+                expression = _zod_type(child, compiled)
+                if not child.required:
+                    expression += ".optional()"
+                fields.append(f"    {child.name}: {expression},")
+            suffix = ".strict()" if prop.items_closed_map else ""
+            inner = "z.object({\n" + "\n".join(fields) + "\n  })" + suffix
+            return f"z.array({inner})"
         inner = _zod_scalar(
             prop.items_type or "string",
             prop.ref_target,
