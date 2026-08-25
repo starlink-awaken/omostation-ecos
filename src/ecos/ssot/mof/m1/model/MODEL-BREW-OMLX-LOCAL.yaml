@@ -83,6 +83,14 @@ models:
   - chat
   - vision
   runs_on: MBP-oMLX-App
+- model_id: qwen-3.8-27b
+  display_name: qwen-3.8-27b (MBP-oMLX-App)
+  cost_per_1k_input: 0.0
+  cost_per_1k_output: 0.0
+  context_window: 32768
+  capabilities:
+  - chat
+  runs_on: MBP-oMLX-App
 - model_id: mythos
   display_name: mythos (MBP-oMLX-App)
   cost_per_1k_input: 0.0
