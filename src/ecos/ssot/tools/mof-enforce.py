@@ -285,7 +285,7 @@ def main():
     parser.add_argument("--watch", action="store_true", help="监听模式 (daemon用)")
     args = parser.parse_args()
 
-    if not BOUNDARY_FILE.exists():
+    if _resolve_boundary_file() is None:
         print(f"❌ 边界规则不存在: {BOUNDARY_FILE}")
         sys.exit(2)
 
