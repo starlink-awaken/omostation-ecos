@@ -243,6 +243,26 @@ WorkPacket:
       description: 分类标签
       items:
         type: string
+    capability_requirements:
+      type: list
+      description: Ordered exact native capabilities required by this WorkPacket
+      items:
+        type: map
+        additionalProperties: false
+        required: [capability_id, operation, effect]
+        properties:
+          capability_id:
+            type: string
+            description: Exact capability selector (skill/workflow/mcp-server/mcp-tool/bos-service)
+            pattern: '^(skill|workflow|mcp-server|mcp-tool|bos-service):[A-Za-z0-9._:@/-]+$'
+          operation:
+            type: enum
+            description: Capability operation
+            values: [find, inspect, load, invoke]
+          effect:
+            type: enum
+            description: Side-effect classification
+            values: [read_only, effectful]
 
   validationRules:
     - rule: packet_id is not None and packet_id != ''
@@ -293,6 +313,12 @@ WorkPacket:
     - rule: "not (authority is not None and scope is not None and authority.get('risk_level') in ['R1','R2','R3'] and len(scope.get('non_goals', [])) < 1)"
       level: error
       message: R1+ 的 non_goals 至少一项
+    - rule: "capability_requirements is None or len({r.get('capability_id') for r in capability_requirements}) == len(capability_requirements)"
+      level: error
+      message: capability_requirements capability_id 必须唯一
+    - rule: "capability_requirements is None or all(r.get('operation') != 'invoke' or not r.get('capability_id', '').startswith('skill:') for r in capability_requirements)"
+      level: error
+      message: Skill 只能 load，禁止 invoke
 
   conditionalRequirements:
     - when:

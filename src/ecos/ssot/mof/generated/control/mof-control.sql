@@ -869,6 +869,8 @@ CREATE TABLE IF NOT EXISTS work_packet (
     "description" TEXT,
     "tags" TEXT,
     -- JSON-encoded
+    "capability_requirements" TEXT,
+    -- JSON-encoded
     CHECK ("schema_version" <> 'work-packet/v2' OR "spec_binding" IS NOT NULL),
     CHECK ("schema_version" <> 'work-packet/v2' OR "instruction_binding" IS NOT NULL),
     CHECK ("schema_version" <> 'work-packet/v1' OR "spec_binding" IS NULL),

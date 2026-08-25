@@ -14,6 +14,8 @@ Covers WorkPacket + CompletionManifest:
 
 from __future__ import annotations
 
+import ast
+import builtins
 import re
 from pathlib import Path
 
@@ -85,11 +87,22 @@ def _find_rule(body: dict, fragment: str) -> str:
 
 
 def _evaluate_rules(exprs: list[str], instance: dict) -> dict[str, bool]:
-    """Evaluate strict-Python rules with the instance dict as locals."""
+    """Evaluate strict-Python rules with the instance dict as locals.
+
+    Rule-referenced names that are absent from the instance resolve to ``None``
+    so optional fields (e.g. ``capability_requirements``) evaluate as absent
+    rather than raising ``NameError`` — matching the ``X is not None`` guard
+    style the rules are written in. Builtins are never shadowed.
+    """
+    builtins_ = {name for name in dir(builtins) if not name.startswith("_")}
     results: dict[str, bool] = {}
     for expr in exprs:
         compiled = compile(expr, "<rule>", "eval")
-        results[expr] = bool(eval(compiled, {"len": len}, instance))
+        tree = ast.parse(expr, "<rule>", "eval")
+        names = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+        missing = {name: None for name in names if name not in instance and name not in builtins_}
+        locals_ = {**instance, **missing}
+        results[expr] = bool(eval(compiled, {"len": len}, locals_))
     return results
 
 

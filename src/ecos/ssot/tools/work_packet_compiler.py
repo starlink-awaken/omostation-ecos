@@ -38,6 +38,10 @@ VALID_VERDICTS = ("accept", "revise", "reject")
 HASH_PREFIX = "sha256:"
 SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 
+CAPABILITY_ID_RE = re.compile(r"^(?:skill|workflow|mcp-server|mcp-tool|bos-service):[A-Za-z0-9._:@/-]+$")
+CAPABILITY_OPERATIONS = {"find", "inspect", "load", "invoke"}
+CAPABILITY_EFFECTS = {"read_only", "effectful"}
+
 # Only these fields participate in the shared packet contract.  Keeping this
 # list explicit prevents adapter metadata, prose, timestamps, or future YAML
 # decorations from silently changing the dispatch hash.
@@ -61,6 +65,7 @@ INVARIANT_FIELDS = (
     "assignment",
     "spec_binding",
     "instruction_binding",
+    "capability_requirements",
 )
 
 PLATFORM_HEADERS = {
@@ -198,6 +203,40 @@ class VerificationReceipt:
 
 
 # ── 核心函数 ──
+def validate_capability_requirements(value: Any) -> list[dict[str, str]]:
+    """Strict canonicalization of the optional ``capability_requirements`` list.
+
+    Enforces, before any canonical serialization: the exact three-field item
+    shape, the capability-ID pattern (no wildcards), duplicate-free ordered
+    identity, operation/effect enums, and the skill:load-only rule. Returns a
+    normalized list; ``None`` passes through as an empty list so packets that
+    do not declare requirements remain readable during shadow rollout.
+    """
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError("capability_requirements must be a list")
+    canonical: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for raw in value:
+        if not isinstance(raw, dict) or set(raw) != {"capability_id", "operation", "effect"}:
+            raise ValueError("capability_requirements items must contain exactly capability_id, operation, effect")
+        item = {key: str(raw[key]) for key in ("capability_id", "operation", "effect")}
+        if CAPABILITY_ID_RE.fullmatch(item["capability_id"]) is None:
+            raise ValueError(f"capability_id must match the exact capability pattern: {item['capability_id']!r}")
+        if item["capability_id"] in seen:
+            raise ValueError(f"duplicate capability_id: {item['capability_id']}")
+        if item["operation"] not in CAPABILITY_OPERATIONS:
+            raise ValueError(f"invalid capability operation: {item['operation']!r}")
+        if item["effect"] not in CAPABILITY_EFFECTS:
+            raise ValueError(f"invalid capability effect: {item['effect']!r}")
+        if item["capability_id"].startswith("skill:") and item["operation"] == "invoke":
+            raise ValueError("skill capabilities are load-only; invoke is forbidden")
+        seen.add(item["capability_id"])
+        canonical.append(item)
+    return canonical
+
+
 def canonicalize(packet: dict[str, Any]) -> str:
     """对 WorkPacket 的 invariant 字段做确定性 canonicalize:
     - 按键排序
@@ -244,6 +283,8 @@ def canonicalize(packet: dict[str, Any]) -> str:
             raise ValueError("work-packet/v1 does not accept spec_binding")
         if instruction_binding is not None:
             raise ValueError("work-packet/v1 does not accept instruction_binding")
+    if "capability_requirements" in packet and packet["capability_requirements"] is not None:
+        packet = {**packet, "capability_requirements": validate_capability_requirements(packet["capability_requirements"])}
     invariant_fields = {key: packet[key] for key in INVARIANT_FIELDS if key in packet and packet[key] is not None}
     return json.dumps(invariant_fields, sort_keys=True, separators=(",", ":"))
 

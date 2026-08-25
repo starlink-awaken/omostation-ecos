@@ -778,6 +778,7 @@ risk controls derived from the execution-control blueprint §7.1."""
     instruction_binding: dict[str, Any] | None = Field(None, description="\u7ed1\u5b9a worker \u5fc5\u987b\u9010\u5b57\u8bfb\u53d6\u5e76\u786e\u8ba4\u7684\u4e0d\u53ef\u53d8 Instruction Pack\uff1bv2 \u5fc5\u987b\u5b8c\u6574\u58f0\u660e")
     description: str | None = Field(None, description="\u8be6\u7ec6\u63cf\u8ff0")
     tags: list[str] | None = Field(None, description="\u5206\u7c7b\u6807\u7b7e")
+    capability_requirements: list[dict[str, Any]] | None = Field(None, description="Ordered exact native capabilities required by this WorkPacket")
 
     @model_validator(mode="after")
     def _enforce_inline_map_contracts(self):
@@ -806,6 +807,28 @@ risk controls derived from the execution-control blueprint §7.1."""
                 raise ValueError("instruction_binding.instruction_profile is required")
             if self.instruction_binding.get("instruction_profile") not in ['executor']:
                 raise ValueError("instruction_binding.instruction_profile has an invalid value")
+        return self
+
+    @model_validator(mode="after")
+    def _enforce_inline_list_contracts(self):
+        if self.capability_requirements is not None:
+            for _item in self.capability_requirements:
+                if set(_item) != set(['capability_id', 'effect', 'operation']):
+                    raise ValueError("capability_requirements items must contain exactly ['capability_id', 'effect', 'operation']")
+                if _item.get("capability_id") is None:
+                    raise ValueError("capability_requirements.capability_id is required")
+                if not isinstance(_item.get("capability_id"), str):
+                    raise ValueError("capability_requirements.capability_id must be a string")
+                if re.fullmatch("^(skill|workflow|mcp-server|mcp-tool|bos-service):[A-Za-z0-9._:@/-]+$", _item.get("capability_id")) is None:
+                    raise ValueError("capability_requirements.capability_id has an invalid format")
+                if _item.get("operation") is None:
+                    raise ValueError("capability_requirements.operation is required")
+                if _item.get("operation") not in ['find', 'inspect', 'load', 'invoke']:
+                    raise ValueError("capability_requirements.operation has an invalid value")
+                if _item.get("effect") is None:
+                    raise ValueError("capability_requirements.effect is required")
+                if _item.get("effect") not in ['read_only', 'effectful']:
+                    raise ValueError("capability_requirements.effect has an invalid value")
         return self
 
     @model_validator(mode="after")

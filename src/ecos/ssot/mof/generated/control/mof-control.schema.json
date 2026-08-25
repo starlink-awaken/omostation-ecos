@@ -4469,6 +4469,39 @@
           "description": "\u9884\u7b97\u4e0e\u65ad\u8def\u5668\u9608\u503c",
           "type": "object"
         },
+        "capability_requirements": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "capability_id": {
+                "description": "Exact capability selector (skill/workflow/mcp-server/mcp-tool/bos-service)",
+                "pattern": "^(skill|workflow|mcp-server|mcp-tool|bos-service):[A-Za-z0-9._:@/-]+$",
+                "type": "string"
+              },
+              "effect": {
+                "enum": [
+                  "read_only",
+                  "effectful"
+                ]
+              },
+              "operation": {
+                "enum": [
+                  "find",
+                  "inspect",
+                  "load",
+                  "invoke"
+                ]
+              }
+            },
+            "required": [
+              "capability_id",
+              "operation",
+              "effect"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
         "circuit_breaker": {
           "description": "\u81ea\u52a8\u4e2d\u65ad\u6761\u4ef6",
           "type": "object"
