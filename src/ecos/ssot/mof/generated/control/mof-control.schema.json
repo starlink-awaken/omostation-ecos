@@ -1876,7 +1876,8 @@
             "eval_exec",
             "mutable_default",
             "placeholder",
-            "file_exists"
+            "file_exists",
+            "static_analysis"
           ]
         },
         "created_at": {
