@@ -24,7 +24,7 @@ m2_ontology:
   - a: SFOP.F
     b: Layer.I0
     relation: EquivalentTo
-    note: 织层槽 F 是 I0/Agora 的运行时投影；H↔B 的唯一合法通道（CR-SFOP-05）
+    note: 织层槽 F 是 I0/Agora 的运行时投影；H↔B 经 F 或 cockpit.adapters（H 侧 B 端口，CR-SFOP-05）
   - a: M3.Element
     b: Element
     relation: EquivalentTo

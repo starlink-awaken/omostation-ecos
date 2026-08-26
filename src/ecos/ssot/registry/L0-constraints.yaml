@@ -239,12 +239,21 @@ constraints:
 - applies_to:
   - L3
   - L1
-  description: H 槽不得直接 import B 槽项目；H↔B 唯一合法通道是 F（agora）
+  description: H 槽不得直接 import B 槽项目。允许的 H→B 路径是经 F（agora），或 cockpit.adapters 作为 H 侧 B 端口（防腐层）。其它 H 文件新调用 fail-closed。
   dimension: X1
   id: CR-SFOP-05
-  rule: import(caller.sfop_slot==H, callee.sfop_slot==B) implies false unless via F
+  rule: import(caller.sfop_slot==H, callee.sfop_slot==B) implies false unless via F or caller path contains /adapters/
   type: required
-  violation: 'E-SFOP-005: 人类面直连后端，未走织层 F'
+  violation: 'E-SFOP-005: 人类面直连后端，未走织层 F 或 cockpit.adapters'
+- applies_to:
+  - L1
+  - L3
+  description: 声称活跃（status=active 或 claimed_active=true）的 cron 执行账本条目必须声明合法 sfop_slot；未声称活跃的存量缺槽仅 warn
+  dimension: X1
+  id: CR-SFOP-06
+  rule: cron.job claimed_active implies cron.job.sfop_slot in [K,H,P,C,S,B,J,O,F]
+  type: required
+  violation: 'E-SFOP-006: 声称活跃的 cron 条目缺少合法槽位'
 - applies_to:
   - L4
   - L1
