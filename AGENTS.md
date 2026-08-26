@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # AGENTS.md — ecos
 
     > Scope: project-local developer guide for `ecos`.

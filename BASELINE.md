@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # L0 治理模块基线
 
 > ecos/l0/governance · 基线定义 · 测试标准

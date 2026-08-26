@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # eCOS 运营脚本
 
 > 源目录: ~/Workspace/projects/ecos/scripts/
