@@ -1,9 +1,9 @@
 {
   "artifacts": {
-    "json-schema": "fed3bb2ffac95b5a66d8f79b53a01f4de9db0189eaccc23d8ec97c05d56b58d6",
-    "pydantic": "462d45d646e134c59fb56c6e229f82e58a3058a424173feca305e8078d3aa6f4",
-    "sqlite": "9674268b999d1508a409a1b8328d7df4911c98672dbf3c3b5d3d66a2c1e8aa99",
-    "zod": "09573cb0712b3e4c1ac73874b4e7c8b354b48ca0246dfe86be3f74bd293b989b"
+    "json-schema": "aba8b653eccbbcee89a40d34e9d5be45bb937772b55c8bf9fc4ce5566dc8a01f",
+    "pydantic": "7eb5bb27d4dda968f57c1ec33772529861941cf1489b887b2bad655484166372",
+    "sqlite": "f604f743e2645b62a90dc8e5d93679ae7db885bcac3684a53b87d324f1e8d940",
+    "zod": "c12e32c6d307d5a39ec2e3876413e55ba09ba50ad79ecd4062bdbefd7c9d3233"
   },
   "source_dir": "m2"
 }
