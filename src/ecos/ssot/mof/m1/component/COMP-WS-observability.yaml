@@ -29,3 +29,7 @@ value_metrics:
   technical_debt: low
   maintenance_cost: medium
   strategic_importance: critical
+
+properties:
+  sfop_slot: P
+  dao_layer: qi
