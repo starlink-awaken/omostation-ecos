@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # ecos API / Usage Reference
 
 > Quick reference for using **ecos** programmatically and from the command line.

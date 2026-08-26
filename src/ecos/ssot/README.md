@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # 织星 L0 — 协议编织层
 
 > eCOS v6.3 | 织星架构 (Stellar Weave) | 2026-06-06

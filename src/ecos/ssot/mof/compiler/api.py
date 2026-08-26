@@ -253,9 +253,7 @@ def _parse_inline_map(
         if not isinstance(child_spec, dict):
             raise CompilerError(f"{path.name}: {parent_label}.{child_name} must be a mapping")
         child_name = str(child_name)
-        parsed_children.append(
-            _parse_property(child_name, child_spec, child_name in required_names, model_names, path)
-        )
+        parsed_children.append(_parse_property(child_name, child_spec, child_name in required_names, model_names, path))
     return tuple(parsed_children), True
 
 

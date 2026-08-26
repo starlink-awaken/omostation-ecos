@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # ecos Architecture
 
 > Architecture overview for **ecos**. For the full workspace architecture, see [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md).

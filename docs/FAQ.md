@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # ecos FAQ
 
 ## What is ecos?
