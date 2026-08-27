@@ -284,7 +284,10 @@ def canonicalize(packet: dict[str, Any]) -> str:
         if instruction_binding is not None:
             raise ValueError("work-packet/v1 does not accept instruction_binding")
     if "capability_requirements" in packet and packet["capability_requirements"] is not None:
-        packet = {**packet, "capability_requirements": validate_capability_requirements(packet["capability_requirements"])}
+        packet = {
+            **packet,
+            "capability_requirements": validate_capability_requirements(packet["capability_requirements"]),
+        }
     invariant_fields = {key: packet[key] for key in INVARIANT_FIELDS if key in packet and packet[key] is not None}
     return json.dumps(invariant_fields, sort_keys=True, separators=(",", ":"))
 

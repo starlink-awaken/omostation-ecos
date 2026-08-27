@@ -12,6 +12,8 @@ layer: "L3"
 created: "2026-06-13"
 version: "1.0.0"
 properties:
+  sfop_slot: F
+  dao_layer: fa
   component_type: "workspace_project"
   language: "typescript"
   framework: "nextjs"

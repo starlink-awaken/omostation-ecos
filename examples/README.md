@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # Examples
 
 This directory contains runnable examples for `ecos`.

@@ -13,6 +13,8 @@ created: '2026-08-25'
 version: 1.0.0
 layer: L0
 properties:
+  sfop_slot: P
+  dao_layer: fa
   layer: L0
   runtime: active
   has_pyproject: true

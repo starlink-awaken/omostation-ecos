@@ -16,6 +16,8 @@ version: 3.4.0
 layer: L1
 runtime: active
 properties:
+  sfop_slot: B
+  dao_layer: qi
   layer: L1
   runtime: active
   has_pyproject: true

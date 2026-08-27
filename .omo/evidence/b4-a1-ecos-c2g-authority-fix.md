@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # B4-A.1 ECOS C2G authority convergence evidence
 
 Date: 2026-08-23

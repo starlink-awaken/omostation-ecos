@@ -384,7 +384,9 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                             f'                    raise ValueError("{prop.name}.{child.name} has an invalid value")'
                         )
                     if child.pattern:
-                        lines.append(f"                if re.fullmatch({json.dumps(child.pattern)}, {child_expr}) is None:")
+                        lines.append(
+                            f"                if re.fullmatch({json.dumps(child.pattern)}, {child_expr}) is None:"
+                        )
                         lines.append(
                             f'                    raise ValueError("{prop.name}.{child.name} has an invalid format")'
                         )

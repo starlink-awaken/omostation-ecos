@@ -1,3 +1,7 @@
+---
+last-reviewed: 2026-08-26
+---
+
 # ecos Contributors
 
 This project is part of the [omostation](https://github.com/starlink-awaken/omostation) workspace.
