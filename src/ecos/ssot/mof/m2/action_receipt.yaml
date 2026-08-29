@@ -142,7 +142,7 @@ ActionReceipt:
     reason:
       type: enum
       description: 稳定 reason 词表 (终态失败时使用; succeeded 通常缺省)
-      values: [allowed, policy_denied, pdp_unavailable, ledger_unavailable, provider_failed, receipt_unconfirmed]
+      values: [allowed, policy_denied, pdp_unavailable, ledger_unavailable, provider_failed, receipt_unconfirmed, authority_required, authority_principal_mismatch, authority_credential_mismatch, authority_expired, authority_version_rollback, authority_unknown, authority_replay, authority_digest_unverified]
     result:
       type: map
       description: provider 返回结果 (JSON 对象; 无真实外部副作用)
