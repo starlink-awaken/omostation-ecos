@@ -39,6 +39,16 @@ STABLE_REASONS = (
     "ledger_unavailable",
     "provider_failed",
     "receipt_unconfirmed",
+    # BET-Y1Q3-T4-04 principal authority denial reasons (all map onto
+    # policy_denied; never allow/succeeded).
+    "authority_required",
+    "authority_principal_mismatch",
+    "authority_credential_mismatch",
+    "authority_expired",
+    "authority_version_rollback",
+    "authority_unknown",
+    "authority_replay",
+    "authority_digest_unverified",
 )
 REASON_VOCABULARY = ("allowed",) + STABLE_REASONS
 

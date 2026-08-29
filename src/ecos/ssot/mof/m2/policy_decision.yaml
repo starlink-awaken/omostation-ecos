@@ -115,7 +115,7 @@ PolicyDecision:
     reason:
       type: enum
       description: 稳定 reason 词表 (至少 policy_denied/pdp_unavailable/ledger_unavailable/provider_failed/receipt_unconfirmed; allow 决策必须为 allowed)
-      values: [allowed, policy_denied, pdp_unavailable, ledger_unavailable, provider_failed, receipt_unconfirmed]
+      values: [allowed, policy_denied, pdp_unavailable, ledger_unavailable, provider_failed, receipt_unconfirmed, authority_required, authority_principal_mismatch, authority_credential_mismatch, authority_expired, authority_version_rollback, authority_unknown, authority_replay, authority_digest_unverified]
 
   optionalProperties:
     description:

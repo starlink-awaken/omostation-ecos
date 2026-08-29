@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS action_receipt (
     "status" TEXT CHECK ("status" IN ('started', 'succeeded', 'failed')) NOT NULL,
     "started_at" TEXT NOT NULL,
     "completed_at" TEXT,
-    "reason" TEXT CHECK ("reason" IN ('allowed', 'policy_denied', 'pdp_unavailable', 'ledger_unavailable', 'provider_failed', 'receipt_unconfirmed')),
+    "reason" TEXT CHECK ("reason" IN ('allowed', 'policy_denied', 'pdp_unavailable', 'ledger_unavailable', 'provider_failed', 'receipt_unconfirmed', 'authority_required', 'authority_principal_mismatch', 'authority_credential_mismatch', 'authority_expired', 'authority_version_rollback', 'authority_unknown', 'authority_replay', 'authority_digest_unverified')),
     "result" TEXT,
     -- JSON-encoded
     "description" TEXT,
@@ -690,7 +690,7 @@ CREATE TABLE IF NOT EXISTS policy_decision (
     "trace_id" TEXT NOT NULL,
     "issued_at" TEXT NOT NULL,
     "expires_at" TEXT NOT NULL,
-    "reason" TEXT CHECK ("reason" IN ('allowed', 'policy_denied', 'pdp_unavailable', 'ledger_unavailable', 'provider_failed', 'receipt_unconfirmed')) NOT NULL,
+    "reason" TEXT CHECK ("reason" IN ('allowed', 'policy_denied', 'pdp_unavailable', 'ledger_unavailable', 'provider_failed', 'receipt_unconfirmed', 'authority_required', 'authority_principal_mismatch', 'authority_credential_mismatch', 'authority_expired', 'authority_version_rollback', 'authority_unknown', 'authority_replay', 'authority_digest_unverified')) NOT NULL,
     "description" TEXT,
     "tags" TEXT,
     -- JSON-encoded
