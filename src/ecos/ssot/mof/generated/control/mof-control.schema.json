@@ -67,7 +67,7 @@
       }
     },
     "ActionReceipt": {
-      "$id": "urn:mof:ActionReceipt:1.0.0",
+      "$id": "urn:mof:ActionReceipt:1.1.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "description": "Formal ActionReceipt M2 schema (version 1.0.0): the durable execution\nreceipt for one authorized action. A strict started \u2192 succeeded|failed\nstate machine records the at-most-once provider attempt: started is\nappended before the provider call, the terminal state after. Every\nreceipt carries the full decision context (decision_id + action,\nprincipal/executor/episode, mandate id+version, capability, server risk,\nbudget/unit, disclosure, canonical request hash, trace, issued/expires)\nso PEP matching and replay need no copied runtime dict/dataclass mirrors.\nreason is optional and meaningful on terminal failure (provider_failed,\nreceipt_unconfirmed, ...). No cryptographic signatures; single-user trust\ndomain.",
       "properties": {
@@ -138,9 +138,19 @@
           "description": "\u6388\u6743\u65f6\u9501\u5b9a\u7684 Mandate \u7248\u672c\u53f7 (>= 1)",
           "type": "integer"
         },
+        "principal_authority_ref": {
+          "description": "OMO \u9a8c\u8bc1\u7684 principal authority \u5f15\u7528 (format authority:omo:<domain>:<id>)",
+          "pattern": "^authority:[A-Za-z0-9_.:/-]+$",
+          "type": "string"
+        },
         "principal_id": {
           "description": "\u6388\u6743\u4e3b (format principal:<id>)",
           "pattern": "^principal:[A-Za-z0-9_:.-]+$",
+          "type": "string"
+        },
+        "principal_receipt_digest": {
+          "description": "OMO \u9a8c\u8bc1\u56de\u6267\u7684 canonical digest (sha256 hex)",
+          "pattern": "^sha256:[a-f0-9]{64}$",
           "type": "string"
         },
         "reason": {
@@ -3415,7 +3425,7 @@
       }
     },
     "PolicyDecision": {
-      "$id": "urn:mof:PolicyDecision:1.0.0",
+      "$id": "urn:mof:PolicyDecision:1.1.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "description": "Formal PolicyDecision M2 schema (version 1.0.0): the immutable decision\ncontext produced by the OMO PDP for one action request, persisted before\nany provider call. Binds the decision outcome (allow|deny, fail-closed)\nto the full authorization context: action, principal/executor/episode\nidentity, pinned mandate id+version, capability (exact bos:// URI),\nserver-side risk, budget/unit, disclosure, canonical request hash, trace,\nand the issued/expires validity window. reason carries a stable vocabulary\n(allowed, policy_denied, pdp_unavailable, ledger_unavailable,\nprovider_failed, receipt_unconfirmed) \u2014 no broad exception may map to\nallow. The Agora PEP matches this context immediately before the provider\nand refuses mismatch/expired/revoked with provider.calls=0. No\ncryptographic signatures; single-user trust domain.",
       "properties": {
@@ -3487,9 +3497,19 @@
           "description": "\u6388\u6743\u65f6\u9501\u5b9a\u7684 Mandate \u7248\u672c\u53f7 (>= 1)",
           "type": "integer"
         },
+        "principal_authority_ref": {
+          "description": "OMO \u9a8c\u8bc1\u7684 principal authority \u5f15\u7528 (format authority:omo:<domain>:<id>)",
+          "pattern": "^authority:[A-Za-z0-9_.:/-]+$",
+          "type": "string"
+        },
         "principal_id": {
           "description": "\u6388\u6743\u4e3b (Human/Agent \u8eab\u4efd, format principal:<id>)",
           "pattern": "^principal:[A-Za-z0-9_:.-]+$",
+          "type": "string"
+        },
+        "principal_receipt_digest": {
+          "description": "OMO \u9a8c\u8bc1\u56de\u6267\u7684 canonical digest (sha256 hex)",
+          "pattern": "^sha256:[a-f0-9]{64}$",
           "type": "string"
         },
         "reason": {

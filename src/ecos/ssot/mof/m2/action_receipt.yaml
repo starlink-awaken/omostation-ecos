@@ -11,7 +11,7 @@
 # be hand-edited.
 
 m2_type: ActionReceipt
-version: 1.0.0
+version: 1.1.0
 created: '2026-08-11T12:45:00Z'
 updated: '2026-08-11'
 owner:
@@ -154,6 +154,14 @@ ActionReceipt:
       description: 分类标签
       items:
         type: string
+    principal_authority_ref:
+      type: string
+      description: OMO 验证的 principal authority 引用 (format authority:omo:<domain>:<id>)
+      pattern: '^authority:[A-Za-z0-9_.:/-]+$'
+    principal_receipt_digest:
+      type: string
+      description: OMO 验证回执的 canonical digest (sha256 hex)
+      pattern: '^sha256:[a-f0-9]{64}$'
 
   validationRules:
     - rule: receipt_id is not None and receipt_id != ''
