@@ -116,6 +116,8 @@ domain."""
     result: dict[str, Any] | None = Field(None, description="provider \u8fd4\u56de\u7ed3\u679c (JSON \u5bf9\u8c61; \u65e0\u771f\u5b9e\u5916\u90e8\u526f\u4f5c\u7528)")
     description: str | None = Field(None, description="\u8be6\u7ec6\u63cf\u8ff0")
     tags: list[str] | None = Field(None, description="\u5206\u7c7b\u6807\u7b7e")
+    principal_authority_ref: str | None = Field(None, pattern="^authority:[A-Za-z0-9_.:/-]+$", description="OMO \u9a8c\u8bc1\u7684 principal authority \u5f15\u7528 (format authority:omo:<domain>:<id>)")
+    principal_receipt_digest: str | None = Field(None, pattern="^sha256:[a-f0-9]{64}$", description="OMO \u9a8c\u8bc1\u56de\u6267\u7684 canonical digest (sha256 hex)")
 
 class Agent(BaseModel):
     """AI Agent——具有特定角色·能力·工具的智能体。如 orchestrator·debugger·test-engineer。回答"谁在执行"。"""
@@ -635,6 +637,8 @@ cryptographic signatures; single-user trust domain."""
     reason: Literal["allowed", "policy_denied", "pdp_unavailable", "ledger_unavailable", "provider_failed", "receipt_unconfirmed"] = Field(..., description="\u7a33\u5b9a reason \u8bcd\u8868 (\u81f3\u5c11 policy_denied/pdp_unavailable/ledger_unavailable/provider_failed/receipt_unconfirmed; allow \u51b3\u7b56\u5fc5\u987b\u4e3a allowed)")
     description: str | None = Field(None, description="\u8be6\u7ec6\u63cf\u8ff0")
     tags: list[str] | None = Field(None, description="\u5206\u7c7b\u6807\u7b7e")
+    principal_authority_ref: str | None = Field(None, pattern="^authority:[A-Za-z0-9_.:/-]+$", description="OMO \u9a8c\u8bc1\u7684 principal authority \u5f15\u7528 (format authority:omo:<domain>:<id>)")
+    principal_receipt_digest: str | None = Field(None, pattern="^sha256:[a-f0-9]{64}$", description="OMO \u9a8c\u8bc1\u56de\u6267\u7684 canonical digest (sha256 hex)")
 
 class PredictiveGovernance(BaseModel):
     """预测性治理——基于历史数据预测风险并推荐预防性措施。回答"将会发生什么"。"""

@@ -205,14 +205,14 @@ def test_policy_decision_model_truth_is_loaded(compiler: MofCompiler) -> None:
     schemas = {s.name: s for s in compiler.load()}
     assert DECISION_MODEL_NAME in schemas
     schema = schemas[DECISION_MODEL_NAME]
-    assert schema.version == "1.0.0"
+    assert schema.version == "1.1.0"
     assert schema.m3_parent == "GovernanceElement.Decision"
     assert set(schema.required_names) == POLICY_DECISION_REQUIRED_FIELDS
 
 
 def test_policy_decision_envelope_and_ownership(policy_decision_yaml: dict) -> None:
     assert policy_decision_yaml["m2_type"] == DECISION_MODEL_NAME
-    assert policy_decision_yaml["version"] == "1.0.0"
+    assert policy_decision_yaml["version"] == "1.1.0"
     assert policy_decision_yaml["owner"]["team"] == "execution-control"
     assert "policy" in policy_decision_yaml["owner"]
     assert policy_decision_yaml["migrationPolicy"]["strategy"] == "additive-only"
@@ -291,14 +291,14 @@ def test_action_receipt_model_truth_is_loaded(compiler: MofCompiler) -> None:
     schemas = {s.name: s for s in compiler.load()}
     assert RECEIPT_MODEL_NAME in schemas
     schema = schemas[RECEIPT_MODEL_NAME]
-    assert schema.version == "1.0.0"
+    assert schema.version == "1.1.0"
     assert schema.m3_parent == "StructuralElement.Artifact"
     assert set(schema.required_names) == ACTION_RECEIPT_REQUIRED_FIELDS
 
 
 def test_action_receipt_envelope_and_ownership(action_receipt_yaml: dict) -> None:
     assert action_receipt_yaml["m2_type"] == RECEIPT_MODEL_NAME
-    assert action_receipt_yaml["version"] == "1.0.0"
+    assert action_receipt_yaml["version"] == "1.1.0"
     assert action_receipt_yaml["owner"]["team"] == "execution-control"
     assert action_receipt_yaml["migrationPolicy"]["strategy"] == "additive-only"
 

@@ -99,6 +99,8 @@ export const ActionReceipt = z.object({
   result: z.record(z.string(), z.unknown()).optional(),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  principal_authority_ref: z.string().regex(new RegExp("^authority:[A-Za-z0-9_.:/-]+$")).optional(),
+  principal_receipt_digest: z.string().regex(new RegExp("^sha256:[a-f0-9]{64}$")).optional(),
 });
 
 export const Agent = z.object({
@@ -572,6 +574,8 @@ export const PolicyDecision = z.object({
   reason: z.enum(["allowed", "policy_denied", "pdp_unavailable", "ledger_unavailable", "provider_failed", "receipt_unconfirmed"]),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  principal_authority_ref: z.string().regex(new RegExp("^authority:[A-Za-z0-9_.:/-]+$")).optional(),
+  principal_receipt_digest: z.string().regex(new RegExp("^sha256:[a-f0-9]{64}$")).optional(),
 });
 
 export const PredictiveGovernance = z.object({

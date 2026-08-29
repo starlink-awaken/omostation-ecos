@@ -103,8 +103,10 @@ CREATE TABLE IF NOT EXISTS action_receipt (
     "result" TEXT,
     -- JSON-encoded
     "description" TEXT,
-    "tags" TEXT
+    "tags" TEXT,
     -- JSON-encoded
+    "principal_authority_ref" TEXT,
+    "principal_receipt_digest" TEXT
 );
 
 CREATE TABLE IF NOT EXISTS agent (
@@ -690,8 +692,10 @@ CREATE TABLE IF NOT EXISTS policy_decision (
     "expires_at" TEXT NOT NULL,
     "reason" TEXT CHECK ("reason" IN ('allowed', 'policy_denied', 'pdp_unavailable', 'ledger_unavailable', 'provider_failed', 'receipt_unconfirmed')) NOT NULL,
     "description" TEXT,
-    "tags" TEXT
+    "tags" TEXT,
     -- JSON-encoded
+    "principal_authority_ref" TEXT,
+    "principal_receipt_digest" TEXT
 );
 
 CREATE TABLE IF NOT EXISTS predictive_governance (
