@@ -139,8 +139,6 @@ gates:
     command: ["bin/gac/gac-compute-onboard.py", "--check"]
     broken: true
     broken_reason: "依赖本地算力服务 (cc-switch/codexbar/litellm/omlxc), 本地不存在 → 超时"
-  - id: "bus-usage-report"
-    command: ["bin/ssot/bus-usage-report.py"]
   - id: "bus-e2e-harness"
     command: ["bin/ssot/bus-e2e-harness.py", "--count", "30", "--json"]
     ci_only: true
