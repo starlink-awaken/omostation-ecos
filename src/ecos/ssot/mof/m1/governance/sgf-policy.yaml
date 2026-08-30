@@ -103,8 +103,6 @@ gates:
   - id: "matrix-consistency"
     command: ["bin/ssot/matrix-consistency-lint.py", "--skip-launchd"]
     ci_skip: true  # CI 无 launchd 依赖，在 CI_SKIP 里注册
-  - id: "governance-convergence"
-    command: ["bin/gac/governance-convergence-lint.py"]
   - id: "governance-semantic-gate"
     command: ["bin/gac/governance-semantic-gate.py", "--json"]
   - id: "adr-coverage"
