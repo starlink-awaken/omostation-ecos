@@ -1,12 +1,14 @@
 # M2: ConstraintL0
 # M4 元模型闭环 — Phase 1 (ADR-0132 P1-S1)
-# 继承 ConstraintMgmt,添加 L0-constraints 专用字段集 (12 字段)
+# 继承 ConstraintMgmt,添加 L0-constraints 专用字段集
+# 对齐实际 L0-constraints.yaml 数据格式 (v1 + trigger + opc 三种形态)
 
 m2_type: ConstraintL0
-version: 1.0.0
+version: 1.1.0
 created: '2026-07-06T10:00:00'
+updated: '2026-08-27'
 ConstraintL0:
-  m3_parent: Constraint  # 继承 Constraint (m3.yaml Constraint 类目)
+  m3_parent: ConstraintL0  # 继承 ConstraintL0 (m3.yaml ConstraintL0 类目)
   description: 织星 L0 协议约束 — 跨层协议契约。L0 registry/L0-constraints.yaml 的 M2 schema
   icon: 🔒
 
@@ -40,12 +42,12 @@ ConstraintL0:
       description: 归档
       transitions: []
 
-  # ──── 12 必填字段 (L0-constraints v2 形状) ────
+  # ──── 必填字段 (对齐 L0-constraints.yaml 实际数据) ────
   requiredProperties:
     id:
       type: string
-      pattern: '^[A-Z][0-9]-C[0-9]{2,3}$|^CR-[A-Z0-9-]+-[0-9]{2}$'
-      description: L0 约束 ID (继承 X1-C0[0-9]+ 等命名)
+      pattern: '^[A-Z][0-9]-C[0-9]{2,3}$|^CR-[A-Z0-9-]+-[0-9]{2}$|^CS-[0-9]{2}$'
+      description: L0 约束 ID (X1-C0[0-9]+ / CR-XXX-NN / CS-NN)
     description:
       type: string
       minLength: 5
@@ -54,33 +56,25 @@ ConstraintL0:
       type: list
       items:
         type: enum
-        values: [M3, M2, M1, M0, L0, L1, L2, L3, L4, I0, meta]
+        values: [L0, L1, L2, L3, L4, I0]
         minItems: 1
-      description: 适用层 / 元层 (L0/M0/M2/M3 是元层语义,L1-L4 是物理层,meta 是治理元层)
+      description: 适用层 (L0-L4 物理层, I0 集成层)
     dimension:
       type: enum
-      values: [X1, X2, X3, X4, M1, M2, X-meta]
+      values: [X1, X2, X3, X4]
       description: 治理维度
-    severity:
+    type:
       type: enum
-      values: [critical, high, medium, low]
-      description: 严重度 (替代原 type=required/preferred/advisory)
-    rule_expr:
-      type: map
-      required: [kind]
-      properties:
-        kind:
-          type: enum
-          values: [predicate, composite, javascript, lambda, ref]
-        args:
-          type: string
-        ref:
-          type: string
-      description: 谓词表达式 (DSL 约束)
-    violation_code:
+      values: [required, preferred, advisory]
+      description: 约束类型 (required=强制, preferred=推荐, advisory=建议)
+    rule:
       type: string
-      pattern: '^E-(L0|L[0-4])-[A-Z0-9-]+: .+$'
-      description: 违规代码+默认消息
+      minLength: 3
+      description: 谓词表达式 (DSL 约束规则)
+    violation:
+      type: string
+      pattern: '^[EW]-(L0|L[0-4])-[A-Z0-9-]+: .+$'
+      description: 违规代码+默认消息 (E=Error, W=Warning)
     relation_constraints:
       type: map
       properties:
@@ -95,21 +89,24 @@ ConstraintL0:
           items: { type: ref }
       description: 与其他约束的关系
 
-  # ──── 5 可选字段 ────
+  # ──── 可选字段 (对齐 trigger/opc 约束扩展) ────
   optionalProperties:
+    name:
+      type: string
+      description: 约束显示名称 (trigger/opc 约束使用)
+    severity:
+      type: enum
+      values: [error, warning, critical]
+      description: 严重度 (用于 trigger/opc 约束, 与 type 互补)
     confidence:
       type: enum
       values: [fact, inference, hypothesis, estimated]
       default: fact
       description: 元模型的置信度 (Phase 2 桥接 meta_model.py.Confidence)
-    examples:
-      type: list
-      items: { type: ref }
-      description: 示例场景 (→M1 实例 yaml 引用)
     references:
       type: list
-      items: { type: ref }
-      description: 引用其他 M3 Element (反向链接)
+      items: { type: string }
+      description: 引用路径 (文档/脚本/反馈)
     rationale:
       type: string
       description: 约束存在的 rationale (架构意图)
@@ -118,21 +115,30 @@ ConstraintL0:
       default: 365
       min: 1
       description: 价值半衰期 (天),默认 1 年
+    introduced:
+      type: date
+      description: 引入日期 (OPC 约束使用)
+    value_tier:
+      type: integer
+      min: 1
+      max: 3
+      description: 价值层级 (1=核心, 2=重要, 3=一般)
+    gac_ref:
+      type: string
+      pattern: '^CR-[A-Z0-9-]+$'
+      description: 关联的 GaC 规则 ID (governance-checks.yaml::rules)
 
   # ──── 校验规则 ────
   validationRules:
-    - rule: severity == 'critical' implies applies_to ⊆ ['L0', 'M0']
+    - rule: type == 'required' implies violation matches '^E-.+$'
       level: error
-      message: critical 约束只能用于 L0/M0 元层
-    - rule: confidence in ['hypothesis', 'estimated'] implies severity in ['low', 'medium']
-      level: error
-      message: 假设/估计 置信度不能升 high/critical
-    - rule: rule_expr.kind == 'ref' implies rule_expr.ref != null
-      level: error
-      message: ref 表达式必须有引用目标
-    - rule: state == 'aging' implies half_life_days < 365
+      message: required 约束的 violation 必须以 E- 开头
+    - rule: type == 'preferred' implies violation matches '^[EW]-.+$'
       level: warning
-      message: 老化约束应有较短半衰期
+      message: preferred 约束的 violation 建议以 W- 开头
+    - rule: severity == 'error' implies type == 'required'
+      level: error
+      message: severity=error 的约束必须是 required 类型
 
   # ──── 关系约束 ────
   relationConstraints:
@@ -151,24 +157,29 @@ ConstraintL0:
     - ADR-0129 (state projection plane, gitignored 派生面)
 
   examples:
-    - id: X1-C01-v2
-      name: Protocol registration requirement
+    - id: X1-C01
       description: 所有跨层协议映射必须在 L0 Protocol Registry 中注册
       applies_to: [L0, L1, L2, L3]
       dimension: X1
-      severity: high
-      rule_expr: { kind: predicate, args: 'protocol.registered == true' }
-      violation_code: 'E-L0-001: 未注册协议映射'
+      type: required
+      rule: 'protocol.registered == true'
+      violation: 'E-L0-001: 未注册协议映射'
       confidence: fact
       state: scored_active
-    - id: CR-MCP-LAZY-01-v2
-      name: Agora Proxy lazy initialization
+    - id: CR-MCP-LAZY-01
       description: Agora Proxy 必须采用 lazy initialization 避免循环依赖锁死
       applies_to: [L0, L1, L2, I0]
       dimension: X1
-      severity: critical
-      rule_expr: { kind: predicate, args: "proxy.initialization == 'lazy'" }
-      violation_code: 'E-L0-011: 触发代理循环依赖 (Eager proxy initialization detected)'
+      type: required
+      rule: "proxy.initialization == 'lazy'"
+      violation: 'E-L0-011: 触发代理循环依赖 (Eager proxy initialization detected)'
       confidence: fact
       half_life_days: 730
       state: scored_active
+    - id: CR-TRIGGER-01
+      name: "Trigger 注册约束"
+      description: "所有异步触发机制必须在 L0 Trigger Registry 注册为 M1 节点"
+      rule: "for each Trigger in system: exists M1 node with type='trigger'"
+      type: required
+      severity: error
+      violation: "未注册的触发机制无法被系统感知和治理"

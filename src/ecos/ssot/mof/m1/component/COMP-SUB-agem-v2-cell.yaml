@@ -1,0 +1,17 @@
+id: COMP-SUB-age-v2-cell
+type: Component
+m3_parent: StructuralElement.Component
+name: age-v2-cell
+description: AGE-v2 (Agent Generation Evolution v2) — Agent 执行单元，提供规划-执行-验证-治理-记忆-回放全生命周期管理
+project: omo
+parent: COMP-WS-omo
+layer: L2
+runtime: active
+status: active
+model_driven_refs:
+  source_file: projects/omo/src/omo/resident/cell*.py
+
+state_history:
+  - state: active
+    timestamp: '2026-08-27T00:00:00Z'
+    reason: initial_modeling — 18 模块 + 50+ 测试 + 23 BOS URI + 26 MCP 工具
