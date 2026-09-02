@@ -31,6 +31,8 @@ rule_expr:
   args:
     - constraint_count == 137
     - all(constraint.m3_parent == 'ConstraintL0' for constraint in derived)
+rule: constraint_count == 137
+violation: "E-L0-INDEX-001: L0 约束索引数量或派生关系不匹配"
 violation_code: E-L0-INDEX-001
 relation_constraints: {}
 source:
