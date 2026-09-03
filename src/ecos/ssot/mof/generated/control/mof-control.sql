@@ -220,20 +220,22 @@ CREATE TABLE IF NOT EXISTS constraint_l0 (
     "description" TEXT NOT NULL,
     "applies_to" TEXT NOT NULL,
     -- JSON-encoded
-    "dimension" TEXT CHECK ("dimension" IN ('X1', 'X2', 'X3', 'X4', 'M1', 'M2', 'X-meta')) NOT NULL,
-    "severity" TEXT CHECK ("severity" IN ('critical', 'high', 'medium', 'low')) NOT NULL,
-    "rule_expr" TEXT NOT NULL,
-    -- JSON-encoded
-    "violation_code" TEXT NOT NULL,
+    "dimension" TEXT CHECK ("dimension" IN ('X1', 'X2', 'X3', 'X4')) NOT NULL,
+    "type" TEXT CHECK ("type" IN ('required', 'preferred', 'advisory')) NOT NULL,
+    "rule" TEXT NOT NULL,
+    "violation" TEXT NOT NULL,
     "relation_constraints" TEXT NOT NULL,
     -- JSON-encoded
+    "name" TEXT,
+    "severity" TEXT CHECK ("severity" IN ('error', 'warning', 'critical')),
     "confidence" TEXT CHECK ("confidence" IN ('fact', 'inference', 'hypothesis', 'estimated')),
-    "examples" TEXT,
-    -- ref list →M1 (no junction: source/target identity missing)
     "references" TEXT,
-    -- ref list →None (no junction: source/target identity missing)
+    -- JSON-encoded
     "rationale" TEXT,
-    "half_life_days" INTEGER
+    "half_life_days" INTEGER,
+    "introduced" TEXT,
+    "value_tier" INTEGER,
+    "gac_ref" TEXT
 );
 
 CREATE TABLE IF NOT EXISTS constraint_mgmt (
