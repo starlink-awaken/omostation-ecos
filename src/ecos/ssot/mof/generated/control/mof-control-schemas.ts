@@ -190,19 +190,23 @@ export const ConcurrencyControl = z.object({
 });
 
 export const ConstraintL0 = z.object({
-  id: z.string().regex(new RegExp("^[A-Z][0-9]-C[0-9]{2,3}$|^CR-[A-Z0-9-]+-[0-9]{2}$")),
+  id: z.string().regex(new RegExp("^[A-Z][0-9]-C[0-9]{2,3}$|^CR-[A-Z0-9-]+-[0-9]{2}$|^CS-[0-9]{2}$")),
   description: z.string(),
   applies_to: z.array(z.enum([])),
-  dimension: z.enum(["X1", "X2", "X3", "X4", "M1", "M2", "X-meta"]),
-  severity: z.enum(["critical", "high", "medium", "low"]),
-  rule_expr: z.record(z.string(), z.unknown()),
-  violation_code: z.string().regex(new RegExp("^E-(L0|L[0-4])-[A-Z0-9-]+: .+$")),
+  dimension: z.enum(["X1", "X2", "X3", "X4"]),
+  type: z.enum(["required", "preferred", "advisory"]),
+  rule: z.string(),
+  violation: z.string().regex(new RegExp("^[EW]-(L0|L[0-4])-[A-Z0-9-]+: .+$")),
   relation_constraints: z.record(z.string(), z.unknown()),
+  name: z.string().optional(),
+  severity: z.enum(["error", "warning", "critical"]).optional(),
   confidence: z.enum(["fact", "inference", "hypothesis", "estimated"]).optional(),
-  examples: z.array(z.string().describe("reference →M1")).optional(),
-  references: z.array(z.string().describe("reference →?")).optional(),
+  references: z.array(z.string()).optional(),
   rationale: z.string().optional(),
   half_life_days: z.number().int().optional(),
+  introduced: z.string().date().optional(),
+  value_tier: z.number().int().optional(),
+  gac_ref: z.string().regex(new RegExp("^CR-[A-Z0-9-]+$")).optional(),
 });
 
 export const ConstraintMgmt = z.object({

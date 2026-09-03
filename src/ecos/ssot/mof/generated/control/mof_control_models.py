@@ -212,19 +212,23 @@ class ConcurrencyControl(BaseModel):
 
 class ConstraintL0(BaseModel):
     """织星 L0 协议约束 — 跨层协议契约。L0 registry/L0-constraints.yaml 的 M2 schema"""
-    id: str = Field(..., pattern="^[A-Z][0-9]-C[0-9]{2,3}$|^CR-[A-Z0-9-]+-[0-9]{2}$", description="L0 \u7ea6\u675f ID (\u7ee7\u627f X1-C0[0-9]+ \u7b49\u547d\u540d)")
+    id: str = Field(..., pattern="^[A-Z][0-9]-C[0-9]{2,3}$|^CR-[A-Z0-9-]+-[0-9]{2}$|^CS-[0-9]{2}$", description="L0 \u7ea6\u675f ID (X1-C0[0-9]+ / CR-XXX-NN / CS-NN)")
     description: str = Field(..., description="\u7ea6\u675f\u63cf\u8ff0")
-    applies_to: list[str] = Field(..., description="\u9002\u7528\u5c42 / \u5143\u5c42 (L0/M0/M2/M3 \u662f\u5143\u5c42\u8bed\u4e49,L1-L4 \u662f\u7269\u7406\u5c42,meta \u662f\u6cbb\u7406\u5143\u5c42)")
-    dimension: Literal["X1", "X2", "X3", "X4", "M1", "M2", "X-meta"] = Field(..., description="\u6cbb\u7406\u7ef4\u5ea6")
-    severity: Literal["critical", "high", "medium", "low"] = Field(..., description="\u4e25\u91cd\u5ea6 (\u66ff\u4ee3\u539f type=required/preferred/advisory)")
-    rule_expr: dict[str, Any] = Field(..., description="\u8c13\u8bcd\u8868\u8fbe\u5f0f (DSL \u7ea6\u675f)")
-    violation_code: str = Field(..., pattern="^E-(L0|L[0-4])-[A-Z0-9-]+: .+$", description="\u8fdd\u89c4\u4ee3\u7801+\u9ed8\u8ba4\u6d88\u606f")
+    applies_to: list[str] = Field(..., description="\u9002\u7528\u5c42 (L0-L4 \u7269\u7406\u5c42, I0 \u96c6\u6210\u5c42)")
+    dimension: Literal["X1", "X2", "X3", "X4"] = Field(..., description="\u6cbb\u7406\u7ef4\u5ea6")
+    type: Literal["required", "preferred", "advisory"] = Field(..., description="\u7ea6\u675f\u7c7b\u578b (required=\u5f3a\u5236, preferred=\u63a8\u8350, advisory=\u5efa\u8bae)")
+    rule: str = Field(..., description="\u8c13\u8bcd\u8868\u8fbe\u5f0f (DSL \u7ea6\u675f\u89c4\u5219)")
+    violation: str = Field(..., pattern="^[EW]-(L0|L[0-4])-[A-Z0-9-]+: .+$", description="\u8fdd\u89c4\u4ee3\u7801+\u9ed8\u8ba4\u6d88\u606f (E=Error, W=Warning)")
     relation_constraints: dict[str, Any] = Field(..., description="\u4e0e\u5176\u4ed6\u7ea6\u675f\u7684\u5173\u7cfb")
+    name: str | None = Field(None, description="\u7ea6\u675f\u663e\u793a\u540d\u79f0 (trigger/opc \u7ea6\u675f\u4f7f\u7528)")
+    severity: Literal["error", "warning", "critical"] | None = Field(None, description="\u4e25\u91cd\u5ea6 (\u7528\u4e8e trigger/opc \u7ea6\u675f, \u4e0e type \u4e92\u8865)")
     confidence: Literal["fact", "inference", "hypothesis", "estimated"] | None = Field(None, description="\u5143\u6a21\u578b\u7684\u7f6e\u4fe1\u5ea6 (Phase 2 \u6865\u63a5 meta_model.py.Confidence)")
-    examples: list[str] | None = Field(None, description="\u793a\u4f8b\u573a\u666f (\u2192M1 \u5b9e\u4f8b yaml \u5f15\u7528)")
-    references: list[str] | None = Field(None, description="\u5f15\u7528\u5176\u4ed6 M3 Element (\u53cd\u5411\u94fe\u63a5)")
+    references: list[str] | None = Field(None, description="\u5f15\u7528\u8def\u5f84 (\u6587\u6863/\u811a\u672c/\u53cd\u9988)")
     rationale: str | None = Field(None, description="\u7ea6\u675f\u5b58\u5728\u7684 rationale (\u67b6\u6784\u610f\u56fe)")
     half_life_days: int | None = Field(None, description="\u4ef7\u503c\u534a\u8870\u671f (\u5929),\u9ed8\u8ba4 1 \u5e74")
+    introduced: date | None = Field(None, description="\u5f15\u5165\u65e5\u671f (OPC \u7ea6\u675f\u4f7f\u7528)")
+    value_tier: int | None = Field(None, description="\u4ef7\u503c\u5c42\u7ea7 (1=\u6838\u5fc3, 2=\u91cd\u8981, 3=\u4e00\u822c)")
+    gac_ref: str | None = Field(None, pattern="^CR-[A-Z0-9-]+$", description="\u5173\u8054\u7684 GaC \u89c4\u5219 ID (governance-checks.yaml::rules)")
 
 class ConstraintMgmt(BaseModel):
     """管理约束——什么限制了我们。债务·违规·技术债。回答"什么阻碍"。"""
@@ -876,7 +880,6 @@ class Workflow(BaseModel):
 # Resolve cross-model forward references after all classes are defined.
 Action.model_rebuild()
 Commitment.model_rebuild()
-ConstraintL0.model_rebuild()
 ConstraintMgmt.model_rebuild()
 Entity.model_rebuild()
 Episode.model_rebuild()
