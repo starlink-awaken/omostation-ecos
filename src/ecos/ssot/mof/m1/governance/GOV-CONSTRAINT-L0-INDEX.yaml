@@ -10,6 +10,9 @@ created: '2026-08-08'
 version: 1.0.0
 properties:
   m3_parent: Constraint
+  rule: "所有 L0 派生约束必须登记于本索引且 m3_parent 指向有效 M3 Constraint 类型"
+  violation: "L0 约束索引不完整或含失效映射 - mof-schema-validate governance 焦点校验失败"
+  applies_to_layers: [L0]
   constraint_count: 137
   dimension_breakdown:
     X1: 88
