@@ -1,6 +1,7 @@
 ---
 type: ssot
 last-reviewed: 2026-08-26
+owner: governance-team
 ---
 
 # 工作流编排收敛 — 最终架构审计报告

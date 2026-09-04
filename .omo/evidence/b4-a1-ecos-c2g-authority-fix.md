@@ -1,6 +1,7 @@
 ---
 type: ssot
 last-reviewed: 2026-08-26
+owner: governance-team
 ---
 
 # B4-A.1 ECOS C2G authority convergence evidence

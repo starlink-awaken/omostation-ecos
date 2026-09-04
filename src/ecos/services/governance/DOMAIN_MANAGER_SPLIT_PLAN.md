@@ -1,6 +1,7 @@
 ---
 type: ssot
 last-reviewed: 2026-08-26
+owner: governance-team
 ---
 
 # domain_manager.py — 1553 LOC god module

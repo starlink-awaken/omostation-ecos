@@ -1,6 +1,7 @@
 ---
 type: ssot
 last-reviewed: 2026-08-26
+owner: governance-team
 ---
 
 # 织星 L0 — 协议编织层

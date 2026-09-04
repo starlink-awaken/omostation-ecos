@@ -1,6 +1,7 @@
 ---
 type: ssot
 last-reviewed: 2026-08-26
+owner: governance-team
 ---
 
 # 蜂群式AI超级大脑 — 部署指南
