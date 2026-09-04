@@ -28,10 +28,10 @@ ports:
     status: deprecated
     note: "已收敛到 cockpit /dev/*"
   8766:
-    name: forge-api
+    name: kos-rest-api
     transport: http
     status: active
-    note: "kairon/forge · HTTP · Forge API Server"
+    note: "kairon/kos · HTTP · KOS REST API v1 (9 endpoints). FastAPI uvicorn. SSOT: protocols/port-registry.yaml"
   9090:
     name: ecos-dashboard
     transport: deprecated
