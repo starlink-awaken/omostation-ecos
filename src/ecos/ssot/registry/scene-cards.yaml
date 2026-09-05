@@ -7,6 +7,11 @@
 # Enforced by ecos-architecture-validator at CI/CD time.
 # SSOT: ecos/src/ecos/ssot/registry/scene-cards.yaml
 # Version: 1.0.0 | 2026-08-07
+#
+# Scope note (BET-Y2Q1-T7-04, 2026-09-05):
+# This file is the SCHEMA/CONTRACT for scene cards.
+# Actual scene card instances live in docs/scene-cards/ (workspace-level).
+# Both are needed: this defines the shape, docs/scene-cards/ holds the data.
 
 version: "1.0.0"
 updated_at: "2026-08-07"
