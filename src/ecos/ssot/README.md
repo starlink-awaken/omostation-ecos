@@ -58,7 +58,6 @@ ssot/                               ← L0 SSOT
 └── tools/ (43 个)                   ← 工具链
     ├── mof-validate.py             ← M1↔M2 校验
     ├── mof-scan.py                 ← 自动扫描 → M1
-    ├── mof-model.py                ← 全量资产建模
     ├── mof-audit.py                ← M1↔M0 漂移审计
     ├── mof-derive.py               ← 本体推理
     ├── mof-extract.py              ← 逆向提炼
