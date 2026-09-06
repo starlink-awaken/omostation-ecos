@@ -30,10 +30,11 @@ from pathlib import Path
 
 
 import yaml
+
 # 仓库根: 以本脚本位置解析 (兼容 主仓 checkout / worktree .subtrees/ecos 双环境)
 # <ecos>/src/ecos/ssot/tools/mof-l4-bridge.py → parents[4] = <ecos>
 ECOS_ROOT = Path(__file__).resolve().parents[4]
-WS = ECOS_ROOT.parent          # 含 projects/ 的层 (主仓=Workspace; worktree=ws-xxx)
+WS = ECOS_ROOT.parent  # 含 projects/ 的层 (主仓=Workspace; worktree=ws-xxx)
 MOF_M1 = ECOS_ROOT / "src/ecos/ssot/mof/m1"
 OUT_DIR = MOF_M1 / "l4_manifest"
 DEFAULT_REGISTRY = Path.home() / "Documents/@公共/_control/L4-DOMAIN-REGISTRY.yaml"
@@ -83,8 +84,7 @@ def project_node(manifest_path: Path, manifest: dict) -> dict:
         "subtype": "ProjectedManifest",
         "name": manifest.get("display_name", dom_id),
         "description": (
-            f"Projection of Documents DOMAIN.yaml (archetype={manifest.get('archetype')});"
-            f" canonical at {manifest_path}"
+            f"Projection of Documents DOMAIN.yaml (archetype={manifest.get('archetype')}); canonical at {manifest_path}"
         ),
         "status": "active" if manifest.get("lifecycle", "active") in ("active", "draft") else "suspended",
         "domain": "meta",
@@ -120,9 +120,7 @@ def project_node(manifest_path: Path, manifest: dict) -> dict:
             "source_file": str(manifest_path),
             "content_hash": _sha256(manifest_path),
         },
-        "state_history": [
-            {"state": "active", "timestamp": now.isoformat(), "reason": "l4_bridge_projection"}
-        ],
+        "state_history": [{"state": "active", "timestamp": now.isoformat(), "reason": "l4_bridge_projection"}],
     }
     return node
 

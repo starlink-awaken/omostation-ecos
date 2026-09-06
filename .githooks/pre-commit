@@ -114,4 +114,18 @@ if [ -n "$STAGED_OMOTASK" ]; then
     }
 fi
 
+# ── L4 Projection Bridges (Documents canonical ↔ M1 投影, 蓝图 C1/C2) ──
+STAGED_L4_ANY=$(git diff --cached --name-only --diff-filter=ACM -- 'src/ecos/ssot/mof/m1/l4_manifest/*.yaml' 'src/ecos/ssot/mof/m1/l4_knowledge/*.yaml' 2>/dev/null)
+if [ -n "$STAGED_L4_ANY" ]; then
+    echo "🌉 L4 projection bridge 漂移校验 (DOMAIN.yaml / KEMS _entities ↔ M1)..."
+    _run_mof_tool mof-l4-bridge.py --check || {
+        echo "❌ mof-l4-bridge 漂移 (Documents DOMAIN.yaml 已变, 重新 --write)"
+        exit 1
+    }
+    _run_mof_tool mof-kems-bridge.py --check || {
+        echo "❌ mof-kems-bridge 漂移 (KEMS _entities 已变, 重新 --write)"
+        exit 1
+    }
+fi
+
 echo "✅ Pre-commit check complete"

@@ -167,9 +167,7 @@ def index_node(kems: dict, now: datetime) -> dict:
         },
         "evidence_refs": [str(kems["root"] / "ontology")],
         "model_driven_refs": {"source_file": str(classes_f), "content_hash": _sha256(classes_f)},
-        "state_history": [
-            {"state": "canonical", "timestamp": now.isoformat(), "reason": "kems_bridge_projection"}
-        ],
+        "state_history": [{"state": "canonical", "timestamp": now.isoformat(), "reason": "kems_bridge_projection"}],
     }
 
 
@@ -194,8 +192,7 @@ def model_node(kems: dict, model: dict, now: datetime) -> dict:
         "subtype": "KnowledgeModel",
         "name": model["title"],
         "description": (
-            f"KEMS {model['model_type']} 模型投影 (status={model['status']}); "
-            f"canonical at {model['path']}"
+            f"KEMS {model['model_type']} 模型投影 (status={model['status']}); canonical at {model['path']}"
         ),
         "status": "canonical" if model["status"] == "active" else "archived",
         "domain": dom,
@@ -213,9 +210,7 @@ def model_node(kems: dict, model: dict, now: datetime) -> dict:
             "kems_review_date": model.get("review_date"),
         },
         "model_driven_refs": {"source_file": str(model["path"]), "content_hash": _sha256(model["path"])},
-        "state_history": [
-            {"state": "canonical", "timestamp": now.isoformat(), "reason": "kems_bridge_projection"}
-        ],
+        "state_history": [{"state": "canonical", "timestamp": now.isoformat(), "reason": "kems_bridge_projection"}],
     }
     return node
 
@@ -252,9 +247,7 @@ def check_drift(nodes: list[dict]) -> int:
             continue
         disk = yaml.safe_load(fp.read_text(encoding="utf-8"))
         src = Path(disk.get("source_ref") or "")
-        disk_hash = (disk.get("properties") or {}).get("content_hash") or disk.get(
-            "content_hash"
-        )
+        disk_hash = (disk.get("properties") or {}).get("content_hash") or disk.get("content_hash")
         if not src.is_file():
             drifts.append(f"{n['id']}: source_ref 不可达 ({src})")
         elif _sha256(src) != disk_hash:

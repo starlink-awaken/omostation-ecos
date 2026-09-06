@@ -40,9 +40,7 @@ def test_m2_property_declares_each_field_once() -> None:
     """Dataclass annotations silently overwrite duplicate class fields."""
     api_path = M2_DIR.parent / "compiler" / "api.py"
     tree = ast.parse(api_path.read_text(encoding="utf-8"), filename=str(api_path))
-    m2_property = next(
-        node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "M2Property"
-    )
+    m2_property = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "M2Property")
     declared = [
         node.target.id
         for node in m2_property.body
