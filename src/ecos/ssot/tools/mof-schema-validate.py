@@ -382,51 +382,55 @@ def main():
             continue
         for f in sorted(d.glob("*.yaml")):
             data = yaml.safe_load(f.read_text(encoding="utf-8"))
-            if not isinstance(data, dict):
-                continue
-            total += 1
-            t = data.get("type")
-            nid = data.get("id", f.stem)
-
-            if t:
-                type_counter[t] += 1
-
-            # 用 alias 校验 (支持 m2_type + snake_case + section key 双向)
-            if t and t not in type_aliases:
-                type_drift_counter[(t, f.relative_to(M1_DIR))] += 1
-                drift.append((nid, t, str(f.relative_to(M1_DIR))))
-                continue
-
-            if t not in schemas:
-                # type 用了 alias 但 M2 schema 实际只认 m2_type 名字, 需找到对应 schema
-                # 找 alias 关系
-                matched_schema = None
-                for mt, sch in schemas.items():
-                    if t == mt or t == mt.lower() or t == mt[0].lower() + mt[1:]:
-                        matched_schema = sch
-                        break
-                if matched_schema is None:
+            # multi-doc list 文件 (如 agent/AGENT-RESIDENT-ROLES.yaml):
+            # 每个 list 元素是独立 M1 节点, 逐项校验
+            nodes = data if isinstance(data, list) else [data]
+            for data in nodes:
+                if not isinstance(data, dict):
                     continue
-                schema = matched_schema
-            else:
-                schema = schemas[t]
+                total += 1
+                t = data.get("type")
+                nid = data.get("id", f.stem)
 
-            issues = check_m1_node(
-                data,
-                schema,
-                t,
-                check_types=args.check_types,
-                check_transitions=args.check_transitions,
-                check_refs=args.check_refs,
-            )
-            for issue in issues:
-                if "missing required" in issue:
-                    missing_req.append((nid, t, issue.strip(), str(f.relative_to(M1_DIR))))
-                if "stateMachine" in issue:
-                    invalid_sm.append((nid, t, issue.strip(), str(f.relative_to(M1_DIR))))
-                if "type mismatch" in issue or "ref path" in issue:
-                    # Phase 3 新校验项, 收集到 invalid_sm
-                    invalid_sm.append((nid, t, issue.strip(), str(f.relative_to(M1_DIR))))
+                if t:
+                    type_counter[t] += 1
+
+                # 用 alias 校验 (支持 m2_type + snake_case + section key 双向)
+                if t and t not in type_aliases:
+                    type_drift_counter[(t, f.relative_to(M1_DIR))] += 1
+                    drift.append((nid, t, str(f.relative_to(M1_DIR))))
+                    continue
+
+                if t not in schemas:
+                    # type 用了 alias 但 M2 schema 实际只认 m2_type 名字, 需找到对应 schema
+                    # 找 alias 关系
+                    matched_schema = None
+                    for mt, sch in schemas.items():
+                        if t == mt or t == mt.lower() or t == mt[0].lower() + mt[1:]:
+                            matched_schema = sch
+                            break
+                    if matched_schema is None:
+                        continue
+                    schema = matched_schema
+                else:
+                    schema = schemas[t]
+
+                issues = check_m1_node(
+                    data,
+                    schema,
+                    t,
+                    check_types=args.check_types,
+                    check_transitions=args.check_transitions,
+                    check_refs=args.check_refs,
+                )
+                for issue in issues:
+                    if "missing required" in issue:
+                        missing_req.append((nid, t, issue.strip(), str(f.relative_to(M1_DIR))))
+                    if "stateMachine" in issue:
+                        invalid_sm.append((nid, t, issue.strip(), str(f.relative_to(M1_DIR))))
+                    if "type mismatch" in issue or "ref path" in issue:
+                        # Phase 3 新校验项, 收集到 invalid_sm
+                        invalid_sm.append((nid, t, issue.strip(), str(f.relative_to(M1_DIR))))
 
     if not args.json_output:
         print(f"=== M1 节点总数: {total} ===")

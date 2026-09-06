@@ -57,39 +57,60 @@ def load_boundary() -> dict:
         return yaml.safe_load(f)
 
 
+REGISTRY_FILE = WS / "docs" / "project-registry.yaml"
+
+
+def _load_registry_layers() -> dict:
+    """从 docs/project-registry.yaml 读取 projects.*.layer 事实.
+
+    支持嵌套 (knowledge.gbrain 等). 读取失败返回空 dict (fallback 到目录名推断).
+    """
+    if not REGISTRY_FILE.exists():
+        return {}
+    try:
+        import yaml
+
+        data = yaml.safe_load(REGISTRY_FILE.read_text(encoding="utf-8")) or {}
+    except Exception:  # defensive fallback
+        return {}
+    layers: dict = {}
+    for name, proj in (data.get("projects") or {}).items():
+        if not isinstance(proj, dict):
+            continue
+        if proj.get("layer"):
+            layers[name] = proj["layer"]
+        parent_layer = proj.get("layer")
+        for sub_name, sub in proj.items():
+            if isinstance(sub, dict) and sub.get("layer"):
+                layers[sub_name] = sub["layer"]
+            elif isinstance(sub, dict) and sub.get("repository") and parent_layer:
+                # 嵌套子模块 (knowledge.gbrain) 继承父项目层
+                layers[sub_name] = parent_layer
+    return layers
+
+
+def _legacy_dir_layer(name: str) -> str:
+    """旧目录名→层映射, 仅当注册表未覆盖时兜底."""
+    if name in ("ecos",):
+        return "L0"
+    if name in ("runtime", "agent-runtime"):
+        return "L1"
+    if name in ("cockpit", "hermes-console"):
+        return "L3"
+    if name in ("agora",):
+        return "I0"
+    return "L2"
+
+
 def scan_assets() -> list[dict]:
     """扫描全量资产"""
     assets = []
-
-    # Scan Documents (L4)
-    if DOCS.exists():
-        for f in DOCS.rglob("*"):
-            if f.is_file() and not any(
-                s in str(f)
-                for s in [
-                    ".git",
-                    ".obsidian",
-                    "node_modules",
-                    ".venv",
-                    "Zotero",
-                    "__pycache__",
-                    ".pytest_cache",
-                    ".ruff_cache",
-                ]
-            ):
-                assets.append(
-                    {
-                        "path": str(f),
-                        "layer": "L4",
-                        "type": f.suffix,
-                        "name": f.name,
-                        "size": f.stat().st_size,
-                    }
-                )
-
-    # Scan Workspace (L0-L3+I0)
     if WS.exists():
         ws_projects = WS / "projects"
+        # 层事实 SSOT: docs/project-registry.yaml (workspace.layers / projects.*.layer)
+        # 目录名猜测已废弃 — 旧逻辑把 projects/* 全按 L2 扫, 导致 ecos SSOT
+        # 文件 (topology/L0-constraints) 与测试文件被误报 (CONV 2026-09-06)
+        registry_layers = _load_registry_layers()
         scan_dirs = [
             WS / "agora",
             WS / "cockpit",
@@ -101,20 +122,17 @@ def scan_assets() -> list[dict]:
         if ws_projects.exists():
             scan_dirs.append(ws_projects)
 
+        scanned: set[str] = set()
+
         for scan_dir in scan_dirs:
             if not scan_dir.exists():
                 continue
-            # Infer layer
-            layer = "L2"
-            name = scan_dir.name
-            if name in ["ecos"]:
-                layer = "L0"
-            elif name in ["runtime", "agent-runtime"]:
-                layer = "L1"
-            elif name in ["cockpit", "hermes-console"]:
-                layer = "L3"
-            elif name in ["agora"]:
-                layer = "I0"
+            scan_dir_resolved = str(scan_dir.resolve())
+            if scan_dir_resolved in scanned:
+                continue
+            scanned.add(scan_dir_resolved)
+            # Infer layer: registry first, legacy dir-name fallback
+            layer = registry_layers.get(scan_dir.name) or _legacy_dir_layer(scan_dir.name)
 
             for f in scan_dir.rglob("*"):
                 if f.is_file() and not any(
@@ -129,10 +147,15 @@ def scan_assets() -> list[dict]:
                         "dist/",
                     ]
                 ):
+                    # projects/<name>/ 子目录按注册表覆盖层归属
+                    rel = f.relative_to(scan_dir)
+                    f_layer = layer
+                    if scan_dir.name == "projects" and len(rel.parts) >= 2:
+                        f_layer = registry_layers.get(rel.parts[0], layer)
                     assets.append(
                         {
                             "path": str(f),
-                            "layer": layer,
+                            "layer": f_layer,
                             "type": f.suffix,
                             "name": f.name,
                             "size": f.stat().st_size,
@@ -158,10 +181,21 @@ def check_violation(asset: dict, boundary: dict) -> dict | None:
         unless = rule.get("unless", "")
         note = rule.get("note", "")
 
-        # Match pattern
-        if re.search(pattern.replace("*", ".*"), name):
-            # Check unless
-            if unless and re.search(unless.replace("*", ".*"), path):
+        # glob → regex: '*' → '.*', '.' 转义为字面量.
+        # 旧实现 pattern.replace('*', '.*') 未转义 '.', '*.md' 会匹配任何含
+        # 'md' 子串的文件名 (如 domain_cmd.py) — 长期误报源头.
+        def _glob_match(pat: str, target: str) -> bool:
+            return re.search(re.escape(pat).replace(r"\*", ".*") + r"\Z", target) is not None
+
+        matched = _glob_match(pattern, name)
+        if not matched and pattern.startswith("*."):
+            # 后缀规则允许路径尾部匹配 (e.g. docs/ 内 'constraints.yaml')
+            matched = _glob_match(pattern.lstrip("*"), name)
+        if matched:
+            # Check unless — 豁免 token 同时匹配文件名或路径
+            # (README/AGENTS 类 token 在 name, tests//docs/ 类 token 在 path)
+            unless_target = f"{name}\n{path}"
+            if unless and re.search(unless.replace("*", ".*"), unless_target):
                 continue
             return {
                 "asset": name,

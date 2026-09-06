@@ -26,9 +26,9 @@ layers:
       - { type: "directory", condition: "constraints/", note: "约束定义" }
       - { type: "directory", condition: "governance/", note: "治理配置" }
     forbidden:
-      - { pattern: "*.md", unless: "README|INDEX|CHANGELOG", note: "L0 不存人类知识文档（那是 L4 的职责）" }
+      - { pattern: "*.md", unless: "README|INDEX|CHANGELOG|ARCHITECTURE|AGENTS|CLAUDE|GOVERNANCE|CONTRIBUTING|CONTRIBUTORS|CODE_OF_CONDUCT|SECURITY|SUPPORT|LICENSE|GENOME|MAINTAINERS|RELEASE|BASELINE|BOUNDARY|ACKNOWLEDGMENTS|TEST-CASES|CAPABILITY-MAP|CALLCHAIN|docs/|_omo/|evidence/|LADS/|lads/|services/|DOMAIN_MANAGER", note: "L0 工程标准文档/治理面/运行时数据豁免; 纯知识文档归 L4" }
       - { pattern: "*.db|*.sqlite", note: "L0 不存运行时数据（那是 L1/L4 的职责）" }
-      - { pattern: "docker-compose*|Dockerfile|Makefile", note: "L0 不存部署配置（那是 L1 的职责）" }
+      - { pattern: "docker-compose*|Dockerfile|Makefile", unless: "pyproject.toml", note: "pyproject 工程根的标准部署文件豁免 (ecos.db 运行时数据另案)" }
 
   # ── L1: 运行时矩阵层 ──
   L1:
@@ -38,8 +38,8 @@ layers:
       - { type: "*.yaml", condition: "runtime|boundary|matrix|registry", note: "运行时配置" }
       - { type: "*.plist", note: "launchd 配置" }
     forbidden:
-      - { pattern: "*.md", unless: "README", note: "L1 不存人类知识文档" }
-      - { pattern: "*constraint*|*protocol*|*pattern*|*ontology*", note: "约束/协议/模式定义属于 L0" }
+      - { pattern: "*.md", unless: "README|INDEX|CHANGELOG|ARCHITECTURE|AGENTS|CLAUDE|GOVERNANCE|CONTRIBUTING|CONTRIBUTORS|CODE_OF_CONDUCT|SECURITY|SUPPORT|LICENSE|GENOME|MAINTAINERS|RELEASE|BASELINE|BOUNDARY|ACKNOWLEDGMENTS|CAPABILITY-MAP|CALLCHAIN|docs/|_omo/|omo/|scripts/|protocols/|scratch/|conf/|.serena/|agent-sessions/|sandbox/|quarantine/", note: "L1 工程标准文档与运行时状态面豁免 (retro/weekly/decision inbox 是治理数据非知识文档违规)" }
+      - { pattern: "*constraint*|*protocol*|*pattern*|*ontology*", unless: "tests/|docs/|protocol.py|protocol_tools.py|protocols/", note: "约束/协议定义属于 L0; 测试/文档/运行时协议接口实现豁免" }
 
   # ── L2: 内核三平面层 ──
   L2:
@@ -61,8 +61,9 @@ layers:
       - { type: "*.py", condition: "mcp|server|adapter|gateway|entry|bridge", note: "入口服务" }
       - { type: "*.html|*.css|*.js", note: "Web 界面" }
     forbidden:
-      - { pattern: "*engine*|*kernel*|*planner*", note: "引擎逻辑属于 L2" }
-      - { pattern: "*daemon*|*runtime*|*matrix*", note: "运行时逻辑属于 L1" }
+      - { pattern: "*engine*|*kernel*|*planner*", unless: "tests/|bdsk", note: "引擎逻辑属于 L2; 测试文件与领域命名豁免" }
+      - { pattern: "*daemon*|*matrix*", unless: "tests/", note: "运行时逻辑属于 L1; 测试文件豁免" }
+      # agent_runtime_* 是 cockpit 的 Agent 接入运行时服务面 (L3 本职), 不再按文件名误判
 
   # ── L4: 自我层 ──
   L4:

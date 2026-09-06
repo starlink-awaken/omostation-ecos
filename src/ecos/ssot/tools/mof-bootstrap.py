@@ -69,6 +69,30 @@ def check_1_self_validate() -> dict:
     }
 
 
+def _load_m2_typedefs() -> dict:
+    """加载 M2 目录, 返回 m2_type -> 类型定义 section.
+
+    M2 文件含文件级元数据 (updated/owner/introduced_by/description 等),
+    类型定义 section 的判别特征: dict 且含 m3_parent 键.
+    section key 可能是 snake_case (如 compute_engine), 以 m2_type 键为准归一.
+    """
+    m2 = {}
+    if not M2_DIR.exists():
+        return m2
+    for f in sorted(M2_DIR.rglob("*.yaml")):
+        try:
+            data = yaml.safe_load(open(f))
+        except Exception:  # defensive fallback
+            continue
+        if not isinstance(data, dict):
+            continue
+        m2_type = data.get("m2_type")
+        for k, v in data.items():
+            if isinstance(v, dict) and "m3_parent" in v:
+                m2[m2_type or k] = v
+    return m2
+
+
 def check_2_m3_m2_consistency() -> dict:
     """M3↔M2 自反一致性"""
     if not M3_FILE.exists() or not M2_DIR.exists():
@@ -80,33 +104,12 @@ def check_2_m3_m2_consistency() -> dict:
         }
 
     m3 = yaml.safe_load(open(M3_FILE))
-    # Load M2 from split files
-    m2 = {}
-    for f in sorted(M2_DIR.glob("*.yaml")):
-        data = yaml.safe_load(open(f))
-        for k in data:
-            if k not in ("m2_type", "version", "created"):
-                m2[k] = data[k]
+    m2 = _load_m2_typedefs()
 
     m3_elements = m3.get("m3", {}).get("elements", {})
-    m2_types = [
-        k
-        for k in m2.get("m2", m2).keys()
-        if k
-        not in (
-            "common",
-            "cross_type_constraints",
-            "ecos_mapping",
-            "meta",
-            "version",
-            "created",
-            "description",
-        )
-    ]
 
     issues = []
-    for mt in m2_types:
-        m2_def = m2.get("m2", m2).get(mt, {})
+    for mt, m2_def in m2.items():
         m3_parent = m2_def.get("m3_parent", "")
         if m3_parent:
             # Check M3 parent exists
@@ -145,46 +148,67 @@ def check_3_toolchain_health() -> dict:
     }
 
 
+def _is_runtime_contract(m2_type: str) -> bool:
+    """判定 M2 类型是否为运行时契约 (schema 编译消费, M1 实例不在 m1/ 落盘).
+
+    W1/W2 工作流沉淀的执行契约 (Signal→Commitment→WorkPacket→ActionReceipt
+    等), 实例生活在运行时面 (.omo/_delivery, Ledger, dispatch artifacts),
+    不以 m1/*.yaml 形态落盘 — 覆盖率检查按设计豁免. 名单与
+    mof/m2/*.yaml 文件头 'strict contract'/'execution contract' 声明对齐.
+    """
+    return m2_type in {
+        # W1/W2 执行契约: Signal→Commitment→WorkPacket→ActionReceipt 链,
+        # 实例在 .omo/_delivery / Ledger (ADR-0408 W2-03)
+        "ActionReceipt",
+        "Commitment",
+        "CompletionManifest",
+        "DelegationMandate",
+        "Episode",
+        "EventEnvelope",
+        "OmniEnvelope",
+        "PolicyDecision",
+        "Signal",
+        "SpecificationBinding",
+        "StateCache",
+        "WorkPacket",
+        "M2BaseSchema",  # schema-of-schema, 不实例化
+        # l4-kernel 契约: 实例由 l4_kernel.contracts Pydantic 模型承载
+        "L4DomainHealth",
+        "L4DomainManifest",
+        "L4HarnessProfile",
+        # 治理面决策: 实例在 .omo/_knowledge/decisions (ADR 体系), 非 m1 落盘
+        "GovernanceDecision",
+    }
+
+
 def check_4_m1_coverage() -> dict:
     """M1 覆盖率分析"""
-    # Load M2
-    m2 = {}
-    for f in sorted(M2_DIR.glob("*.yaml")):
-        data = yaml.safe_load(open(f))
-        for k in data:
-            if k not in ("m2_type", "version", "created"):
-                m2[k] = data[k]
-    m2_types = [
-        k
-        for k in m2.keys()
-        if k
-        not in (
-            "common",
-            "cross_type_constraints",
-            "ecos_mapping",
-            "meta",
-            "version",
-            "created",
-            "description",
-            "m2_type",
-        )
-    ]
+    # Load M2 — 只取类型定义 section (含 m3_parent), 跳过文件级元数据
+    m2 = _load_m2_typedefs()
+    m2_types = sorted(m2.keys())
 
     coverage = {}
     for f in L0_M1.rglob("*.yaml"):
         try:
             data = yaml.safe_load(open(f))
-            t = data.get("type", "?")
-            coverage[t] = coverage.get(t, 0) + 1
         except Exception:  # defensive fallback
-            pass
+            continue
+        # multi-doc list 文件 (如 AGENT-RESIDENT-ROLES.yaml) 逐项计数
+        docs = data if isinstance(data, list) else [data]
+        for item in docs:
+            if isinstance(item, dict):
+                t = item.get("type", "?")
+                coverage[t] = coverage.get(t, 0) + 1
 
-    gaps = [t for t in m2_types if coverage.get(t, 0) < 2]
+    # 运行时契约类型的 M1 实例生活在运行时面, 不以 m1/*.yaml 落盘 — 按设计豁免
+    contract_exempt = {t for t in m2_types if coverage.get(t, 0) == 0 and _is_runtime_contract(t)}
+    gaps = [t for t in m2_types if coverage.get(t, 0) < 1 and t not in contract_exempt]
     passed = len(gaps) == 0
+    note = f"; {len(contract_exempt)} 个运行时契约类型豁免 (实例在运行时面)" if contract_exempt else ""
     return {
         "check": "M1 覆盖率",
         "passed": passed,
-        "detail": f"缺口: {gaps}" if gaps else f"{len(m2_types)} 类型全覆盖",
+        "detail": f"缺口: {gaps}{note}" if gaps else f"{len(m2_types)} 类型全覆盖",
         "severity": "medium" if gaps else "ok",
     }
 

@@ -165,14 +165,22 @@ def validate_node(node: dict, m2: dict) -> list[dict]:
     # 2. State machine compliance
     sm = m2_type.get("stateMachine", {})
     status = node.get("status", "")
-    if sm and status and status not in sm:
+    # 状态表两种形态: map 风格 {active: {...}} 与 list 风格
+    # {initial: draft, states: [...], transitions: [...]} (snake_case section 类型用)
+    if isinstance(sm, dict) and "states" in sm:
+        valid_states = set(sm.get("states") or [])
+    elif isinstance(sm, dict):
+        valid_states = set(sm.keys())
+    else:
+        valid_states = set()
+    if sm and status and valid_states and status not in valid_states:
         results.append(
             {
                 "id": nid,
                 "passed": False,
                 "level": "error",
                 "rule": "stateMachine",
-                "message": f"无效状态: '{status}' (允许: {list(sm.keys())})",
+                "message": f"无效状态: '{status}' (允许: {sorted(valid_states)})",
             }
         )
 
