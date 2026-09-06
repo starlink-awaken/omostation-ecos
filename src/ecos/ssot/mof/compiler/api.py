@@ -419,7 +419,8 @@ def load_m2_dir(m2_dir: Path) -> list[M2Schema]:
     """
     raw_files: list[tuple[Path, dict, str, str]] = []
     model_names: set[str] = set()
-    for path in sorted(m2_dir.glob("*.yaml")):
+    # rglob 递归: 覆盖 m2/l4/ 子目录 (L4 知识主权契约 C1-C6), 与 m2 顶层同等地位
+    for path in sorted(m2_dir.rglob("*.yaml")):
         try:
             raw = yaml.safe_load(path.read_text(encoding="utf-8"))
         except yaml.YAMLError as exc:

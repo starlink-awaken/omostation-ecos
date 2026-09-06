@@ -71,7 +71,7 @@ def _canonical_m2_names(m2_dir: Path) -> set[str]:
     truth and are skipped.
     """
     names: set[str] = set()
-    for path in sorted(m2_dir.glob("*.yaml")):
+    for path in sorted(m2_dir.rglob("*.yaml")):
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
         if not isinstance(raw, dict):
             continue
