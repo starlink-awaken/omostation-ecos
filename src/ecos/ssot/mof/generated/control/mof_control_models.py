@@ -523,7 +523,7 @@ visibility/sharing_policy/retention)、生命周期与价值层级。
     api_version: str = Field(..., pattern="^l4/v1$")
     kind: Literal["KnowledgeObject"] = ...
     id: str = Field(..., pattern="^ko-[a-z0-9][a-z0-9-]*$")
-    schema: str = Field(..., description="\u5bf9\u8c61 schema \u6807\u8bc6 (\u5982 l4.knowledge-object/v1)")
+    schema_value: str = Field(..., alias="schema", description="\u5bf9\u8c61 schema \u6807\u8bc6 (\u5982 l4.knowledge-object/v1)")
     space_id: str = Field(..., pattern="^personal-space$", description="A \u9636\u6bb5\u56fa\u5b9a personal-space")
     domain_id: str = Field(..., description="\u6240\u5c5e L4 \u77e5\u8bc6\u57df id (L4-DOMAIN-REGISTRY)")
     kind_class: Literal["fact", "model", "ontology", "decision", "lesson", "glossary", "template", "reference"] = Field(..., description="\u77e5\u8bc6\u7c7b\u522b (\u4e0e wire kind \u533a\u5206\u7684\u8bed\u4e49\u7c7b)")

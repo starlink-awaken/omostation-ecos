@@ -2,13 +2,13 @@
 # Source of truth: KEMS _entities/ (Documents canonical)
 # Rebuild: python3 src/ecos/ssot/tools/mof-kems-bridge.py --write
 
-id: KOBJ-work-weijian-域模型-业务资料KEMS
+id: KOBJ-work-liyongke-模型驱动决策视图
 type: L4KnowledgeObject
 subtype: KnowledgeModel
-name: 域模型-业务资料KEMS
-description: KEMS model 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/域模型-业务资料KEMS.md
+name: 模型驱动决策视图
+description: KEMS view 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/模型驱动决策视图.md
 status: canonical
-domain: work-weijian
+domain: work-liyongke
 created: '2026-09-06'
 version: 1.0.0
 layer: L4
@@ -17,11 +17,11 @@ kind: KnowledgeObject
 schema: l4.knowledge-object/v1
 kind_class: reference
 space_id: personal-space
-domain_id: work-weijian
+domain_id: work-liyongke
 authority: canonical
 lifecycle_state: canonical
-source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/域模型-业务资料KEMS.md
-content_hash: sha256:f19c2baa1e0ca3063c4410e9f7fa3b9e05ee8db3fc9220ac65c91e8c3045044d
+source_ref: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/模型驱动决策视图.md
+content_hash: sha256:3c51eed4cd68462a38ad097be56520089009c683a628f1920259cb08d3296312
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -31,13 +31,13 @@ freshness_policy: kems-review-90d
 value_tier: 3
 properties:
   layer: L4
-  kems_model_type: model
+  kems_model_type: view
   kems_status: active
-  kems_owner: 信息中心 / xiamingxing
+  kems_owner: 规自委利用科
   kems_review_date: 2026-08-05
 model_driven_refs:
-  source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/域模型-业务资料KEMS.md
-  content_hash: sha256:f19c2baa1e0ca3063c4410e9f7fa3b9e05ee8db3fc9220ac65c91e8c3045044d
+  source_file: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/模型驱动决策视图.md
+  content_hash: sha256:3c51eed4cd68462a38ad097be56520089009c683a628f1920259cb08d3296312
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'

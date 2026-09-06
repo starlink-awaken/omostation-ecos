@@ -18,52 +18,48 @@
 
 import argparse
 import json
+import yaml
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── 路径 (实际 MOF 目录) ──
 MOF_ROOT = Path(__file__).resolve().parent.parent / "mof"
 M1_DIR = MOF_ROOT / "m1"
+M2_DIR = MOF_ROOT / "m2"
 NODES_DIR = MOF_ROOT / "generated" / "nodes"
 
-# 合规 status 枚举 (来自 m3.yaml Element.status)
-VALID_STATUSES = {
-    "draft",
-    "active",
-    "deprecated",
-    "superseded",
-    "archived",
-    "proposed",
-    "accepted",
-    "done",
-    "running",
-    "identified",
-    "scored",
-    "scored_active",
-    "aging",
-    "resolved",
-    "recorded",
-    "adopted",
-    "validated",
-    "published",
-    "planned",
-    "stopped",
-    "documented",
-    "standalone",
-    "emitted",
-    "betted",
-    "tracking",
-    "predicting",
-    "valid",
-    # L4 KnowledgeObject 生命周期态 (m2/l4/knowledge-object.yaml stateMachine)
-    # canonical / archived 与 L4DomainManifest suspended 等由 M2 schema 语义管辖
-    "canonical",
-    "suspended",
-    "captured",
-    "curated",
-    "quarantined",
-}
+
+def _load_m2_state_machines() -> dict[str, set[str]]:
+    """从 M2 schemas 加载 每类型 → 合法 status 集合.
+
+    真值单一来源: m2/*.yaml 的 stateMachine (两种形态都支持):
+      map 风格  {active: {...}, ...}          → 键即状态
+      list 风格 {initial: X, states: [...]}   → states 列表即状态
+    未知类型节点 (M2 无对应 schema) 返回 None 表示"不校验".
+    """
+    machines: dict[str, set[str]] = {}
+    for f in sorted(M2_DIR.rglob("*.yaml")):
+        try:
+            data = yaml.safe_load(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(data, dict):
+            continue
+        m2_type = data.get("m2_type")
+        if not m2_type:
+            continue
+        for v in data.values():
+            if isinstance(v, dict) and "m3_parent" in v and isinstance(v.get("stateMachine"), dict):
+                sm = v["stateMachine"]
+                if "states" in sm:
+                    states = set(sm.get("states") or [])
+                else:
+                    states = {k for k in sm if isinstance(k, str)}
+                machines[m2_type] = states
+    return machines
+
+
+VALID_STATUSES = set()  # 已废弃: 保留名兼容旧 import; 真值见 _load_m2_state_machines()
 
 
 def now():
@@ -100,11 +96,19 @@ def scan_m1_instances() -> list[dict]:
 
 
 def check_status_compliance(nodes: list[dict]) -> list[dict]:
-    """校验 status 值是否在合规枚举内"""
+    """校验 status 是否在该类型 M2 stateMachine 合法集合内.
+
+    单一真值 = M2 stateMachine (消灭与手抄 VALID_STATUSES 清单的双真相).
+    M2 无对应 schema 的类型 (Unknown 等) 不校验 — schema-validate 负责类型漂移.
+    """
+    machines = _load_m2_state_machines()
     violations = []
     for n in nodes:
-        st = n.get("status", "").lower().strip()
-        if st and st not in VALID_STATUSES:
+        st = n.get("status", "").strip()
+        allowed = machines.get(n.get("type", ""))
+        if allowed is None:
+            continue
+        if st and st not in allowed:
             violations.append({"id": n["id"], "status": n["status"], "path": n.get("path", "")})
     return violations
 

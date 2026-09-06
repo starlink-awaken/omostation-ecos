@@ -40,5 +40,5 @@ model_driven_refs:
   content_hash: sha256:8ee82037f0351c14f7c5758ad91527b0a9f649dd53b7893d5e0c3d0e18e96398
 state_history:
 - state: canonical
-  timestamp: '2026-09-06T10:24:02.956723+00:00'
+  timestamp: '2026-09-06T11:53:01.878240+00:00'
   reason: kems_bridge_projection
