@@ -32,12 +32,30 @@ import yaml
 ECOS_ROOT = Path(__file__).resolve().parents[4]
 OUT_DIR = ECOS_ROOT / "src/ecos/ssot/mof/m1/l4_knowledge"
 
-# KEMS SSOT 布局约定 (ADR-0110 / 卫健委 metamodel.yaml §二)
-KEMS_DOMAINS: dict[str, dict[str, Path]] = {
-    "work-weijian": {
-        "entities": Path.home() / "Documents/@工作文档/卫健委/_entities",
-    },
-}
+# L4 registry SSOT — 域清单从 registry 自动发现, 不手抄 (消灭双真相)
+L4_REGISTRY = Path.home() / "Documents/@公共/_control/L4-DOMAIN-REGISTRY.yaml"
+
+
+def discover_kems_domains(registry: Path = L4_REGISTRY) -> dict[str, dict[str, Path]]:
+    """扫 L4-DOMAIN-REGISTRY → 有 _entities/models 的域才投影.
+
+    只挑非空域, 避免给空 _entities 生成空索引节点;
+    projection 域 (cockpit) 与 federation 域 (work-docs) 的知识真值
+    归属其 canonical 源, 天然无 models, 自动排除.
+    """
+    if not registry.exists():
+        return {}
+    reg = yaml.safe_load(registry.read_text(encoding="utf-8"))
+    if reg.get("kind") != "DomainRegistry":
+        return {}
+    rdir = registry.parent
+    domains: dict[str, dict[str, Path]] = {}
+    for m in reg.get("manifests", []):
+        manifest_path = (rdir / m["path"]).resolve()
+        entities = manifest_path.parent / "_entities"
+        if (entities / "models").is_dir() and any((entities / "models").glob("*.md")):
+            domains[m["id"]] = {"entities": entities}
+    return domains
 
 
 def _sha256(path: Path) -> str:
@@ -261,16 +279,55 @@ def check_drift(nodes: list[dict]) -> int:
     return 0
 
 
+KEMS_REVIEW_FRESHNESS_DAYS = 90  # KEMS metamodel CF-4 / 治理纪律 5
+
+
+
+def check_freshness(nodes: list[dict], now: datetime) -> int:
+    """X2 保鲜轴落地 (KEMS CF-4): review_date 超 90 天 → 报过期.
+
+    只读磁盘投影节点的 kems_review_date; 无日期的节点跳过 (无法判定 ≠ 过期).
+    """
+    stale = []
+    for fp in sorted(OUT_DIR.glob("KOBJ-*.yaml")):
+        if fp.stem.endswith("-index"):
+            continue
+        disk = yaml.safe_load(fp.read_text(encoding="utf-8"))
+        props = disk.get("properties") or {}
+        rd = props.get("kems_review_date")
+        if not rd:
+            continue
+        try:
+            days = (now - datetime.fromisoformat(str(rd)).replace(tzinfo=UTC)).days
+        except ValueError:
+            continue
+        if days > KEMS_REVIEW_FRESHNESS_DAYS:
+            stale.append((disk["id"], rd, days))
+    if stale:
+        print(f"⚠️ KEMS freshness 过期 ({len(stale)} 个模型 review_date > {KEMS_REVIEW_FRESHNESS_DAYS} 天):")
+        for nid, rd, days in stale:
+            print(f"  - {nid}: review_date={rd} ({days} 天前)")
+        return 1
+    print("✅ KEMS freshness 全部在 90 天窗口内")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--write", action="store_true")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--freshness", action="store_true", help="X2 保鲜检查: review_date > 90 天非零退出")
     ap.add_argument("--domain", help="只处理指定 KEMS 域 id (默认全部)")
     args = ap.parse_args()
 
     now = datetime.now(UTC)
+    domains = discover_kems_domains()
+    # work-weijian 的 KEMS 目录在 @工作文档/卫健委 子域, registry 的 ../DOMAIN.yaml
+    # 相对解析已覆盖; 兜底: registry 不可用时保底已知域
+    if not domains:
+        domains = {"work-weijian": {"entities": Path.home() / "Documents/@工作文档/卫健委/_entities"}}
     nodes: list[dict] = []
-    for dom_id, spec in KEMS_DOMAINS.items():
+    for dom_id, spec in domains.items():
         if args.domain and dom_id != args.domain:
             continue
         if not spec["entities"].is_dir():
@@ -288,6 +345,8 @@ def main() -> int:
         n = write_nodes(nodes)
         print(f"✅ {n} 投影节点已写入 {OUT_DIR.relative_to(ECOS_ROOT)}")
         return 0
+    if args.freshness:
+        return check_freshness(nodes, now)
     if args.check:
         return check_drift(nodes)
     ap.print_help()

@@ -2,13 +2,13 @@
 # Source of truth: KEMS _entities/ (Documents canonical)
 # Rebuild: python3 src/ecos/ssot/tools/mof-kems-bridge.py --write
 
-id: KOBJ-work-weijian-KEMS宏观迭代战略
+id: KOBJ-work-liyongke-域模型-利用科业务
 type: L4KnowledgeObject
 subtype: KnowledgeModel
-name: KEMS宏观迭代战略
-description: KEMS strategy 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/KEMS宏观迭代战略.md
+name: 域模型-利用科业务
+description: KEMS domain 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/域模型-利用科业务.md
 status: canonical
-domain: work-weijian
+domain: work-liyongke
 created: '2026-09-06'
 version: 1.0.0
 layer: L4
@@ -17,11 +17,11 @@ kind: KnowledgeObject
 schema: l4.knowledge-object/v1
 kind_class: model
 space_id: personal-space
-domain_id: work-weijian
+domain_id: work-liyongke
 authority: canonical
 lifecycle_state: canonical
-source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/KEMS宏观迭代战略.md
-content_hash: sha256:807130aaf28313b5fa959a993cc7062afbaac5587e9b89a1e8124d36ba20d516
+source_ref: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/域模型-利用科业务.md
+content_hash: sha256:fdcaaf2f3b6408560921b6a7457765d0a278c58b102af17640f86faa1fce729d
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -31,13 +31,13 @@ freshness_policy: kems-review-90d
 value_tier: 3
 properties:
   layer: L4
-  kems_model_type: strategy
+  kems_model_type: domain
   kems_status: active
-  kems_owner: xiamingxing（夏明星 · 信息中心）
-  kems_review_date: 2026-08-05
+  kems_owner: 规自委利用科 / 秦张瑶
+  kems_review_date: 2026-08-06
 model_driven_refs:
-  source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/KEMS宏观迭代战略.md
-  content_hash: sha256:807130aaf28313b5fa959a993cc7062afbaac5587e9b89a1e8124d36ba20d516
+  source_file: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/域模型-利用科业务.md
+  content_hash: sha256:fdcaaf2f3b6408560921b6a7457765d0a278c58b102af17640f86faa1fce729d
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'

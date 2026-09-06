@@ -278,9 +278,21 @@ def _py_field_kwargs(prop: "M2Property") -> str:
     return ", ".join(kwargs)
 
 
-def _py_field_name(name: str) -> str:
-    """Pydantic rejects leading-underscore field names; keep the rest identical."""
-    return name[1:] if name.startswith("_") else name
+PYDANTIC_RESERVED = {"schema", "json", "copy", "dict", "model_fields", "model_config"}
+
+
+def _py_field_name(name: str) -> tuple[str, bool]:
+    """返回 (字段名, 是否需要 alias).
+
+    - 前导下划线: Pydantic 拒绝, 去掉前缀.
+    - BaseModel 保留名 (schema/json/copy/dict/...): 字段名改为 `<name>_value`,
+      通过 `Field(alias=...)` 保持 wire 名不变 — 消除
+      "Field name shadows an attribute in parent BaseModel" UserWarning.
+    """
+    clean = name[1:] if name.startswith("_") else name
+    if clean in PYDANTIC_RESERVED:
+        return f"{clean}_value", True
+    return clean, False
 
 
 def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
@@ -304,7 +316,9 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
         for p in s.properties:
             py_type = _py_type(p, compiled)
             kwargs = _py_field_kwargs(p)
-            field_name = _py_field_name(p.name)
+            field_name, needs_alias = _py_field_name(p.name)
+            if needs_alias:
+                kwargs = (f'alias="{p.name}", ' + kwargs) if kwargs else f'alias="{p.name}"'
             if p.required:
                 field_call = f"Field(..., {kwargs})" if kwargs else "..."
                 lines.append(f"    {field_name}: {py_type} = {field_call}")
@@ -324,7 +338,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                 ]
             )
             for prop in inline_maps:
-                field_name = _py_field_name(prop.name)
+                field_name, _ = _py_field_name(prop.name)
                 lines.append(f"        if self.{field_name} is not None:")
                 if prop.closed_map:
                     allowed = sorted(child.name for child in prop.inline_properties)
@@ -359,7 +373,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
                 ]
             )
             for prop in inline_lists:
-                field_name = _py_field_name(prop.name)
+                field_name, _ = _py_field_name(prop.name)
                 lines.append(f"        if self.{field_name} is not None:")
                 lines.append(f"            for _item in self.{field_name}:")
                 if prop.items_closed_map:
@@ -402,7 +416,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
             for requirement in s.conditional_requirements:
                 for required_name in requirement.required_names:
                     lines.append(
-                        f"        if self.{_py_field_name(requirement.property_name)} == {json.dumps(requirement.equals)} and self.{_py_field_name(required_name)} is None:"
+                        f"        if self.{_py_field_name(requirement.property_name)[0]} == {json.dumps(requirement.equals)} and self.{_py_field_name(required_name)[0]} is None:"
                     )
                     lines.append(
                         f"            raise ValueError({json.dumps(required_name + ' is required when ' + requirement.property_name + ' equals ' + requirement.equals)})"
@@ -419,7 +433,7 @@ def emit_pydantic(schemas: list["M2Schema"], m2_dir: Path) -> str:
             for forbiddance in s.conditional_forbiddances:
                 for forbidden_name in forbiddance.forbidden_names:
                     lines.append(
-                        f"        if self.{_py_field_name(forbiddance.property_name)} == {json.dumps(forbiddance.equals)} and self.{_py_field_name(forbidden_name)} is not None:"
+                        f"        if self.{_py_field_name(forbiddance.property_name)[0]} == {json.dumps(forbiddance.equals)} and self.{_py_field_name(forbidden_name)[0]} is not None:"
                     )
                     message = (
                         f"{forbidden_name} is forbidden when {forbiddance.property_name} equals {forbiddance.equals}"
