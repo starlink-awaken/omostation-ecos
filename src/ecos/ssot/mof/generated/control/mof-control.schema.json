@@ -1908,7 +1908,8 @@
             "mutable_default",
             "placeholder",
             "file_exists",
-            "static_analysis"
+            "static_analysis",
+            "documents_boundary"
           ]
         },
         "created_at": {
