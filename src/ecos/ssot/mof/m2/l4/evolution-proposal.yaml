@@ -1,0 +1,88 @@
+# M2: L4EvolutionProposal
+# C5 契约 (08-L4知识主权架构蓝图 §7) — l4-kernel 只产生 Proposal; 修改通过 OMO 审批
+# 与受控执行 (蓝图不变量 4)。本类型是 Proposal 的形状契约, 不是执行授权。
+
+m2_type: L4EvolutionProposal
+version: 1.0.0
+created: '2026-09-06T16:00:00+08:00'
+L4EvolutionProposal:
+  m3_parent: GovernanceElement.Decision
+  description: |
+    L4 演化提案——l4-kernel Harness/健康投影产生的结构化变更建议。
+    必须携带原因、风险、影响对象、回滚点与所需审批; 本身不携带执行权。
+    与 OMO approval 链 (run_ref/approval_ref) 关联后才可能被执行。
+  icon: 🧬
+  wireAliases:
+    api_version: apiVersion
+  wireConstants:
+    apiVersion: l4/v1
+    kind: EvolutionProposal
+  stateMachine:
+    proposed:
+      description: 已提出 (等待结构校验)
+      transitions: [validated, rejected]
+    validated:
+      description: 结构校验通过 (等待 OMO 审批)
+      transitions: [approved, rejected, stale]
+    approved:
+      description: 已批准 (OMO approval 到位)
+      transitions: [executing, executed, stale]
+    rejected:
+      description: 已驳回 (附理由)
+      transitions: []
+    executing:
+      description: 受控执行中 (Workflow Mesh mutation)
+      transitions: [executed, failed]
+    executed:
+      description: 已执行 (待 Harness recheck)
+      transitions: [verified, regressed]
+    failed:
+      description: 执行失败 (回滚点生效)
+      transitions: [proposed, archived]
+    verified:
+      description: 复检通过 (变更生效)
+      transitions: []
+    regressed:
+      description: 复检回退 (触发回滚)
+      transitions: [proposed, archived]
+    stale:
+      description: 已过期 (基线已变化, 需重新提案)
+      transitions: [archived]
+    archived:
+      description: 已归档
+      transitions: []
+  requiredProperties:
+    api_version: {type: string, pattern: '^l4/v1$'}
+    kind: {type: enum, values: [EvolutionProposal]}
+    id: {type: string, pattern: '^ep-[a-z0-9][a-z0-9-]*$'}
+    domain_id: {type: string, description: 目标 L4 知识域}
+    reason: {type: string, description: 提案原因 (问题陈述/收益预期)}
+    risk_summary: {type: string, description: 风险摘要}
+    affected_refs: {type: list, items: {type: string}, description: 影响对象指针 (最小集合)}
+    rollback_point: {type: string, description: 回滚点标识 (snapshot/commit/manifest)}
+    approvals_required: {type: list, items: {type: string}, description: 所需审批面 (如 omo-approval)}
+    proposed_at: {type: string, format: date-time}
+    lifecycle_state:
+      type: enum
+      description: 提案状态 (stateMachine 全集)
+      values: [proposed, validated, approved, rejected, executing, executed, failed, verified, regressed, stale, archived]
+  optionalProperties:
+    harness_refs: {type: list, items: {type: string}, description: 触发本提案的 DomainHealth 结果指针}
+    omo_run_ref: {type: string, description: 关联 OMO run (审批链)}
+    change_manifest: {type: string, description: 变更清单指针 (content-plane 事务协议)}
+  validationRules:
+    - rule: lifecycle_state in [approved, executing, executed, verified] implies omo_run_ref != None
+      level: error
+      message: 进入审批/执行态必须关联 OMO run (l4-kernel 不自持执行权)
+    - rule: lifecycle_state in [executed, verified, regressed] implies rollback_point != None
+      level: error
+      message: 已执行的提案必须有回滚点
+    - rule: lifecycle_state == 'rejected' implies reason != None
+      level: error
+      message: 驳回必须附理由
+    - rule: affected_refs.size >= 1
+      level: error
+      message: 提案必须声明影响对象, 禁止空影响面提案
+  relationConstraints:
+    can_be_source_of: [References, Triggers]
+    can_be_target_of: [Produces, Audits]

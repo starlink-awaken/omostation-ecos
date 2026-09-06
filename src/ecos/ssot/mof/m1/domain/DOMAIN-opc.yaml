@@ -12,6 +12,8 @@ created: '2026-06-12'
 version: 1.0.0
 layer: L4
 properties:
+  l4_ref: opc
+  archetype: operational
   bos_uri_pattern: bos://opc/**
   domain_type: document
   doc_subtype: Functional

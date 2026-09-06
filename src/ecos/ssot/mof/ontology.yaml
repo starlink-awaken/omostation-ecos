@@ -212,6 +212,15 @@ m2_ontology:
     rule: if (M2_type has examples > 0) and (M1_nodes of M2_type == 0) then M2_type.coverage
       = 'missing'
     priority: medium
+  - id: DR-09
+    description: Documents L4 知识域双轨建模映射 — 老 Domain M1 节点与 L4DomainManifest 投影的对齐锚
+    rule: if (Domain.l4_ref == L4DOM-<id>.properties.l4_domain_id) then Domain.archetype
+      == L4DOM-<id>.properties.archetype and L4DOM-<id>.content_hash 锚定 Documents
+      DOMAIN.yaml
+    note: 双轨分工 — Domain (workspace 视角, bos/能力/KEMS 面板) + L4DomainManifest (Documents
+      canonical 投影, 身份/策略/hash); 同一域两模型经 l4_ref 互指, 漂移由 mof-l4-bridge
+      --check 治理 (蓝图不变量 5 零复制 + 不变量 2 投影可重建)
+    priority: high
   entity_resolution:
     description: 同一实体在不同域的表示——如何识别它们指向同一事物
     resolution_keys:

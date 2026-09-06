@@ -2479,6 +2479,676 @@
         ]
       }
     },
+    "L4ContextPack": {
+      "$id": "urn:mof:L4ContextPack:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "L4 \u4e0a\u4e0b\u6587\u5305\u2014\u2014\u6309 actor \u6743\u9650\u88c1\u526a\u7684\u53ea\u8bfb\u77e5\u8bc6\u4e0a\u4e0b\u6587\u96c6\u5408\u3002\n\u6bcf\u4e2a\u6761\u76ee\u5fc5\u987b\u643a\u5e26 canonical source \u5f15\u7528; \u65e0\u6cd5\u8fd4\u56de canonical \u5f15\u7528\u7684\u547d\u4e2d\n\u5e94\u6807\u8bb0\u4f4e\u53ef\u4fe1 (\u84dd\u56fe \u00a710.2)\u3002\u672c\u5bf9\u8c61\u662f\u6d3e\u751f\u6295\u5f71, \u53ef\u968f\u65f6\u4ece canonical \u91cd\u5efa\u3002",
+      "properties": {
+        "api_version": {
+          "pattern": "^l4/v1$",
+          "type": "string"
+        },
+        "domain_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "entries": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "freshness_base": {
+          "description": "\u65b0\u9c9c\u5ea6\u57fa\u7ebf (registry/manifest \u7248\u672c\u6216 hash)",
+          "type": "string"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^cp-[a-z0-9][a-z0-9-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "ContextPack"
+          ]
+        },
+        "low_trust_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "redacted_rules": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "requested_by": {
+          "description": "\u8bf7\u6c42\u8005 (actor id)",
+          "type": "string"
+        },
+        "space_id": {
+          "pattern": "^personal-space$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "id",
+        "requested_by",
+        "space_id",
+        "domain_ids",
+        "entries",
+        "generated_at",
+        "freshness_base"
+      ],
+      "title": "L4ContextPack",
+      "type": "object",
+      "x-mof-state-machine": {
+        "consumed": [
+          "expired"
+        ],
+        "expired": [],
+        "generated": [
+          "consumed",
+          "expired"
+        ]
+      }
+    },
+    "L4DomainHealth": {
+      "$id": "urn:mof:L4DomainHealth:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u4e00\u6b21\u786e\u5b9a\u6027 L4 Harness \u6267\u884c\u7684\u7ed3\u6784\u5316\u7ed3\u679c\uff1b\u5b83\u662f\u6d3e\u751f\u8bc1\u636e\uff0c\u4e0d\u662f canonical \u5185\u5bb9\u3002",
+      "properties": {
+        "checked_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "domain_id": {
+          "type": "string"
+        },
+        "issues": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "profile_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "domain_id",
+        "profile_id",
+        "checked_at",
+        "issues"
+      ],
+      "title": "L4DomainHealth",
+      "type": "object",
+      "x-mof-state-machine": {
+        "archived": [],
+        "generated": [
+          "superseded",
+          "archived"
+        ],
+        "superseded": [
+          "archived"
+        ]
+      }
+    },
+    "L4DomainManifest": {
+      "$id": "urn:mof:L4DomainManifest:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "L4 \u77e5\u8bc6\u57df\u5b9e\u4f8b\u7684\u4e25\u683c\u5951\u7ea6\uff1b\u4ec5\u63cf\u8ff0\u77e5\u8bc6\u6743\u5a01\u8fb9\u754c\uff0c\u4e0d\u6df7\u5165\u914d\u7f6e\u3001\u5de5\u5177\u3001\u6a21\u578b\u6216\u5b58\u50a8\u57df\u3002",
+      "properties": {
+        "api_version": {
+          "pattern": "^l4/v1$",
+          "type": "string"
+        },
+        "archetype": {
+          "enum": [
+            "constitutional",
+            "private-core",
+            "operational",
+            "library",
+            "federation",
+            "projection"
+          ]
+        },
+        "authority_policy": {
+          "enum": [
+            "canonical_write",
+            "reference_library",
+            "federation_only",
+            "projection_only"
+          ]
+        },
+        "default_sensitivity": {
+          "enum": [
+            "internal",
+            "private",
+            "confidential",
+            "restricted"
+          ]
+        },
+        "default_visibility": {
+          "enum": [
+            "private"
+          ]
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "harness_profile_ref": {
+          "pattern": "^harness://",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "DomainManifest"
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "draft",
+            "active",
+            "suspended",
+            "archived"
+          ]
+        },
+        "owners": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "policy_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "principal_ref": {
+          "type": "string"
+        },
+        "retention": {
+          "enum": [
+            "permanent",
+            "policy_managed",
+            "rebuildable"
+          ]
+        },
+        "root": {
+          "description": "DOMAIN.yaml \u6240\u5728\u76ee\u5f55\u5185\u7684\u76f8\u5bf9\u8def\u5f84",
+          "type": "string"
+        },
+        "sharing_policy": {
+          "enum": [
+            "deny",
+            "explicit_publish"
+          ]
+        },
+        "space_ref": {
+          "pattern": "^personal-space$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "id",
+        "display_name",
+        "archetype",
+        "space_ref",
+        "root",
+        "owners",
+        "principal_ref",
+        "default_sensitivity",
+        "default_visibility",
+        "sharing_policy",
+        "retention",
+        "authority_policy",
+        "harness_profile_ref",
+        "lifecycle"
+      ],
+      "title": "L4DomainManifest",
+      "type": "object",
+      "x-mof-state-machine": {
+        "active": [
+          "suspended",
+          "archived"
+        ],
+        "archived": [],
+        "draft": [
+          "active",
+          "archived"
+        ],
+        "suspended": [
+          "active",
+          "archived"
+        ]
+      }
+    },
+    "L4EvolutionProposal": {
+      "$id": "urn:mof:L4EvolutionProposal:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "L4 \u6f14\u5316\u63d0\u6848\u2014\u2014l4-kernel Harness/\u5065\u5eb7\u6295\u5f71\u4ea7\u751f\u7684\u7ed3\u6784\u5316\u53d8\u66f4\u5efa\u8bae\u3002\n\u5fc5\u987b\u643a\u5e26\u539f\u56e0\u3001\u98ce\u9669\u3001\u5f71\u54cd\u5bf9\u8c61\u3001\u56de\u6eda\u70b9\u4e0e\u6240\u9700\u5ba1\u6279; \u672c\u8eab\u4e0d\u643a\u5e26\u6267\u884c\u6743\u3002\n\u4e0e OMO approval \u94fe (run_ref/approval_ref) \u5173\u8054\u540e\u624d\u53ef\u80fd\u88ab\u6267\u884c\u3002",
+      "properties": {
+        "affected_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "api_version": {
+          "pattern": "^l4/v1$",
+          "type": "string"
+        },
+        "approvals_required": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "change_manifest": {
+          "description": "\u53d8\u66f4\u6e05\u5355\u6307\u9488 (content-plane \u4e8b\u52a1\u534f\u8bae)",
+          "type": "string"
+        },
+        "domain_id": {
+          "description": "\u76ee\u6807 L4 \u77e5\u8bc6\u57df",
+          "type": "string"
+        },
+        "harness_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^ep-[a-z0-9][a-z0-9-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "EvolutionProposal"
+          ]
+        },
+        "lifecycle_state": {
+          "enum": [
+            "proposed",
+            "validated",
+            "approved",
+            "rejected",
+            "executing",
+            "executed",
+            "failed",
+            "verified",
+            "regressed",
+            "stale",
+            "archived"
+          ]
+        },
+        "omo_run_ref": {
+          "description": "\u5173\u8054 OMO run (\u5ba1\u6279\u94fe)",
+          "type": "string"
+        },
+        "proposed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "reason": {
+          "description": "\u63d0\u6848\u539f\u56e0 (\u95ee\u9898\u9648\u8ff0/\u6536\u76ca\u9884\u671f)",
+          "type": "string"
+        },
+        "risk_summary": {
+          "description": "\u98ce\u9669\u6458\u8981",
+          "type": "string"
+        },
+        "rollback_point": {
+          "description": "\u56de\u6eda\u70b9\u6807\u8bc6 (snapshot/commit/manifest)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "id",
+        "domain_id",
+        "reason",
+        "risk_summary",
+        "affected_refs",
+        "rollback_point",
+        "approvals_required",
+        "proposed_at",
+        "lifecycle_state"
+      ],
+      "title": "L4EvolutionProposal",
+      "type": "object",
+      "x-mof-state-machine": {
+        "approved": [
+          "executing",
+          "executed",
+          "stale"
+        ],
+        "archived": [],
+        "executed": [
+          "verified",
+          "regressed"
+        ],
+        "executing": [
+          "executed",
+          "failed"
+        ],
+        "failed": [
+          "proposed",
+          "archived"
+        ],
+        "proposed": [
+          "validated",
+          "rejected"
+        ],
+        "regressed": [
+          "proposed",
+          "archived"
+        ],
+        "rejected": [],
+        "stale": [
+          "archived"
+        ],
+        "validated": [
+          "approved",
+          "rejected",
+          "stale"
+        ],
+        "verified": []
+      }
+    },
+    "L4HarnessProfile": {
+      "$id": "urn:mof:L4HarnessProfile:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "L4 \u77e5\u8bc6\u57df archetype \u5230\u786e\u5b9a\u6027\u9a8c\u8bc1 Gate \u7684\u7b56\u7565\u6620\u5c04\u3002",
+      "properties": {
+        "advisory_gates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "archetype": {
+          "enum": [
+            "constitutional",
+            "private-core",
+            "operational",
+            "library",
+            "federation",
+            "projection"
+          ]
+        },
+        "disabled_gates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^harness://",
+          "type": "string"
+        },
+        "required_gates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "archetype",
+        "required_gates"
+      ],
+      "title": "L4HarnessProfile",
+      "type": "object",
+      "x-mof-state-machine": {
+        "active": [
+          "deprecated",
+          "archived"
+        ],
+        "archived": [],
+        "deprecated": [
+          "archived"
+        ],
+        "draft": [
+          "active",
+          "archived"
+        ]
+      }
+    },
+    "L4KnowledgeObject": {
+      "$id": "urn:mof:L4KnowledgeObject:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "L4 \u77e5\u8bc6\u5bf9\u8c61\u2014\u2014\u664b\u5347\u4e3a canonical \u7684\u77e5\u8bc6\u6761\u76ee\u7684\u5f62\u72b6\u5951\u7ea6\u3002\n\u5fc5\u987b\u643a\u5e26 provenance (source_ref + content_hash)\u3001\u4e3b\u6743\u5b57\u6bb5 (principal/sensitivity/\nvisibility/sharing_policy/retention)\u3001\u751f\u547d\u5468\u671f\u4e0e\u4ef7\u503c\u5c42\u7ea7\u3002\n\u7981\u6b62\u628a\u6587\u6863\u6b63\u6587\u590d\u5236\u8fdb\u672c\u5bf9\u8c61; \u53ea\u5141\u8bb8 source_ref \u6307\u9488 + hash \u6307\u7eb9\u3002",
+      "properties": {
+        "api_version": {
+          "pattern": "^l4/v1$",
+          "type": "string"
+        },
+        "authority": {
+          "enum": [
+            "source",
+            "canonical",
+            "projection"
+          ]
+        },
+        "based_on": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "consumer_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "content_hash": {
+          "description": "\u539f\u4ef6 SHA-256 \u6307\u7eb9",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "domain_id": {
+          "description": "\u6240\u5c5e L4 \u77e5\u8bc6\u57df id (L4-DOMAIN-REGISTRY)",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "freshness_policy": {
+          "description": "\u4fdd\u9c9c\u7b56\u7565\u5f15\u7528 (review \u5468\u671f/\u964d\u7ea7\u89c4\u5219)",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^ko-[a-z0-9][a-z0-9-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "KnowledgeObject"
+          ]
+        },
+        "kind_class": {
+          "enum": [
+            "fact",
+            "model",
+            "ontology",
+            "decision",
+            "lesson",
+            "glossary",
+            "template",
+            "reference"
+          ]
+        },
+        "lifecycle_state": {
+          "enum": [
+            "captured",
+            "admitted",
+            "quarantined",
+            "normalized",
+            "curated",
+            "canonical",
+            "published",
+            "consumed",
+            "observed",
+            "revised",
+            "deprecated",
+            "archived",
+            "forgotten"
+          ]
+        },
+        "principal": {
+          "type": "string"
+        },
+        "retention": {
+          "enum": [
+            "permanent",
+            "policy_managed",
+            "rebuildable"
+          ]
+        },
+        "review_policy": {
+          "description": "\u5ba1\u67e5\u7b56\u7565\u5f15\u7528",
+          "type": "string"
+        },
+        "schema": {
+          "description": "\u5bf9\u8c61 schema \u6807\u8bc6 (\u5982 l4.knowledge-object/v1)",
+          "type": "string"
+        },
+        "sensitivity": {
+          "enum": [
+            "internal",
+            "private",
+            "confidential",
+            "restricted"
+          ]
+        },
+        "sharing_policy": {
+          "enum": [
+            "deny",
+            "explicit_publish"
+          ]
+        },
+        "sidecars": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "source_ref": {
+          "description": "Documents canonical \u539f\u4ef6\u7684\u4ed3\u5e93\u76f8\u5bf9\u6216\u57df\u76f8\u5bf9\u6307\u9488",
+          "type": "string"
+        },
+        "space_id": {
+          "description": "A \u9636\u6bb5\u56fa\u5b9a personal-space",
+          "pattern": "^personal-space$",
+          "type": "string"
+        },
+        "value_tier": {
+          "description": "X3 \u4ef7\u503c\u5c42\u7ea7",
+          "type": "integer"
+        },
+        "visibility": {
+          "enum": [
+            "private"
+          ]
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "id",
+        "schema",
+        "space_id",
+        "domain_id",
+        "kind_class",
+        "authority",
+        "lifecycle_state",
+        "source_ref",
+        "content_hash",
+        "principal",
+        "sensitivity",
+        "visibility",
+        "sharing_policy",
+        "retention",
+        "freshness_policy",
+        "value_tier"
+      ],
+      "title": "L4KnowledgeObject",
+      "type": "object",
+      "x-mof-state-machine": {
+        "admitted": [
+          "normalized",
+          "quarantined"
+        ],
+        "archived": [
+          "forgotten"
+        ],
+        "canonical": [
+          "published",
+          "revised",
+          "deprecated"
+        ],
+        "captured": [
+          "admitted",
+          "quarantined"
+        ],
+        "consumed": [
+          "observed",
+          "revised"
+        ],
+        "curated": [
+          "canonical"
+        ],
+        "deprecated": [
+          "archived"
+        ],
+        "forgotten": [],
+        "normalized": [
+          "curated",
+          "quarantined"
+        ],
+        "observed": [
+          "revised",
+          "deprecated"
+        ],
+        "published": [
+          "consumed",
+          "revised",
+          "deprecated"
+        ],
+        "quarantined": [
+          "admitted",
+          "archived"
+        ],
+        "revised": [
+          "canonical",
+          "published"
+        ]
+      }
+    },
     "Lesson": {
       "$id": "urn:mof:Lesson:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",

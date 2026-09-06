@@ -1,0 +1,113 @@
+# M2: L4KnowledgeObject
+# C2 契约 (08-L4知识主权架构蓝图 §7) — 晋升后 canonical knowledge 的形状契约。
+# MOF 只拥有"内容的形状与指纹"; 内容本体留在 Documents, 零复制 (蓝图不变量 5)。
+
+m2_type: L4KnowledgeObject
+version: 1.0.0
+created: '2026-09-06T16:00:00+08:00'
+L4KnowledgeObject:
+  m3_parent: StructuralElement.Entity
+  description: |
+    L4 知识对象——晋升为 canonical 的知识条目的形状契约。
+    必须携带 provenance (source_ref + content_hash)、主权字段 (principal/sensitivity/
+    visibility/sharing_policy/retention)、生命周期与价值层级。
+    禁止把文档正文复制进本对象; 只允许 source_ref 指针 + hash 指纹。
+  icon: 📄
+  wireAliases:
+    api_version: apiVersion
+  wireConstants:
+    apiVersion: l4/v1
+    kind: KnowledgeObject
+  stateMachine:
+    captured:
+      description: 已捕获 (原始资产, 未晋升)
+      transitions: [admitted, quarantined]
+    admitted:
+      description: 已准入 (T0/T1/T2/T4/T7 通过)
+      transitions: [normalized, quarantined]
+    quarantined:
+      description: 隔离 (验证失败, 禁止写 canonical)
+      transitions: [admitted, archived]
+    normalized:
+      description: 已标准化
+      transitions: [curated, quarantined]
+    curated:
+      description: 已策展
+      transitions: [canonical]
+    canonical:
+      description: 权威 (有 provenance/hash/owner/review policy)
+      transitions: [published, revised, deprecated]
+    published:
+      description: 已发布 (有稳定引用与发布证据)
+      transitions: [consumed, revised, deprecated]
+    consumed:
+      description: 已被引用消费
+      transitions: [observed, revised]
+    observed:
+      description: 消费已观测 (回收价值证据)
+      transitions: [revised, deprecated]
+    revised:
+      description: 修订中 (proposal 驱动)
+      transitions: [canonical, published]
+    deprecated:
+      description: 已弃用
+      transitions: [archived]
+    archived:
+      description: 已归档 (retention 管辖)
+      transitions: [forgotten]
+    forgotten:
+      description: 已遗忘 (撤回索引+审计记录, 非直接删除)
+      transitions: []
+  requiredProperties:
+    api_version: {type: string, pattern: '^l4/v1$'}
+    kind: {type: enum, values: [KnowledgeObject]}
+    id: {type: string, pattern: '^ko-[a-z0-9][a-z0-9-]*$'}
+    schema: {type: string, description: 对象 schema 标识 (如 l4.knowledge-object/v1)}
+    space_id: {type: string, pattern: '^personal-space$', description: A 阶段固定 personal-space}
+    domain_id: {type: string, description: 所属 L4 知识域 id (L4-DOMAIN-REGISTRY)}
+    kind_class:
+      type: enum
+      description: 知识类别 (与 wire kind 区分的语义类)
+      values: [fact, model, ontology, decision, lesson, glossary, template, reference]
+    authority:
+      type: enum
+      description: 权威级别
+      values: [source, canonical, projection]
+    lifecycle_state:
+      type: enum
+      description: 生命周期状态 (stateMachine 全集)
+      values: [captured, admitted, quarantined, normalized, curated, canonical, published, consumed, observed, revised, deprecated, archived, forgotten]
+    source_ref: {type: string, description: Documents canonical 原件的仓库相对或域相对指针}
+    content_hash: {type: string, pattern: '^sha256:[0-9a-f]{64}$', description: 原件 SHA-256 指纹}
+    principal: {type: string}
+    sensitivity: {type: enum, values: [internal, private, confidential, restricted]}
+    visibility: {type: enum, values: [private]}
+    sharing_policy: {type: enum, values: [deny, explicit_publish]}
+    retention: {type: enum, values: [permanent, policy_managed, rebuildable]}
+    freshness_policy: {type: string, description: 保鲜策略引用 (review 周期/降级规则)}
+    value_tier: {type: integer, min: 1, max: 7, description: X3 价值层级}
+  optionalProperties:
+    review_policy: {type: string, description: 审查策略引用}
+    evidence_refs: {type: list, items: {type: string}, description: 证据指针 (OMO evidence)}
+    consumer_refs: {type: list, items: {type: string}, description: 已登记消费者 (ADR-0441 原语 2)}
+    sidecars: {type: list, items: {type: string}, description: 原始二进制 sidecar 指针}
+    based_on: {type: list, items: {type: string}, description: 派生依据 (KEMS 治理纪律兼容)}
+  validationRules:
+    - rule: authority == 'canonical' implies lifecycle_state in [canonical, published, consumed, observed, revised, deprecated, archived]
+      level: error
+      message: canonical 权威必须处于晋升后生命周期阶段
+    - rule: authority == 'projection' implies lifecycle_state == consumed
+      level: error
+      message: projection 不是 canonical 状态机成员, 只能以 consumed 引用存在
+    - rule: source_ref is not relative-escaping and content_hash is not None
+      level: error
+      message: source_ref 受域 containment 约束且必须携带内容指纹
+    - rule: sensitivity == 'restricted' implies sharing_policy == 'deny'
+      level: error
+      message: restricted 内容默认 fail closed, 禁止外发策略
+    - rule: lifecycle_state == 'forgotten' implies evidence_refs.size >= 1
+      level: error
+      message: forgotten 必须留审计记录, 不允许无证据删除 (蓝图 §8)
+  relationConstraints:
+    can_be_source_of: [References, Contains]
+    can_be_target_of: [Contains, Validates, Produces]

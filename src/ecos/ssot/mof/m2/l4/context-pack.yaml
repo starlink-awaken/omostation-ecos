@@ -1,0 +1,55 @@
+# M2: L4ContextPack
+# C6 契约 (08-L4知识主权架构蓝图 §7) — 向 Agent 提供只读、带引用、受空间权限
+# 裁剪的上下文包。禁止通过 ContextPack 写回 Documents (ADR-0441 原语 2 呼应)。
+
+m2_type: L4ContextPack
+version: 1.0.0
+created: '2026-09-06T16:00:00+08:00'
+L4ContextPack:
+  m3_parent: StructuralElement.Artifact
+  description: |
+    L4 上下文包——按 actor 权限裁剪的只读知识上下文集合。
+    每个条目必须携带 canonical source 引用; 无法返回 canonical 引用的命中
+    应标记低可信 (蓝图 §10.2)。本对象是派生投影, 可随时从 canonical 重建。
+  icon: 📦
+  wireAliases:
+    api_version: apiVersion
+  wireConstants:
+    apiVersion: l4/v1
+    kind: ContextPack
+  stateMachine:
+    generated:
+      description: 已生成 (按请求裁剪)
+      transitions: [consumed, expired]
+    consumed:
+      description: 已消费 (引用进入产出)
+      transitions: [expired]
+    expired:
+      description: 已过期 (freshness 或基线变化, 可重建)
+      transitions: []
+  requiredProperties:
+    api_version: {type: string, pattern: '^l4/v1$'}
+    kind: {type: enum, values: [ContextPack]}
+    id: {type: string, pattern: '^cp-[a-z0-9][a-z0-9-]*$'}
+    requested_by: {type: string, description: 请求者 (actor id), 不允许为空}
+    space_id: {type: string, pattern: '^personal-space$'}
+    domain_ids: {type: list, items: {type: string}, description: 覆盖的 L4 知识域}
+    entries: {type: list, items: {type: map}, description: 条目集 (ko_ref/source_ref/hash/低可信标记)}
+    generated_at: {type: string, format: date-time}
+    freshness_base: {type: string, description: 新鲜度基线 (registry/manifest 版本或 hash)}
+  optionalProperties:
+    redacted_rules: {type: list, items: {type: string}, description: 本包执行的裁剪规则记录}
+    low_trust_refs: {type: list, items: {type: string}, description: 无法回指 canonical 的低可信命中}
+  validationRules:
+    - rule: entries.size >= 1 implies all(entry.source_ref != None and entry.content_hash != None)
+      level: error
+      message: 每个条目必须可回指 canonical source + hash, 禁止无引用命中
+    - rule: domain_ids.size >= 1 and requested_by != None
+      level: error
+      message: 上下文包必须声明覆盖域与请求者
+    - rule: "true"
+      level: error
+      message: ContextPack 是只读投影 — 不存在 write/append 操作面 (ADR-0441)
+  relationConstraints:
+    can_be_source_of: [References]
+    can_be_target_of: [Produces]
