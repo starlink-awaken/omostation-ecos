@@ -535,8 +535,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--layer", type=str, default="all")
     parser.add_argument("--summary", action="store_true")
-    parser.add_argument("--save", action="store_true", default=True)
-    parser.add_argument("--output", type=Path, default=L0_NODES)
+    parser.add_argument("--save", action="store_true", default=False,
+                        help="(已禁用) 写盘功能已随退役移除 — mof-model 只读汇总")
     args = parser.parse_args()
 
     all_nodes = []
@@ -555,10 +555,11 @@ def main():
             all_nodes.extend(scan_protocols(WS))
 
     print(format_summary(all_nodes))
-
+    # 2026-09-06 退役 (TASK-262B9E59): --save 写盘路径整体移除 —
+    # 本 CLI 曾覆写 mof/nodes/ 66 文件 + 生成 6 个低质节点; 模型真相
+    # 已由 m1/ 显式节点 + mof-l4-bridge/kems-bridge 投影接管, 禁止再落盘
     if args.save and all_nodes:
-        saved = save_nodes(all_nodes, args.output)
-        print(f"  ✅ {saved} 个节点 → {args.output}")
+        print("  ⛔ --save 已禁用 (TASK-262B9E59): 写盘功能随退役移除")
 
 
 if __name__ == "__main__":
