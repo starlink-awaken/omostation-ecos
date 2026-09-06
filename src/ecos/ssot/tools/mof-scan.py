@@ -56,6 +56,13 @@ VALID_STATUSES = {
     "tracking",
     "predicting",
     "valid",
+    # L4 KnowledgeObject 生命周期态 (m2/l4/knowledge-object.yaml stateMachine)
+    # canonical / archived 与 L4DomainManifest suspended 等由 M2 schema 语义管辖
+    "canonical",
+    "suspended",
+    "captured",
+    "curated",
+    "quarantined",
 }
 
 
