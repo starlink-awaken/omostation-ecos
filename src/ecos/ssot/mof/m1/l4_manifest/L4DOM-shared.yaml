@@ -30,7 +30,7 @@ properties:
   authority_policy: canonical_write
   space_ref: personal-space
   storage: /Users/xiamingxing/Documents/@公共
-  content_hash: sha256:270795aeb2a96240ed3d437892ee46e00720f3b2eb92e9f2e220d1ce07c7c6c6
+  content_hash: sha256:cd9128ebc9501ea94991d93ee0454832cfebb9efc6c4d4429d8fdcc0a2681ba8
   harness_profile_ref: harness://constitutional/v1
   default_sensitivity: internal
   default_visibility: private
@@ -40,8 +40,8 @@ properties:
   - '@学习进化/_knowledge/10-systems/基建架构/08-L4知识主权架构蓝图-2026-2031.md'
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@公共/DOMAIN.yaml
-  content_hash: sha256:270795aeb2a96240ed3d437892ee46e00720f3b2eb92e9f2e220d1ce07c7c6c6
+  content_hash: sha256:cd9128ebc9501ea94991d93ee0454832cfebb9efc6c4d4429d8fdcc0a2681ba8
 state_history:
 - state: active
-  timestamp: '2026-09-07T04:09:43.256837+00:00'
+  timestamp: '2026-09-07T07:33:10.382987+00:00'
   reason: l4_bridge_projection
