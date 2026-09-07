@@ -126,7 +126,63 @@ def generate_m0_snapshot() -> dict:
     if L0_NODES.exists():
         snap["m1_node_count"] = len(list(L0_NODES.glob("*.yaml")))  # type: ignore[reportArgumentType]
 
+    # L4 Domain Health (蓝图 C4: Harness 结果是投影, 采集入 M0)
+    try:
+        l4_health = _collect_l4_domain_health()
+        if l4_health:
+            snap["l4_domain_health"] = l4_health  # type: ignore[reportArgumentType]
+    except Exception:  # defensive fallback — l4-kernel 不可达时 M0 其余部分照常
+        pass
+
     return snap
+
+
+def _collect_l4_domain_health() -> dict | None:
+    """调 l4-kernel harness run 采集 12 个 L4 域健康 (只读).
+
+    输出形态: {domain_id: {ok, gates, issue_count, issues_summary}}
+    l4-kernel CLI 未安装或 registry 缺失时返回 None.
+    """
+    import json
+    import os
+    import subprocess
+
+    registry = Path.home() / "Documents/@公共/_control/L4-DOMAIN-REGISTRY.yaml"
+    if not registry.exists():
+        return None
+    env = os.environ.copy()
+    env["L4_DOMAIN_REGISTRY"] = str(registry)
+    ids_out = subprocess.run(
+        ["python3", "-c",
+         "import yaml;print(' '.join(m['id'] for m in yaml.safe_load(open(r'%s'))['manifests']))" % registry],
+        capture_output=True, text=True, env=env, timeout=15,
+    )
+    if ids_out.returncode != 0:
+        return None
+    # 找 l4_kernel 包 (workspace projects/l4-kernel)
+    l4_src = WS / "projects" / "l4-kernel" / "src" if (WS / "projects" / "l4-kernel" / "src").exists() else None
+    result: dict = {}
+    for dom_id in ids_out.stdout.split():
+        cmd = ["python3", "-m", "l4_kernel.cli", "harness", "run", dom_id, "--json"]
+        if l4_src and (l4_src / "l4_kernel").is_dir():
+            env2 = env.copy()
+            env2["PYTHONPATH"] = str(l4_src)
+            proc = subprocess.run(cmd, capture_output=True, text=True, env=env2, timeout=60)
+        else:
+            proc = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=60)
+        try:
+            payload = json.loads(proc.stdout)
+        except Exception:
+            continue
+        health = payload.get("data") or {}
+        issues = health.get("issues") or []
+        result[dom_id] = {
+            "ok": health.get("ok"),
+            "profile_id": health.get("profile_id"),
+            "issue_count": len(issues),
+            "error_codes": sorted({i.get("code") for i in issues if i.get("severity") == "error"}),
+        }
+    return result or None
 
 
 def save_m0_snapshot(snap: dict):
