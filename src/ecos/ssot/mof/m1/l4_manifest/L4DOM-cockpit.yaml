@@ -10,7 +10,7 @@ description: Projection of Documents DOMAIN.yaml (archetype=projection); canonic
   at /Users/xiamingxing/Documents/@驾驶舱/DOMAIN.yaml
 status: active
 domain: meta
-created: '2026-09-06'
+created: '2026-09-07'
 version: 1.0.0
 layer: L4
 api_version: l4/v1
@@ -43,5 +43,5 @@ model_driven_refs:
   content_hash: sha256:cd42768fc17d53441144e49051fc30ca6df75fefdeca8da5b328a5f07777a5fd
 state_history:
 - state: active
-  timestamp: '2026-09-06T08:37:10.808929+00:00'
+  timestamp: '2026-09-07T04:09:43.257341+00:00'
   reason: l4_bridge_projection
