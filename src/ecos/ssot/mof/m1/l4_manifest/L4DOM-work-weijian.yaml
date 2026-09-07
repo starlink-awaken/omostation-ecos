@@ -10,7 +10,7 @@ description: Projection of Documents DOMAIN.yaml (archetype=operational); canoni
   at /Users/xiamingxing/Documents/@工作文档/卫健委/DOMAIN.yaml
 status: active
 domain: meta
-created: '2026-09-06'
+created: '2026-09-07'
 version: 1.0.0
 layer: L4
 api_version: l4/v1
@@ -43,5 +43,5 @@ model_driven_refs:
   content_hash: sha256:352aa7e2c3fb9e2af8aaa57890eeef3d39f111144018694a34019d785c2468a5
 state_history:
 - state: active
-  timestamp: '2026-09-06T08:37:10.808825+00:00'
+  timestamp: '2026-09-07T04:09:43.257242+00:00'
   reason: l4_bridge_projection

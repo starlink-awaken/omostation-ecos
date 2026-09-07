@@ -10,7 +10,7 @@ description: Projection of Documents DOMAIN.yaml (archetype=constitutional); can
   at /Users/xiamingxing/Documents/@公共/DOMAIN.yaml
 status: active
 domain: meta
-created: '2026-09-06'
+created: '2026-09-07'
 version: 1.0.0
 layer: L4
 api_version: l4/v1
@@ -30,7 +30,7 @@ properties:
   authority_policy: canonical_write
   space_ref: personal-space
   storage: /Users/xiamingxing/Documents/@公共
-  content_hash: sha256:a721d29bebe20de7bca1f5efc15383d403fd686191d8cc1c0db5425752973b81
+  content_hash: sha256:270795aeb2a96240ed3d437892ee46e00720f3b2eb92e9f2e220d1ce07c7c6c6
   harness_profile_ref: harness://constitutional/v1
   default_sensitivity: internal
   default_visibility: private
@@ -40,8 +40,8 @@ properties:
   - '@学习进化/_knowledge/10-systems/基建架构/08-L4知识主权架构蓝图-2026-2031.md'
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@公共/DOMAIN.yaml
-  content_hash: sha256:a721d29bebe20de7bca1f5efc15383d403fd686191d8cc1c0db5425752973b81
+  content_hash: sha256:270795aeb2a96240ed3d437892ee46e00720f3b2eb92e9f2e220d1ce07c7c6c6
 state_history:
 - state: active
-  timestamp: '2026-09-06T08:37:10.808370+00:00'
+  timestamp: '2026-09-07T04:09:43.256837+00:00'
   reason: l4_bridge_projection
