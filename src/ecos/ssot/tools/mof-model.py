@@ -531,6 +531,11 @@ def format_summary(all_nodes: list[dict]) -> str:
 def main():
     import sys
 
+    print("⛔ MOF Model CLI 已退役 (TASK-262B9E59)。", file=sys.stderr)
+    print("  模型真相由 m1/ 显式节点 + mof-l4-bridge / mof-kems-bridge 投影接管。", file=sys.stderr)
+    print("  如需查看资产清单: python3 src/ecos/ssot/tools/mof-scan.py --summary", file=sys.stderr)
+    sys.exit(1)
+
     print("⚠️ MOF Model 独立 CLI 已弃用，请使用 cockpit 替代", file=sys.stderr)
     parser = argparse.ArgumentParser()
     parser.add_argument("--layer", type=str, default="all")
