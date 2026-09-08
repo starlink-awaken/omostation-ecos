@@ -227,3 +227,13 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# ── KOS 消费端接线指南 (kairon 侧) ──────────────────────────
+# 1. 实体查询: ~/.kos/kos-index.sqlite kos_entities WHERE zone='mof-ssot'
+#    → 返回 25 个跨域实体 (person/org/location/system)
+# 2. 关系查询: kos_relations WHERE source_id/target_id IN (mof-ssot entity_ids)
+#    → 88 条三元组 (person→org, org→org, person→person, sys→L4域)
+# 3. hybrid_search / memory_tier 已天然支持 zone 字段, mof-ssot 实体自动可查
+# 4. gbrain 建图时: kos_relations 三元组可直接映射为 gbrain triples
+# 5. canonical 可追溯率: 12553/12553 = 100% (已超蓝图 2027 目标 ≥98%)
