@@ -36,8 +36,8 @@ if [ ! -d "$HOME/workspace/projects/kairon" ]; then
   echo "  ✅ kairon"
 fi
 mkdir -p ~/Workspace/projects
-if [ ! -d "$HOME/Workspace/projects/gbrain" ]; then
-  cd ~/Workspace/projects
+if [ ! -d "$HOME/Workspace/projects/knowledge/gbrain" ]; then
+  cd ~/Workspace/projects/knowledge
   git clone git@github.com:xia-mingxing/gbrain.git gbrain 2>/dev/null || \
   echo "  ⚠️  gbrain clone 失败，手动处理"
   cd gbrain && bun install 2>/dev/null || true
