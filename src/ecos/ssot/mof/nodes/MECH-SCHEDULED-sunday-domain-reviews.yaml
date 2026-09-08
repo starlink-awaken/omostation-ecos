@@ -9,7 +9,7 @@ name: Sunday Domain Reviews
 description: '定时任务: sunday-domain-reviews'
 status: active
 domain: meta
-created: '2026-08-19'
+created: '2026-08-30'
 version: 1.0.0
 layer: L4
 properties:

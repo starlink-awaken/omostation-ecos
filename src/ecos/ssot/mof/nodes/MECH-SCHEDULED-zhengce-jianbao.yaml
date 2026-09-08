@@ -9,7 +9,7 @@ name: Zhengce Jianbao
 description: '定时任务: zhengce-jianbao'
 status: active
 domain: meta
-created: '2026-08-19'
+created: '2026-09-04'
 version: 1.0.0
 layer: L4
 properties:

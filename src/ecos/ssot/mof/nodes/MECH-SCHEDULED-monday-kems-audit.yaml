@@ -9,7 +9,7 @@ name: Monday Kems Audit
 description: '定时任务: monday-kems-audit'
 status: active
 domain: meta
-created: '2026-08-19'
+created: '2026-08-31'
 version: 1.0.0
 layer: L4
 properties:
