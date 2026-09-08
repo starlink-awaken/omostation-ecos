@@ -27,7 +27,6 @@ P2_TOOLS = [
     ("mof-audit", []),
     ("mof-extract", ["--help"]),
     ("mof-events", []),
-    ("mof-model", []),
     ("mof-capability", []),
     ("mof-register-tasks", []),
     ("mof-schema-validate", []),

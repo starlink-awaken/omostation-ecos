@@ -22,7 +22,6 @@ P1_TOOLS = [
     ("mof-sla", ["--snapshot-only"]),
     ("mof-extract", ["--help"]),
     ("mof-events", []),
-    ("mof-model", []),
     ("mof-capability", []),
     ("mof-register-tasks", []),
     ("mof-schema-validate", []),
