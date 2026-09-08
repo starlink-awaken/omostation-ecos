@@ -15,7 +15,7 @@ properties:
 cross_references:
   realized_by:
     project: kairon
-    entrypoint: packages/sdk/
+    entrypoint: packages/kairon-plugin-sdk/
 model_driven_refs:
   source_file: projects/ecos/src/ecos/ssot/mof/m1/
 state_history:
