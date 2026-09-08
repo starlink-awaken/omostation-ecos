@@ -11,7 +11,7 @@ status: running
 runtime_status: running
 
 model_driven_refs:
-  source_file: projects/gbrain/pyproject.toml
+  source_file: projects/knowledge/gbrain/pyproject.toml
 
 relations:
   provided_by: gbrain

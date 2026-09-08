@@ -17,7 +17,7 @@ tools:
 transport: stdio
 status: active
 model_driven_refs:
-  source_file: projects/gbrain/src/core/operations.ts
+  source_file: projects/knowledge/gbrain/src/core/operations.ts
 
 relations:
   provided_by: COMP-WS-gbrain
