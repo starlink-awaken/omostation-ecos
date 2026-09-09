@@ -66,7 +66,10 @@ def _upsert(conn: sqlite3.Connection, node: dict) -> str:
         ensure_ascii=False,
     )
 
-    op = "replace" if existing else "insert"
+    cur = conn.execute(
+        "SELECT 1 FROM kos_entities WHERE entity_id = ?", (name,)
+    )
+    op = "replace" if cur.fetchone() else "insert"
 
     conn.execute(
         """
@@ -99,7 +102,6 @@ def do_write(nodes: list[dict]) -> int:
     ins = rep = 0
     try:
         for n in nodes:
-            name = n.get("name") or n["id"]
             op = _upsert(conn, n)
             if op == "insert":
                 ins += 1
