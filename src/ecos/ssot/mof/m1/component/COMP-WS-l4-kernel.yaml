@@ -10,7 +10,7 @@ version: 1.0.0
 layer: L4
 properties:
   sfop_slot: K
-  dao_layer: dao
+  dao_layer: fa
   layer: L4
   runtime: active
   has_pyproject: true
@@ -22,6 +22,14 @@ state_history:
 - state: active
   timestamp: '2026-06-19T00:00:00Z'
   reason: initial_modeling
+- state: active
+  timestamp: '2026-09-11T00:00:00Z'
+  reason: >-
+    dao_layer 重归类 dao→fa (D7 决议): 道的定义是"不可执行, 只可违背后判
+    失败", 而 l4-kernel 是可执行包 (CLI/runtime active/例行 cron harness
+    巡检), 其活动实质是门禁判定 (法: 判失败) 而非存在性定义 (道)。全仓唯一
+    dao 归类系命名直觉所致。详见主仓 .omo/cron/registry.yaml open_decisions D7
+    与 docs/architecture/dao-fa-shu-qi.md 归类指引。
 value_metrics:
   business_value: high
   technical_debt: low
