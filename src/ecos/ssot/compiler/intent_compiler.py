@@ -98,6 +98,82 @@ class IntentExecutionSpec:
         }
 
 
+def _build_dynamic_dag(domain: str, text: str, policies: list) -> list[AgentRoleNode]:
+    """基于领域和复杂度动态生成 Agent DAG 拓扑.
+
+    根据任务领域和复杂度，生成不同规模的 Agent 协作图：
+    - 简单任务: 2 角色 (Builder + Auditor)
+    - 标准任务: 3 角色 (Planner + Builder + Auditor)
+    - 复杂任务: 4 角色 (Planner + Builder + Auditor + Challenger)
+    - 特定领域: 添加领域专家角色
+    """
+    is_complex = len(text) > 100 or any(k in text for k in ["立项", "方案", "规划", "评估", "深度", "全面"])
+    has_block_policy = any(p.severity == "BLOCK" for p in policies)
+
+    dag: list[AgentRoleNode] = []
+
+    # 复杂任务或高合规风险：添加规划者
+    if is_complex or has_block_policy:
+        dag.append(AgentRoleNode(
+            role="LeadPlanner",
+            archetype="Sage",
+            responsibility="系统性拆解任务目标、梳理政策依据与顶层规划",
+        ))
+
+    # 核心构建者（始终存在）
+    dag.append(AgentRoleNode(
+        role="DomainBuilder",
+        archetype="Builder",
+        responsibility="起草方案主体内容、设计具体业务流程与交付格式",
+    ))
+
+    # 特定领域：添加领域专家
+    if domain == "work-weijian":
+        dag.append(AgentRoleNode(
+            role="DomainExpert",
+            archetype="Sage",
+            responsibility="提供医疗卫健领域专业知识与政策合规指导",
+        ))
+    elif domain == "work-transfer":
+        dag.append(AgentRoleNode(
+            role="DomainExpert",
+            archetype="Sage",
+            responsibility="提供科技成果转化法律与政策合规指导",
+        ))
+    elif domain == "engineering":
+        dag.append(AgentRoleNode(
+            role="TechLead",
+            archetype="Builder",
+            responsibility="技术方案评审、架构设计与代码质量把控",
+        ))
+
+    # 有政策要求时：添加合规审计
+    if policies:
+        dag.append(AgentRoleNode(
+            role="ComplianceAuditor",
+            archetype="Keeper",
+            responsibility="对齐 Policy-as-Code 红线与事实真源 SLA",
+        ))
+
+    # 复杂任务或高合规风险：添加挑战者
+    if is_complex and has_block_policy:
+        dag.append(AgentRoleNode(
+            role="ShadowChallenger",
+            archetype="Devil",
+            responsibility="进行 360 度红蓝对抗审议，寻找漏洞与合规缺陷并打补丁",
+        ))
+
+    # 确保至少有 2 个角色
+    if len(dag) < 2:
+        dag.append(AgentRoleNode(
+            role="Reviewer",
+            archetype="Keeper",
+            responsibility="通用质量审查与交付验证",
+        ))
+
+    return dag
+
+
 class IntentSpecCompiler:
     """Compiles unstructured natural language requests into structured execution specs."""
 
@@ -197,29 +273,8 @@ class IntentSpecCompiler:
                 )
             )
 
-        # 5. Plan Multi-Agent DAG Topology
-        dag: list[AgentRoleNode] = [
-            AgentRoleNode(
-                role="LeadPlanner",
-                archetype="Sage",
-                responsibility="系统性拆解任务目标、梳理政策依据与顶层规划",
-            ),
-            AgentRoleNode(
-                role="DomainBuilder",
-                archetype="Builder",
-                responsibility="起草方案主体内容、设计具体业务流程与交付格式",
-            ),
-            AgentRoleNode(
-                role="ComplianceAuditor",
-                archetype="Keeper",
-                responsibility="对齐 Policy-as-Code 红线与事实真源 SLA",
-            ),
-            AgentRoleNode(
-                role="ShadowChallenger",
-                archetype="Devil",
-                responsibility="进行 360 度红蓝对抗审议，寻找预算漏洞与合规缺陷并打补丁",
-            ),
-        ]
+        # 5. Plan Multi-Agent DAG Topology (动态生成)
+        dag = _build_dynamic_dag(detected_domain, text, policies)
 
         # 6. Estimate Compute & Token Budget
         is_complex = len(text) > 100 or any(k in text for k in ["立项", "方案", "规划", "评估", "深度", "全面"])
