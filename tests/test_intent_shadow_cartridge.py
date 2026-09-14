@@ -21,7 +21,7 @@ def test_intent_spec_compiler_weijian() -> None:
     assert any(p.rule_id == "E-POL-WJ-001" for p in spec.policy_requirements)
     assert any(p.rule_id == "E-POL-WJ-002" for p in spec.policy_requirements)
     assert len(spec.fact_requirements) >= 1
-    assert len(spec.agent_dag) == 4
+    assert len(spec.agent_dag) == 5
     assert spec.compute_budget is not None
     assert spec.compute_budget.speculative_draft_enabled is True
 
