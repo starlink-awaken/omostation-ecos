@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/三医本体模型.md
-content_hash: sha256:fe5bc491b80d086d36baae0aed44d0746620a561bb4aae091a9e38f3ffc7a4b3
+content_hash: sha256:e986ad2b308d45cb6aa5f12662f90fed8aa98b264fce8fa14a346256afe19210
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -34,11 +34,14 @@ properties:
   kems_model_type: canonical
   kems_status: active
   kems_owner: 信息科 / xiamingxing
-  kems_review_date: 2026-08-10
+  kems_review_date: 2026-09-17
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/三医本体模型.md
-  content_hash: sha256:fe5bc491b80d086d36baae0aed44d0746620a561bb4aae091a9e38f3ffc7a4b3
+  content_hash: sha256:e986ad2b308d45cb6aa5f12662f90fed8aa98b264fce8fa14a346256afe19210
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

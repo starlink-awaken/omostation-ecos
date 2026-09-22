@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/KEMS治理机制.md
-content_hash: sha256:110f46bafecaf37185bc8a6d4cb2213f37063ee80ab0e6d7ea21f84a2ecf5799
+content_hash: sha256:89ca7a01eaa345ef3700efe7159dde6ba2926055fb2800dc4128ca21e569d163
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-05
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/KEMS治理机制.md
-  content_hash: sha256:110f46bafecaf37185bc8a6d4cb2213f37063ee80ab0e6d7ea21f84a2ecf5799
+  content_hash: sha256:89ca7a01eaa345ef3700efe7159dde6ba2926055fb2800dc4128ca21e569d163
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

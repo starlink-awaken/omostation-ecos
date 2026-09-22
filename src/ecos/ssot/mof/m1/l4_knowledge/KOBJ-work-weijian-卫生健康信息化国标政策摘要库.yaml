@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-国标摘要库.md
-content_hash: sha256:e648344c92c15fa6dcecd52a6792a98b6482630c20615f1df77da831d10dbd9c
+content_hash: sha256:2f0f004c740298a3a402020dbd4de3a399196fdb5d3863476d1c47bb6edf7eb3
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-10
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-国标摘要库.md
-  content_hash: sha256:e648344c92c15fa6dcecd52a6792a98b6482630c20615f1df77da831d10dbd9c
+  content_hash: sha256:2f0f004c740298a3a402020dbd4de3a399196fdb5d3863476d1c47bb6edf7eb3
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection
