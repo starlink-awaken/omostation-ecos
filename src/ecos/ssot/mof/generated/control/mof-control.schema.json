@@ -3304,10 +3304,15 @@
       "x-mof-state-machine": {
         "active": [
           "deprecated",
+          "retired",
           "archived"
         ],
         "archived": [],
         "deprecated": [
+          "retired",
+          "archived"
+        ],
+        "retired": [
           "archived"
         ]
       }
