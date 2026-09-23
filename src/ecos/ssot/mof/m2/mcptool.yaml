@@ -13,9 +13,15 @@ MCPTool:
       description: active
       transitions:
       - deprecated
+      - retired
       - archived
     deprecated:
       description: deprecated
+      transitions:
+      - retired
+      - archived
+    retired:
+      description: retired
       transitions:
       - archived
     archived:
