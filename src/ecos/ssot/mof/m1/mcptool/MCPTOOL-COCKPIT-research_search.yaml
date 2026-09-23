@@ -3,7 +3,7 @@ type: MCPTool
 subtype: CockpitTool
 name: research_search
 description: 'cockpit MCP 工具: research_search'
-status: active
+status: withdrawn
 domain: meta
 created: '2026-07-06'
 version: 1.0.0
@@ -17,7 +17,15 @@ state_history:
 - state: active
   timestamp: '2026-07-06T00:00:00Z'
   reason: sync from cockpit mcp --list-tools (MOF 注册 ↔ 实现 drift 治本, PR#125 探针 follow-up)
+- state: withdrawn
+  timestamp: '2026-09-23T00:00:00Z'
+  reason: declared but not implemented
+- state: active
+  timestamp: '2026-07-06T00:00:00Z'
+  reason: sync from cockpit mcp --list-tools (MOF 注册 ↔ 实现 drift 治本, PR#125 探针 follow-up)
 relations:
+  withdrawn_at: 2026-09-23
+  withdrawn_reason: "declared but not implemented — pending reimplementation or permanent retirement"
   depends_on:
   - ARTIFACT-L0-mof-audit
   - ARTIFACT-L0-mof-bootstrap
