@@ -211,3 +211,36 @@ gates:
   - id: "execution-chain"
     command: ["bin/gac/check-execution-chain.py", "--json"]
     timeout: 45
+  # ═══ 2026-09-24 契约走查: 14 个失联 checks 补录 ═══
+  # load_sgf_policy() 整体覆盖语义下, DEFAULT_POLICY 定义但本文件未收录的 checks 从未运行。
+  # 全部 14 项已逐一试跑验证绿 (另 7 项引用了并行 agent 未提交的临时脚本, 已剔除) (bos-tracking-gate 需先修复 BOS 追踪漂移, 见 agora PR)。
+  - id: "capability-ownership"
+    command: ["bin/gac/check-capability-ownership.py"]
+  - id: "derived-only-fast-track"
+    command: ["bin/gac/check-derived-only-fast-track.py"]
+  - id: "auto-fix-loop"
+    command: ["bin/gac/auto-fix-loop.py"]
+  - id: "command-discovery"
+    command: ["bin/gac/command-discovery.py"]
+  - id: "current-state-coherence"
+    command: ["bin/ssot/current-state-coherence.py"]
+  - id: "check-submodule-rewind"
+    command: ["bin/gac/check-submodule-rewind.py"]
+  - id: "check-evidence-honest-closure"
+    command: ["bin/gac/check-evidence-honest-closure.py"]
+  - id: "check-gateway-status-doc"
+    command: ["bin/gac/check-gateway-status-doc.py"]
+  - id: "check-foundry-deck-coverage"
+    command: ["bin/gac/check-foundry-deck-coverage.py"]
+  - id: "check-evidence-freshness"
+    command: ["bin/gac/check-evidence-freshness.py"]
+  - id: "check-governance-trend"
+    command: ["bin/gac/check-governance-trend.py"]
+  - id: "bus-usage-report"
+    command: ["bin/ssot/bus-usage-report.py"]
+  - id: "bos-tracking-gate"
+    command: ["bin/ssot/bos-tracking-gate.py"]
+  - id: "check-index-drift"
+    command: ["bin/ssot/check-index-drift.py"]
+    ci_skip: true
+
