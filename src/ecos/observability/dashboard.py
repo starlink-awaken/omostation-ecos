@@ -12,6 +12,7 @@
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -192,8 +193,8 @@ def check_alerts(data: dict) -> list[dict]:
         alerts.append(
             {"level": "P0", "msg": f"Constraint failed: {data['governance']['constraints']['failed_required']}"}
         )
-    # P1: Agent silent > half
-    if data["agents"]["running"] < data["agents"]["total"] // 2:
+    # P1: Agent silent > half (CI 无本机守护进程,liveness 在 CI 恒为 0/8,跳过判定)
+    if not os.environ.get("CI") and data["agents"]["running"] < data["agents"]["total"] // 2:
         alerts.append(
             {
                 "level": "P1",
