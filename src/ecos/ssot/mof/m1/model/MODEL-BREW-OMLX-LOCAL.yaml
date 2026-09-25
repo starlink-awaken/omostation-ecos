@@ -10,26 +10,6 @@ governance:
   steward: omlxc-api
   freshness_policy: "on-demand explicit read-only export; no implicit synchronization"
 models:
-- model_id: coding
-  display_name: coding (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - reasoning
-  - tools
-  runs_on: MBP-oMLX-App
-- model_id: coding-fast
-  display_name: coding-fast (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - reasoning
-  - tools
-  runs_on: MBP-oMLX-App
 - model_id: coding-next
   display_name: coding-next (MBP-oMLX-App)
   cost_per_1k_input: 0.0
@@ -38,24 +18,6 @@ models:
   capabilities:
   - chat
   - tools
-  runs_on: MBP-oMLX-App
-- model_id: reasoning
-  display_name: reasoning (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 4096
-  capabilities:
-  - chat
-  - reasoning
-  runs_on: MBP-oMLX-App
-- model_id: reasoning-lite
-  display_name: reasoning-lite (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - reasoning
   runs_on: MBP-oMLX-App
 - model_id: embedding
   display_name: embedding (MBP-oMLX-App)
@@ -74,32 +36,6 @@ models:
   - chat
   - vision
   runs_on: MBP-oMLX-App
-- model_id: vision-large
-  display_name: vision-large (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 3072
-  capabilities:
-  - chat
-  - vision
-  runs_on: MBP-oMLX-App
-- model_id: qwen-3.8-27b
-  display_name: qwen-3.8-27b (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 32768
-  capabilities:
-  - chat
-  runs_on: MBP-oMLX-App
-- model_id: mythos
-  display_name: mythos (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - vision
-  runs_on: MBP-oMLX-App
 - model_id: mythos-fast
   display_name: mythos-fast (MBP-oMLX-App)
   cost_per_1k_input: 0.0
@@ -107,57 +43,6 @@ models:
   context_window: 2048
   capabilities:
   - chat
-  runs_on: MBP-oMLX-App
-- model_id: deepseek-v4-flash
-  display_name: deepseek-v4-flash (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  runs_on: MBP-oMLX-App
-- model_id: deepseek-v4-pro
-  display_name: deepseek-v4-pro (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  runs_on: MBP-oMLX-App
-- model_id: mistral-medium-128b
-  display_name: mistral-medium-128b (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  runs_on: MBP-oMLX-App
-- model_id: nemotron-omni
-  display_name: nemotron-omni (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - reasoning
-  runs_on: MBP-oMLX-App
-- model_id: ornith-9b
-  display_name: ornith-9b (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - vision
-  runs_on: MBP-oMLX-App
-- model_id: ornith-35b
-  display_name: ornith-35b (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - vision
   runs_on: MBP-oMLX-App
 - model_id: embed-bge-m3
   display_name: embed-bge-m3 (MBP-oMLX-App)
@@ -175,24 +60,6 @@ models:
   capabilities:
   - rerank
   runs_on: MBP-oMLX-App
-- model_id: gemma-4-26b-a4b-it-qat-mlx-4bit
-  display_name: gemma-4-26b-a4b-it-qat-mlx-4bit (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - vision
-  runs_on: MBP-oMLX-App
-- model_id: gemma-4-31b-it-mlx-8bit
-  display_name: gemma-4-31b-it-mlx-8bit (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 2048
-  capabilities:
-  - chat
-  - vision
-  runs_on: MBP-oMLX-App
 - model_id: gemma-4-e2b-it-mlx-8bit
   display_name: gemma-4-e2b-it-mlx-8bit (MBP-oMLX-App)
   cost_per_1k_input: 0.0
@@ -202,20 +69,11 @@ models:
   - chat
   - vision
   runs_on: MBP-oMLX-App
-- model_id: mid-local
-  display_name: mid-local (MBP-oMLX-App)
+- model_id: qwen-3.6-35b
+  display_name: qwen-3.6-35b (MBP-oMLX-App)
   cost_per_1k_input: 0.0
   cost_per_1k_output: 0.0
-  context_window: 2048
+  context_window: 262144
   capabilities:
   - chat
-  runs_on: MBP-oMLX-App
-- model_id: coder-precise
-  display_name: coder-precise (MBP-oMLX-App)
-  cost_per_1k_input: 0.0
-  cost_per_1k_output: 0.0
-  context_window: 4096
-  capabilities:
-  - chat
-  - tools
   runs_on: MBP-oMLX-App
