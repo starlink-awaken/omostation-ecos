@@ -193,12 +193,14 @@ class DynamicPlanner:
         try:
             from openai import OpenAI  # type: ignore[reportMissingImports]
 
+            # 默认经 aetherforge 门面(原默认直连 LM Studio :1234, 绕过门面且无鉴权)。
+            # 显式设置 LLM_BASE_URL / OPENAI_BASE_URL 时仍按用户配置走。
+            from ecos.l0.ssot.extractor.llm import _gateway_key, _gateway_url
+
+            explicit = os.environ.get("LLM_BASE_URL") or os.environ.get("OPENAI_BASE_URL")
             return OpenAI(
-                api_key=os.environ.get("OPENAI_API_KEY", "local"),
-                base_url=os.environ.get(
-                    "OPENAI_BASE_URL",
-                    os.environ.get("LLM_BASE_URL", "http://localhost:1234/v1"),
-                ),
+                api_key=(os.environ.get("OPENAI_API_KEY") if explicit else _gateway_key()) or "local",
+                base_url=explicit or f"{_gateway_url()}/v1",
             )
         except ImportError:
             logger.warning("openai not installed, dynamic mode falls back to linear execution")

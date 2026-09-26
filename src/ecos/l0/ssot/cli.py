@@ -547,11 +547,11 @@ def cmd_extract(args):
 
     # 如果指定 --llm，强制只使用 LLM 提取器
     if args.llm:
-        from .extractor.llm import LLMExtractor, OllamaBackend
+        from .extractor.llm import LLMExtractor, gateway_backend
 
         if args.llm_model:
             # 用户明确指定模型 → 只用 Ollama（单一后端）
-            llm_ext = LLMExtractor(backends=[OllamaBackend(model=args.llm_model)])
+            llm_ext = LLMExtractor(backends=[gateway_backend(model=args.llm_model)])
         else:
             # 未指定模型 → 自动检测后端链（Ollama → 硅基流动 → DeepSeek → OpenAI）
             llm_ext = LLMExtractor(auto_detect=True)
