@@ -1,6 +1,6 @@
 id: ENG-LMSTUDIO-MACBOOKPRO
 type: ComputeEngine
-node_ref: NODE-MACBOOKPRO
+node_ref: NODE-LOCAL-MAC
 engine_type: local_server
 base_url: "http://localhost:1234/v1"
 supported_protocols: ["openai"]

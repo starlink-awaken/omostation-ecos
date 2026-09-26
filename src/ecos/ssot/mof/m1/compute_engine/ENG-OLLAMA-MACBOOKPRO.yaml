@@ -1,6 +1,6 @@
 id: ENG-OLLAMA-MACBOOKPRO
 type: ComputeEngine
-node_ref: NODE-MACBOOKPRO
+node_ref: NODE-LOCAL-MAC
 engine_type: local_daemon
 base_url: "http://localhost:11434/v1"
 supported_protocols: ["openai"]

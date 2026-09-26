@@ -7,7 +7,7 @@ supported_protocols: ["azure"]
 auth_source: AZURE_OPENAI_API_KEY
 network_zone: "cloud"
 cost_multiplier: 1.5
-status: active
+status: draft
 capabilities: ["chat", "vision", "tools"]
 description: "Azure OpenAI Service"
 

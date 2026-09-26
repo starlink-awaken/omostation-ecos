@@ -7,7 +7,7 @@ supported_protocols: ["bedrock"]
 auth_source: AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
 network_zone: "cloud"
 cost_multiplier: 1.2
-status: active
+status: draft
 capabilities: ["chat", "vision"]
 description: "AWS Bedrock"
 
