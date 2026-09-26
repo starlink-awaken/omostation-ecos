@@ -9,6 +9,9 @@ compute_engine:
     active:
       description: 运行中
       transitions: []
+    draft:
+      description: 未激活/配置不完整(如占位URL), 不计入不合规
+      transitions: [active]
   requiredProperties:
     node_ref:
       type: ref
