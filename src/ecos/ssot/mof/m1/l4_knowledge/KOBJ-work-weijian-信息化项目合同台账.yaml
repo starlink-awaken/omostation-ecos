@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/合同台账-信息化项目.md
-content_hash: sha256:8e507ccde2a49740d413237c8cc8574572dfdc1cf84d39a3f292cfee250de8d7
+content_hash: sha256:b1f36d29c59f9181e223b9a3dfef1a29ec45fa5dbf0e0cda60b23b27ff7ceebd
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-10
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/合同台账-信息化项目.md
-  content_hash: sha256:8e507ccde2a49740d413237c8cc8574572dfdc1cf84d39a3f292cfee250de8d7
+  content_hash: sha256:b1f36d29c59f9181e223b9a3dfef1a29ec45fa5dbf0e0cda60b23b27ff7ceebd
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

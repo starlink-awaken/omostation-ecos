@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-网络安全知识图谱.md
-content_hash: sha256:5ef6681271781feee08e9fc130c103b86047d8b25da41b1ae86ea66b37063ba5
+content_hash: sha256:b4d55ce8b55229f99b8936497d38daaf53e03d64e3cda795d2cb3b355a973c3e
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-10
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-网络安全知识图谱.md
-  content_hash: sha256:5ef6681271781feee08e9fc130c103b86047d8b25da41b1ae86ea66b37063ba5
+  content_hash: sha256:b4d55ce8b55229f99b8936497d38daaf53e03d64e3cda795d2cb3b355a973c3e
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

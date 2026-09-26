@@ -2,14 +2,14 @@
 # Source of truth: KEMS _entities/ (Documents canonical)
 # Rebuild: python3 src/ecos/ssot/tools/mof-kems-bridge.py --write
 
-id: KOBJ-work-weijian-模型-电子病历数据质量抽象模型-EMR-DQ-20260811
+id: KOBJ-work-weijian-模型-电子病历数据质量抽象模型-EMR-DQ-v1-0
 type: L4KnowledgeObject
 subtype: KnowledgeModel
-name: 模型-电子病历数据质量抽象模型-EMR-DQ-20260811
-description: KEMS unknown 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-电子病历数据质量抽象模型-EMR-DQ-20260811.md
-status: canonical
+name: 模型-电子病历数据质量抽象模型 EMR-DQ v1.0
+description: KEMS canonical 模型投影 (status=已采纳); canonical at /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-电子病历数据质量抽象模型-EMR-DQ-20260811.md
+status: archived
 domain: work-weijian
-created: '2026-09-06'
+created: '2026-09-22'
 version: 1.0.0
 layer: L4
 api_version: l4/v1
@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-电子病历数据质量抽象模型-EMR-DQ-20260811.md
-content_hash: sha256:89d4f71da518db51031b2f4cbd4b725a326f65e1399322eeab40feef45430569
+content_hash: sha256:ca4f0978e308ef6b2febafca0f18f83f8aa6c338d46c6cfb14ea8d3637c20826
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -31,14 +31,14 @@ freshness_policy: kems-review-90d
 value_tier: 3
 properties:
   layer: L4
-  kems_model_type: unknown
-  kems_status: active
-  kems_owner: null
-  kems_review_date: null
+  kems_model_type: canonical
+  kems_status: 已采纳
+  kems_owner: 信息科 / xiamingxing
+  kems_review_date: 2026-09-16
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/模型-电子病历数据质量抽象模型-EMR-DQ-20260811.md
-  content_hash: sha256:89d4f71da518db51031b2f4cbd4b725a326f65e1399322eeab40feef45430569
+  content_hash: sha256:ca4f0978e308ef6b2febafca0f18f83f8aa6c338d46c6cfb14ea8d3637c20826
 state_history:
 - state: canonical
-  timestamp: '2026-09-06T11:53:01.878240+00:00'
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection
