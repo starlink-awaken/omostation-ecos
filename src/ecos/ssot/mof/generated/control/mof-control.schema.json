@@ -850,7 +850,10 @@
       "title": "ComputeEngine",
       "type": "object",
       "x-mof-state-machine": {
-        "active": []
+        "active": [],
+        "draft": [
+          "active"
+        ]
       }
     },
     "ComputeNode": {
