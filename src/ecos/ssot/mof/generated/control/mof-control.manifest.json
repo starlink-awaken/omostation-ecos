@@ -1,6 +1,6 @@
 {
   "artifacts": {
-    "json-schema": "ea93fc9e4fa46065d5cc123e62032b19c373eac0f2a5ade0239379aace78aa65",
+    "json-schema": "006c6e0832895be2141b881d1b9fd245e057ffd63886feadfe4e0a777419d645",
     "pydantic": "bc4157cf25c47f3f7849b2532fa0d078a7e4c46f072c6371c6aa6456ab3f0415",
     "sqlite": "5974bfc2efbae4e8301df9070ce1d09911fd74b4a05b4d5e39bacbf89332d8d6",
     "zod": "d6868166cb59ac5751b7094438d570ec18ce12c0a67f5b951d6b0a086704aa9d"
