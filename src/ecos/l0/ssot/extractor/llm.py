@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 from abc import ABC, abstractmethod
 
 from .base import ExtractionCandidate, ExtractionResult, Extractor, TextSource
@@ -137,11 +138,11 @@ class OpenAIBackend(LLMBackend):
         self,
         model: str = "gpt-4o-mini",
         api_key: str = "",
-        base_url: str = os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"),
+        base_url: str = "",
     ):
         self.model = model
         self.api_key = api_key
-        self.base_url = base_url.rstrip("/")
+        self.base_url = (base_url or f"{_gateway_url()}/v1").rstrip("/")
 
     @property
     def name(self) -> str:
@@ -182,6 +183,52 @@ class OpenAIBackend(LLMBackend):
         return data["choices"][0]["message"]["content"]
 
 
+# ── aetherforge 门面 ─────────────────────────────────
+# 本机统一推理入口。地址/密钥解析与 kairon kos.llm_gateway、omostation bin 脚本一致。
+# 旧实现把 DeepSeek / OpenAI 云端 key 发往本机 :9290, 并直连 Ollama 上并未安装的 qwen3.5:4b。
+
+_CLOUD_BASE_URLS = {
+    "openai": "https://api.openai.com/v1",
+    "deepseek": "https://api.deepseek.com/v1",
+    "siliconflow": "https://api.siliconflow.cn/v1",
+    "openrouter": "https://openrouter.ai/api/v1",
+}
+
+
+def _gateway_url(standby: bool = False) -> str:
+    if standby:
+        return os.environ.get("LLM_GATEWAY_STANDBY_URL", "http://100.99.210.78:4000").rstrip("/").removesuffix("/v1")
+    for name in ("LLM_GATEWAY_URL", "AETHERFORGE_URL", "OMLX_URL"):
+        if os.environ.get(name):
+            return os.environ[name].rstrip("/").removesuffix("/v1")
+    return "http://127.0.0.1:4000"
+
+
+def _gateway_key() -> str:
+    for name in ("LLM_GATEWAY_KEY", "AETHERFORGE_API_KEY", "OMLX_API_KEY"):
+        if os.environ.get(name):
+            return os.environ[name]
+    try:
+        out = subprocess.run(
+            ["security", "find-generic-password", "-s", "aetherforge-gateway", "-w"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    return out.stdout.strip() if out.returncode == 0 else ""
+
+
+def gateway_backend(model: str = "", *, standby: bool = False) -> OpenAIBackend:
+    """经 aetherforge 门面的后端。model 用门面别名(默认 LLM_GATEWAY_MODEL 或 fast)。"""
+    return OpenAIBackend(
+        model=model or os.environ.get("LLM_GATEWAY_MODEL", "fast"),
+        api_key=_gateway_key(),
+        base_url=f"{_gateway_url(standby)}/v1",
+    )
+
+
 def _standard_backend_from_env() -> LLMBackend | None:
     provider = os.environ.get("LLM_PROVIDER", "").strip().lower()
     if not provider:
@@ -197,11 +244,19 @@ def _standard_backend_from_env() -> LLMBackend | None:
             base_url=base_url or "http://localhost:11434",
         )
 
-    if provider in {"litellm", "openai", "openrouter", "deepseek", "siliconflow"}:
+    if provider in {"aetherforge", "gateway", "litellm"}:
+        backend = gateway_backend(model)
+        if base_url:
+            backend.base_url = base_url.rstrip("/")
+        if api_key:
+            backend.api_key = api_key
+        return backend
+
+    if provider in _CLOUD_BASE_URLS:
         return OpenAIBackend(
             model=model or "gpt-4o-mini",
-            api_key=api_key or os.environ.get("OPENAI_API_KEY", ""),
-            base_url=base_url or os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"),
+            api_key=api_key or os.environ.get(f"{provider.upper()}_API_KEY", "") or os.environ.get("OPENAI_API_KEY", ""),
+            base_url=base_url or _CLOUD_BASE_URLS[provider],
         )
 
     return None
@@ -563,42 +618,13 @@ class LLMExtractor(Extractor):
                 file=sys.stderr,
             )
 
-        # ── 1. Ollama（本地，免费，最快） ──────────────
-        try:
-            import json
-            import urllib.request
-
-            req = urllib.request.Request("http://localhost:11434/api/tags")
-            resp = urllib.request.urlopen(req, timeout=2)
-            data = json.loads(resp.read().decode())
-            models = data.get("models", [])
-            if models:
-                preferred = [
-                    "qwen3.5:4b",
-                    "qwen3.5",
-                    "qwen2.5:7b",
-                    "qwen2.5",
-                    "deepseek-r2:7b",
-                    "deepseek-r1:7b",
-                    "llama3.2",
-                    "mistral",
-                ]
-                chosen = None
-                for p in preferred:
-                    for m in models:
-                        if p in m.get("name", ""):
-                            chosen = m["name"]
-                            break
-                    if chosen:
-                        break
-                if not chosen:
-                    chosen = models[0]["name"]
-                if ":" not in chosen:
-                    chosen = f"{chosen}:latest"
-                backends.append(OllamaBackend(model=chosen))
-                print(f"  🔌 [{len(backends)}] Ollama (模型: {chosen})", file=sys.stderr)
-        except Exception:  # defensive fallback
-            pass
+        # ── 1. aetherforge 门面(主 → 备用), 本机统一推理入口 ──
+        # 旧实现在此直连本机 Ollama(绕过门面, 且首选模型 qwen3.5:4b 并未安装)。
+        if _gateway_key():
+            for standby in (False, True):
+                backends.append(gateway_backend(standby=standby))
+                label = "备用门面" if standby else "门面"
+                print(f"  🔌 [{len(backends)}] aetherforge {label} ({_gateway_url(standby)})", file=sys.stderr)
 
         # ── 2. 硅基流动（国内用户友好，价格便宜） ──────
         sf_key = os.environ.get("SILICONFLOW_API_KEY", "")
@@ -618,7 +644,7 @@ class LLMExtractor(Extractor):
         ds_key = os.environ.get("DEEPSEEK_API_KEY", "")
         if ds_key:
             ds_model = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
-            ds_url = os.environ.get("DEEPSEEK_BASE_URL", os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"))
+            ds_url = os.environ.get("DEEPSEEK_BASE_URL", _CLOUD_BASE_URLS["deepseek"])
             backends.append(
                 OpenAIBackend(
                     model=ds_model,
@@ -632,7 +658,7 @@ class LLMExtractor(Extractor):
         oa_key = os.environ.get("OPENAI_API_KEY", "")
         if oa_key:
             oa_model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
-            oa_url = os.environ.get("OPENAI_BASE_URL", os.environ.get("AETHERFORGE_URL", "http://127.0.0.1:9290/v1"))
+            oa_url = os.environ.get("OPENAI_BASE_URL", _CLOUD_BASE_URLS["openai"])
             backends.append(
                 OpenAIBackend(
                     model=oa_model,

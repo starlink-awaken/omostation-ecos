@@ -270,10 +270,10 @@ def do_extract(args: dict) -> dict:
 
     use_llm = args.get("use_llm", False)
     if use_llm:
-        from .extractor.llm import LLMExtractor, OllamaBackend
+        from .extractor.llm import LLMExtractor, gateway_backend
 
         model = args.get("model", "") or os.environ.get("OLLAMA_MODEL", "qwen3.5:4b")
-        llm_ext = LLMExtractor(backends=[OllamaBackend(model=model)])
+        llm_ext = LLMExtractor(backends=[gateway_backend(model=model)])
         if llm_ext.can_handle(source):
             pipe.extractors = [llm_ext]
 
