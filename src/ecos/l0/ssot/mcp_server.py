@@ -272,7 +272,9 @@ def do_extract(args: dict) -> dict:
     if use_llm:
         from .extractor.llm import LLMExtractor, gateway_backend
 
-        model = args.get("model", "") or os.environ.get("OLLAMA_MODEL", "qwen3.5:4b")
+        # 门面别名。不读 OLLAMA_MODEL: 它是 Ollama 原生模型名(shell 常全局导出, 如 gemma4:e4b),
+        # 发给门面找不到别名 → 静默兜底到别的档
+        model = args.get("model", "") or os.environ.get("ECOS_LLM_MODEL", "fast")
         llm_ext = LLMExtractor(backends=[gateway_backend(model=model)])
         if llm_ext.can_handle(source):
             pipe.extractors = [llm_ext]
