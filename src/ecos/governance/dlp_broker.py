@@ -24,11 +24,26 @@ TYPE_LABELS = {  # 报警文案中文化 (done_when 契约文案)
     "mobile_phone": "手机号",
     "internal_ip": "内部IP",
     "financial_budget": "机密财务预算",
+    "medical_insurance_no": "医保卡号",
+    "medical_record_no": "病案号/门诊号",
 }
 
 # ── Rule engine (single source) ───────────────────────────────────────
 # (type, compiled, risk, redaction_level) — 高危: 涉密文号/身份证; 中危: 其余
 _RULES: list[tuple[str, re.Pattern[str], str, str]] = [
+    # 医疗标识须带中文语境词(医保卡/病案号等), 只匹配裸数字会大量误报普通数值
+    (
+        "medical_insurance_no",
+        re.compile(r"医保(?:卡|卡号|账号)[：:\s]*[A-Z0-9]{8,20}"),
+        "medium",
+        "mask",
+    ),
+    (
+        "medical_record_no",
+        re.compile(r"(?:病案号|门诊号|住院号)[：:\s]*[A-Z0-9-]{4,20}"),
+        "medium",
+        "mask",
+    ),
     (
         "classified_doc_number",
         re.compile(r"〔\d{4}〕\d{1,4}号|〔\d{4}〕第?\d+号"),
