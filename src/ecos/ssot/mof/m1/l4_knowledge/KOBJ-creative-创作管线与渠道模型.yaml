@@ -2,14 +2,14 @@
 # Source of truth: KEMS _entities/ (Documents canonical)
 # Rebuild: python3 src/ecos/ssot/tools/mof-kems-bridge.py --write
 
-id: KOBJ-family-域模型-家庭
+id: KOBJ-creative-创作管线与渠道模型
 type: L4KnowledgeObject
 subtype: KnowledgeModel
-name: 域模型-家庭
-description: KEMS domain-model 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
+name: 创作管线与渠道模型
+description: KEMS model 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@创意创作/_entities/models/模型-创作管线与渠道.md
 status: canonical
-domain: family
-created: '2026-09-06'
+domain: creative
+created: '2026-09-22'
 version: 1.0.0
 layer: L4
 api_version: l4/v1
@@ -17,11 +17,11 @@ kind: KnowledgeObject
 schema: l4.knowledge-object/v1
 kind_class: reference
 space_id: personal-space
-domain_id: family
+domain_id: creative
 authority: canonical
 lifecycle_state: canonical
-source_ref: /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
-content_hash: sha256:da49cd2370446fb7e37a53e9746cad2712ee7d9e0c8a63dfb4b0b997ed4da7cf
+source_ref: /Users/xiamingxing/Documents/@创意创作/_entities/models/模型-创作管线与渠道.md
+content_hash: sha256:7f2e010de2c4d24e07cb3588362d5a0f774446683186175ced776c46b3417be9
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -31,17 +31,14 @@ freshness_policy: kems-review-90d
 value_tier: 3
 properties:
   layer: L4
-  kems_model_type: domain-model
+  kems_model_type: model
   kems_status: active
-  kems_owner: 家庭
+  kems_owner: xiamingxing
   kems_review_date: 2026-09-17
 model_driven_refs:
-  source_file: /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
-  content_hash: sha256:da49cd2370446fb7e37a53e9746cad2712ee7d9e0c8a63dfb4b0b997ed4da7cf
+  source_file: /Users/xiamingxing/Documents/@创意创作/_entities/models/模型-创作管线与渠道.md
+  content_hash: sha256:7f2e010de2c4d24e07cb3588362d5a0f774446683186175ced776c46b3417be9
 state_history:
-- state: canonical
-  timestamp: '2026-09-06T11:53:01.878240+00:00'
-  reason: kems_bridge_projection
 - state: canonical
   timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection
