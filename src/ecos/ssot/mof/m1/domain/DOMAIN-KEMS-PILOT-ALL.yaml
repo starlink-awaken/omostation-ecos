@@ -110,6 +110,13 @@ domains:
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "OK",'
+  extraction:
+    files: 733
+    chars: 3712839
+    domains_in_summary: 2
+    reported:
+      卫健委: 702
+      合同法规: 31
 - id: work-weijian
   status: OK
   distilled_instances: 17
@@ -192,3 +199,4 @@ evidence:
     failed: 0
     pipe_fails: 0
     gate_alerts: 10
+    followability: 8/8
