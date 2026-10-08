@@ -100,8 +100,14 @@ domains:
     gate: '"verdict": "ALERT",'
 - id: work-docs
   status: OK
-  distilled_instances: 0
+  distilled_instances: 32
   bad: 0
+  mode: aggregate
+  aggregate_of:
+  - work-weijian
+  - work-guozhuan
+  - work-liyongke
+  - work-contracts
   control_files_present:
   - STATUS.md
   path: /Users/xiamingxing/Documents/@工作文档
@@ -109,7 +115,7 @@ domains:
     intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
-    gate: '"verdict": "OK",'
+    gate: '"verdict": "ALERT",'
   extraction:
     files: 733
     chars: 3712839
