@@ -7,10 +7,13 @@ registry_ref: L4-DOMAIN-REGISTRY.yaml（SSOT，12 域唯一真源）
 distill_rules:
 - 域发现=SSOT registry 自动发现，不手抄
 - 控制面探测=DOMAIN.yaml/_control(key-milestones/项目口径/STATUS/TIMELINE)/_meta
-- 骨架蒸馏上限=Milestone≤10、Caliber≤8（克制，先骨架后增补）
+- 骨架蒸馏上限=Milestone≤10、深提炼≤20（--deep creative/opc/cockpit）、Caliber≤8
 - STATUS/TIMELINE 日期行保守解析（仅确定性可解析行）
 - 真数据只读，输出只进 ~/.kems-pilot/domains/<id>/instances.yaml
 - 通用校验=M2 kems-pilot 生成模型逐实例（0 违规才 OK）
+followability_ref: '@公共/_control/KEMS-FOLLOWABILITY.yaml（R1-R8，校验=kems-follow.py）'
+frontmatter_governance: 2026-10-09 补全 12 域 _control/STATUS.md|TIMELINE.md frontmatter（23
+  文件，备份 .bak-20261009）→ intake 12/12 PASS
 domains:
 - id: shared
   status: OK
@@ -22,7 +25,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@公共
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -36,7 +39,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@个人
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -49,7 +52,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@学习进化
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -63,13 +66,13 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@家庭生活
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
 - id: creative
   status: OK
-  distilled_instances: 10
+  distilled_instances: 16
   bad: 0
   control_files_present:
   - key-milestones.yaml
@@ -77,7 +80,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@创意创作
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -91,7 +94,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@OPC
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -103,7 +106,7 @@ domains:
   - STATUS.md
   path: /Users/xiamingxing/Documents/@工作文档
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "OK",'
@@ -118,7 +121,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@工作文档/卫健委
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "OK",'
@@ -132,7 +135,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@工作文档/国转中心
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -146,7 +149,7 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@工作文档/规自委
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
@@ -160,13 +163,13 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@工作文档/合同法规
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
 - id: cockpit
   status: OK
-  distilled_instances: 10
+  distilled_instances: 12
   bad: 0
   control_files_present:
   - key-milestones.yaml
@@ -174,17 +177,18 @@ domains:
   - TIMELINE.md
   path: /Users/xiamingxing/Documents/@驾驶舱
   pipes:
-    intake: '"verdict": "FAIL",'
+    intake: '"verdict": "PASS",'
     fusion: '"verdict": "PASS"'
     artifact: '"verdict": "OK",'
     gate: '"verdict": "ALERT",'
 evidence:
   matrix_file: ~/.kems-pilot/domains/domains-matrix.json
   pipeline_status_file: ~/.kems-pilot/domains/domains-pipeline-status.json
-  provenance: 2026-10-09 全域推广二轮：蒸馏加深（STATUS/TIMELINE）+ 四管道 --domain 参数化 + 12 域验收
+  followability_file: ~/.kems-pilot/evidence/followability-report.json
+  provenance: 2026-10-09 候选推进轮：frontmatter 治理 + 深提炼 + MCP 读面 + 可遵循性
   totals:
     total: 12
-    distilled: 89
+    distilled: 97
     failed: 0
     pipe_fails: 0
     gate_alerts: 10
