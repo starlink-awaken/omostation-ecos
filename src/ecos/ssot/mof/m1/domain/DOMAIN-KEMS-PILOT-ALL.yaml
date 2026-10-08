@@ -1,0 +1,126 @@
+apiVersion: mof/v1
+kind: DomainM1Declaration
+id: kems-pilot-all-domains
+display_name: KEMS 全域覆盖矩阵声明（12 域）
+m2_ref: mof/m2/kems-pilot
+registry_ref: L4-DOMAIN-REGISTRY.yaml（SSOT，12 域唯一真源）
+distill_rules:
+- 域发现=SSOT registry 自动发现，不手抄
+- 控制面探测=DOMAIN.yaml/_control(key-milestones/项目口径/STATUS/TIMELINE)/_meta
+- 骨架蒸馏上限=Milestone≤6、Caliber≤8（克制，先骨架后增补）
+- 真数据只读，输出只进 ~/.kems-pilot/domains/<id>/instances.yaml
+- 通用校验=M2 kems-pilot 生成模型逐实例（0 违规才 OK）
+domains:
+- id: shared
+  status: OK
+  distilled_instances: 1
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@公共
+- id: personal
+  status: OK
+  distilled_instances: 0
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@个人
+- id: vault
+  status: OK
+  distilled_instances: 0
+  bad: 0
+  control_files_present:
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@学习进化
+- id: family
+  status: OK
+  distilled_instances: 0
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@家庭生活
+- id: creative
+  status: OK
+  distilled_instances: 5
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@创意创作
+- id: opc
+  status: OK
+  distilled_instances: 3
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@OPC
+- id: work-docs
+  status: OK
+  distilled_instances: 0
+  bad: 0
+  control_files_present:
+  - STATUS.md
+  path: /Users/xiamingxing/Documents/@工作文档
+- id: work-weijian
+  status: OK
+  distilled_instances: 13
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - 项目口径.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@工作文档/卫健委
+- id: work-guozhuan
+  status: OK
+  distilled_instances: 0
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@工作文档/国转中心
+- id: work-liyongke
+  status: OK
+  distilled_instances: 0
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@工作文档/规自委
+- id: work-contracts
+  status: OK
+  distilled_instances: 4
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@工作文档/合同法规
+- id: cockpit
+  status: OK
+  distilled_instances: 4
+  bad: 0
+  control_files_present:
+  - key-milestones.yaml
+  - STATUS.md
+  - TIMELINE.md
+  path: /Users/xiamingxing/Documents/@驾驶舱
+evidence:
+  matrix_file: ~/.kems-pilot/domains/domains-matrix.json
+  provenance: 2026-10-08 全域推广：SSOT 域发现 + 控制面只读探测 + 骨架蒸馏 + 通用 M2 校验
+  totals:
+    total: 12
+    distilled: 30
+    failed: 0
