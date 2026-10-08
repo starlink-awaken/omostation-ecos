@@ -1,0 +1,68 @@
+# M2: ProjectTask — 流程契约任务（kems-pilot 试点，任务门禁核心）
+# 蒸馏来源：事件卡任务契约初稿（采集→融合→撰写→门禁→复盘）、M06 月报/G5 收入评分。
+# 用途：管道4（任务门禁）——任务置 done 前必须核查交付物，逾期由 Deadline 告警。
+
+m2_type: ProjectTask
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+ProjectTask:
+  m3_parent: StructuralElement.Task
+  description: |
+    流程契约任务——任务门禁的执行单元。task_type 覆盖月报闭环五步
+    （数据采集/融合裁决/撰写/门禁核查/报送/评分/复盘）。
+  icon: ✅
+  requiredProperties:
+    id:
+      type: string
+      description: 任务编码
+    name:
+      type: string
+      description: 任务名称
+    task_type:
+      type: enum
+      description: 任务类型
+      values: [数据采集, 融合裁决, 撰写, 门禁核查, 报送, 评分, 复盘]
+  optionalProperties:
+    event:
+      type: string
+      description: 所属事件 (→PilotEvent.id 引用，图式引用)
+    stage:
+      type: string
+      description: 所属环节 (→WorkflowStage.id 引用，图式引用)
+    checked_deliverables:
+      type: list
+      description: 门禁核查的交付物 (→Deliverable.id 引用，图式引用)
+      items:
+        type: string
+    gate_rules:
+      type: list
+      description: 门禁规则描述（人读）
+    deadline:
+      type: string
+      description: 绑定时限 (→Deadline.id 引用，图式引用)
+    owner:
+      type: string
+      description: 责任方
+    status:
+      type: enum
+      description: 任务状态
+      values: [pending, in_progress, done, blocked, failed]
+    evidence_path:
+      type: string
+      description: 执行证据路径（可追溯）
+  validationRules:
+  - rule: status == 'done' implies checked_deliverables is not None and len(checked_deliverables) > 0
+    level: error
+    message: 任务置 done 前必须核查交付物（门禁契约）
+  - rule: status == 'failed' implies evidence_path is not None
+    level: warning
+    message: 失败任务应留证据路径
+  relationConstraints:
+    can_be_source_of: [CheckedBy]
+    can_be_target_of: [BlocksTask, BoundedByDeadline]
+  examples:
+  - id: TSK-2026-10-MONTHLY-01
+    name: 十月月报-数据采集
+    task_type: 数据采集
+    status: pending

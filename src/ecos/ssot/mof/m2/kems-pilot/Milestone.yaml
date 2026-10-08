@@ -1,0 +1,81 @@
+# M2: Milestone — 关键里程碑节点（kems-pilot 试点）
+# 蒸馏来源：_control/key-milestones.yaml v1.3（M01-M07 全量形状）。
+# 契约腐化注记（2026-09-17 域内已记录）：severity 字段实为「状态」语义（✅/🟡/⛔/⚠️/❌），
+#   与字段名 severity(严重度) 名实不符；本 M2 按现状建模，保留枚举值与 EX-4 约束，
+#   重构留待轨A（不阻塞试点）。
+
+m2_type: Milestone
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+Milestone:
+  m3_parent: StructuralElement.Milestone
+  description: |
+    关键里程碑节点——key-milestones.yaml 的 M0x 节点。severity 实为状态语义：
+    ✅已完成 / 🟡逾期 / 🟡即将到期 / ⛔阻塞 / ⚠️存疑 / ❌失败。
+  icon: 🎯
+  requiredProperties:
+    id:
+      type: string
+      description: 里程碑编码（稳定引用，如 M01）
+    date:
+      type: string
+      description: MM-DD（每年复用）
+      pattern: '^\d{2}-\d{2}$'
+    title:
+      type: string
+      description: 里程碑名称
+    severity:
+      type: string
+      description: 状态标记（名实为状态，见文件头注记；字符串+运行时规则校验，
+        规避 pydantic Literal 对四字节 emoji 的构建限制；真实数据形态为
+        「标记+语义后缀」，如 ⛔阻塞/🟡即将到期，规则按前缀匹配）
+    owner:
+      type: string
+      description: 责任方
+  optionalProperties:
+    gap_ids:
+      type: list
+      description: 依赖的信息缺口（对照 gaps.yaml，全部 resolved 才视为前置闭环）
+    req_files:
+      type: list
+      description: 依赖的申报文件（存在才视为就绪）
+    note:
+      type: string
+      description: 备注（含证据/影响）
+    blocked_reason:
+      type: string
+      description: 阻塞原因（severity=⛔ 时必填）
+    impact:
+      type: string
+      description: 影响范围（severity=⛔ 时必填）
+    project:
+      type: string
+      description: 所属项目 (→ProjectPilot.id 引用，图式引用)
+  conditionalRequirements:
+  - when:
+      property: severity
+      equals: "⛔"
+    required: [blocked_reason, impact]
+  validationRules:
+  - rule: severity.startswith(('✅','🟡','⛔','⚠️','❌'))
+    level: error
+    message: severity 必须以状态标记开头（✅完成/🟡逾期·即将到期/⛔阻塞/⚠️存疑/❌失败），允许语义后缀
+  - rule: severity == '⛔' implies blocked_reason is not None and impact is not None
+    level: error
+    message: 阻塞节点必须声明阻塞原因与影响（P-C4；注意 key-milestones 实为 '⛔阻塞' 形态，按前缀判定）
+  - rule: date is not None and date != ''
+    level: error
+    message: 里程碑必须含日期（EX-4）
+  - rule: severity == '⛔' and blocked_reason is None
+    level: warning
+    message: 阻塞节点必须说明阻塞原因（契约腐化防线）
+  relationConstraints:
+    can_be_source_of: [BlocksTask]
+    can_be_target_of: [HasMilestone, RelatedToEvent]
+  examples:
+  - id: M06
+    date: "09-20"
+    title: 月度工作月报报送
+    severity: "🟡"
+    owner: 信息科

@@ -1,0 +1,76 @@
+# M2: WorkflowStage — 环节/阶段本体（kems-pilot 试点）
+# 蒸馏来源：申报材料清单 7 环节全流程（内部决策→编制申报材料→专家论证→经信局审核→
+#   申请资金→财政评审→政府采购）、key-milestones.yaml 申报→财评→采购链条。
+# 依据规则（申报材料清单原文）：经信局审核意见函是财政评审的必备依据之一。
+
+m2_type: WorkflowStage
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+WorkflowStage:
+  m3_parent: StructuralElement.Stage
+  description: |
+    环节/阶段——信息化项目申报与生命周期阶段。seq 在申报流程内连续（1..7）。
+  icon: 🧭
+  stateMachine:
+    未开始:
+      description: 尚未启动
+      transitions: [进行中]
+    进行中:
+      description: 推进中
+      transitions: [完成, 阻塞]
+    阻塞:
+      description: 受前置依赖阻塞（如经信局批复未出）
+      transitions: [进行中, 完成]
+    完成:
+      description: 已闭环
+      transitions: []
+  requiredProperties:
+    id:
+      type: string
+      description: 环节编码（如 STG-01）
+    seq:
+      type: int
+      description: 环节序号（申报流程 1..7 连续）
+    name:
+      type: string
+      description: 环节名称
+  optionalProperties:
+    work_content:
+      type: string
+      description: 工作内容（申报清单原文）
+    formed_materials:
+      type: list
+      description: 形成的材料 (→Deliverable.id 引用，图式引用)
+      items:
+        type: string
+    basis_materials:
+      type: list
+      description: 依据材料 (→Requirement.id 引用，图式引用)
+      items:
+        type: string
+    approver:
+      type: string
+      description: 审批主体 (→OrgPilot.id 引用，图式引用)
+    status:
+      type: enum
+      description: 环节状态
+      values: [未开始, 进行中, 阻塞, 完成]
+    note:
+      type: string
+      description: 备注（口径/影响）
+  validationRules:
+  - rule: seq is not None and seq >= 1
+    level: error
+    message: 环节序号必须 ≥1
+  - rule: name != ''
+    level: error
+    message: 环节必须有名称
+  relationConstraints:
+    can_be_source_of: [ProducesDeliverable]
+    can_be_target_of: [BelongsToStage, ContainsStage]
+  examples:
+  - id: STG-01
+    seq: 1
+    name: 内部决策与准备
+    work_content: 单位集体研究，形成申报事项和资金安排意见

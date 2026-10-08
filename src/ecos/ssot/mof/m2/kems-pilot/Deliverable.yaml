@@ -1,0 +1,59 @@
+# M2: Deliverable — 交付物/申报材料本体（kems-pilot 试点）
+# 蒸馏来源：申报材料清单「形成的材料」列（申报表/建设方案/专家论证/申报函/资金请示/
+#   评审明细/可研/三方报价等）、事件卡交付物（月报）、key-milestones req_files。
+# 用途：产物契约（管道3）——格式要求/落点/审批状态进模型，杜绝随机落盘。
+
+m2_type: Deliverable
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+Deliverable:
+  m3_parent: StructuralElement.Artifact
+  description: |
+    交付物/申报材料——流程产物。deliverable_type 枚举覆盖申报全链与日常报告。
+  icon: 📦
+  requiredProperties:
+    id:
+      type: string
+      description: 交付物编码（稳定引用）
+    name:
+      type: string
+      description: 交付物名称
+    deliverable_type:
+      type: enum
+      description: 类型
+      values: [申报表, 建设方案, 论证意见, 申报函, 资金请示, 评审材料, 批复, 采购文件, 合同, 月报, 简报, 报告, 清单]
+  optionalProperties:
+    file_path:
+      type: string
+      description: 文件路径（可追溯）
+    format_req:
+      type: string
+      description: 格式要求（artifact-contract）
+    destination:
+      type: string
+      description: 落点（格式合规要求）
+    stage:
+      type: string
+      description: 所属环节 (→WorkflowStage.id 引用，图式引用)
+    approval_status:
+      type: enum
+      description: 审批状态
+      values: [待审批, 已报送, 已批复, 已备案, 未要求]
+    source_note:
+      type: string
+      description: 来源依据
+  validationRules:
+  - rule: name != ''
+    level: error
+    message: 交付物必须有名称
+  - rule: approval_status == '已批复' implies file_path is not None
+    level: warning
+    message: 已批复交付物应留档路径
+  relationConstraints:
+    can_be_source_of: [EvidenceFor]
+    can_be_target_of: [ProducesDeliverable, CheckedBy]
+  examples:
+  - id: DEL-REPORT-EXPERT
+    name: 专家论证意见
+    deliverable_type: 论证意见

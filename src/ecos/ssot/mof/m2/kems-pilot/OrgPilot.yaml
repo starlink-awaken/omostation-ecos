@@ -1,0 +1,54 @@
+# M2: OrgPilot — 组织/审批主体（kems-pilot 试点）
+# 蒸馏来源：申报材料清单审批主体（区经信局/区财政局/区政府/财政评审中心/会计师事务所）、
+#   _entities/ontology/relations.yaml R2/R3/R8/R9（行政监管链/供应商）、合同台账-信息化项目.md。
+# 对齐：域本体 C2 Organization。
+
+m2_type: OrgPilot
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+OrgPilot:
+  m3_parent: StructuralElement.Organization
+  description: |
+    组织/审批主体——行政监管链、医疗机构、供应商、协作机构。
+    审批主体与申报环节（WorkflowStage.approver）双向关联。
+  icon: 🏢
+  requiredProperties:
+    id:
+      type: string
+      description: 组织编码（对齐 C2 实例如 org-jxj）
+    name:
+      type: string
+      description: 组织名称
+    org_type:
+      type: enum
+      description: 组织类型
+      values: [行政监管, 医疗机构, 供应商, 协作机构, 审批主体]
+  optionalProperties:
+    level:
+      type: enum
+      description: 层级
+      values: [国家级, 市级, 区级, 委内]
+    parent:
+      type: string
+      description: 上级组织 (→OrgPilot.id 引用，图式引用)
+    contact:
+      type: string
+      description: 联系人
+    approval_stages:
+      type: list
+      description: 负责的审批环节 (→WorkflowStage.id 引用，图式引用)
+      items:
+        type: string
+  validationRules:
+  - rule: name != ''
+    level: error
+    message: 组织必须有名称
+  relationConstraints:
+    can_be_source_of: [Governs, Approves]
+    can_be_target_of: [Governs, ConstructedBy]
+  examples:
+  - id: org-jxj
+    name: 房山区经济和信息化局
+    org_type: 审批主体
+    level: 区级

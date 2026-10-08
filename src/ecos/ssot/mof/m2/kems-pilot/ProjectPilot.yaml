@@ -1,0 +1,145 @@
+# M2: ProjectPilot — 信息化项目本体（kems-pilot 试点）
+# 蒸馏来源（≥3 真实文件）：_control/项目口径.yaml、_control/key-milestones.yaml、
+#   _knowledge/业务资料 信息化项目简报、事件卡（2026-10 月报闭环）。
+# 对齐：域本体 C3 Project（_entities/ontology/classes.yaml）。
+
+m2_type: ProjectPilot
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+ProjectPilot:
+  m3_parent: StructuralElement.Project
+  description: |
+    信息化项目——房山区卫健委试点域项目工程（新建/升级改造/运维/专项/关注）。
+    承载 项目口径.yaml 的关键业务口径与绩效指标（四类闭式子映射），
+    是试点四管道（进料/融合/产物契约/任务门禁）的项目级聚合锚。
+  icon: 📁
+  requiredProperties:
+    id:
+      type: string
+      description: 项目编码（稳定引用，如 proj-data-collect）
+    full_name:
+      type: string
+      description: 项目全称（口径 SSOT 原文）
+    nature:
+      type: enum
+      description: 项目性质
+      values: [新建, 升级改造, 运维, 专项, 关注]
+  optionalProperties:
+    investment_wan:
+      type: number
+      description: 总投资（万元）
+    software_fee_wan:
+      type: number
+      description: 软件开发费（万元）
+    supervision_fee_wan:
+      type: number
+      description: 监理费（万元）
+    funding_source:
+      type: string
+      description: 资金来源
+    institution_count:
+      type: int
+      description: 覆盖机构数
+    build_period:
+      type: string
+      description: 建设周期（如 2026年11月—2027年4月）
+    owner:
+      type: string
+      description: 项目负责人
+    contact:
+      type: string
+      description: 联络人
+    supervising_leader:
+      type: string
+      description: 主管领导
+    parent_project:
+      type: string
+      description: 归属项目（如 房山区基层信息系统升级）
+    deployment:
+      type: string
+      description: 部署环境
+    data_scope:
+      type: string
+      description: 数据范围（如 门诊/住院/体检）
+    status:
+      type: enum
+      description: 项目状态
+      values: [申报中, 经信局审核, 财政评审, 已立项, 实施中, 验收, 归档, 被否决]
+    performance_indicators:
+      type: map
+      description: 绩效指标（口径 SSOT，四类闭式子映射）
+      additionalProperties: false
+      properties:
+        数量:
+          type: map
+          description: 数量指标条目列表
+          additionalProperties: false
+          properties:
+            items:
+              type: list
+              description: 指标条目（如 二三级医疗机构数据回落数量=10家）
+          required: [items]
+        质量:
+          type: map
+          description: 质量指标条目列表
+          additionalProperties: false
+          properties:
+            items:
+              type: list
+              description: 质量条目
+          required: [items]
+        进度:
+          type: map
+          description: 进度指标条目列表
+          additionalProperties: false
+          properties:
+            items:
+              type: list
+              description: 进度条目
+          required: [items]
+        成本:
+          type: map
+          description: 成本指标条目列表
+          additionalProperties: false
+          properties:
+            items:
+              type: list
+              description: 成本条目
+          required: [items]
+        效果:
+          type: map
+          description: 效果指标条目列表
+          additionalProperties: false
+          properties:
+            items:
+              type: list
+              description: 效果条目
+          required: [items]
+      required: [数量, 质量, 进度, 成本, 效果]
+    milestones:
+      type: list
+      description: 关键里程碑 (→Milestone.id 引用，图式引用)
+      items:
+        type: string
+    calibers:
+      type: list
+      description: 项目口径条目 (→Caliber.id 引用，图式引用)
+      items:
+        type: string
+  validationRules:
+  - rule: full_name != '' and full_name is not None
+    level: error
+    message: 项目必须有全称
+  - rule: status == '被否决' implies note 已记录 (否决项目必须留否决证据)
+    level: warning
+    message: 被否决项目应在 note 中记录否决来源
+  relationConstraints:
+    can_be_source_of: [ContainsStage, HasMilestone, ConstrainedBy]
+    can_be_target_of: [Impacts, ConstructedBy, AssessedBy]
+  examples:
+  - id: proj-data-collect
+    full_name: 房山区基层信息系统升级——"三医"诊疗数据归集模块项目
+    nature: 升级改造
+    investment_wan: 300
+    status: 经信局审核

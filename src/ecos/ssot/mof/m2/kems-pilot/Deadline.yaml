@@ -1,0 +1,67 @@
+# M2: Deadline — 时限（kems-pilot 试点，管道4 门禁时钟源）
+# 蒸馏来源：key-milestones M06（每月20日月报）、G5 收入评分月底、
+#   M07 大兴开标 09-29、历史教训 09-17 决算时限（check-critical-path 未预警，靠人记住才没漏）。
+# 用途：任务门禁的倒计时引擎——机器捕获时限，不再靠人。
+
+m2_type: Deadline
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+Deadline:
+  m3_parent: StructuralElement.Deadline
+  description: |
+    时限——报送/评分/开标/批复等硬时限与提醒。due_date 为绝对日期
+    （MM-DD 里程碑每年复用，由门禁引擎按当年转 YYYY-MM-DD）。
+  icon: ⏰
+  requiredProperties:
+    id:
+      type: string
+      description: 时限编码
+    name:
+      type: string
+      description: 时限名称
+    due_date:
+      type: date
+      description: 到期日期（YYYY-MM-DD）
+    deadline_type:
+      type: enum
+      description: 时限类型
+      values: [硬时限, 报送, 评分, 批复, 开标, 提醒]
+  optionalProperties:
+    days_left:
+      type: int
+      description: 剩余天数（门禁引擎按日计算）
+    bound_task:
+      type: string
+      description: 绑定任务 (→ProjectTask.id 引用，图式引用)
+    bound_milestone:
+      type: string
+      description: 绑定里程碑 (→Milestone.id 引用，图式引用)
+    priority:
+      type: enum
+      description: 优先级
+      values: [高, 中, 低]
+    status:
+      type: enum
+      description: 状态
+      values: [未到期, 即将到期, 已到期, 已逾期, 已闭环]
+    alarm_rule:
+      type: string
+      description: 告警规则（如 提前3天告警/日报巡检）
+  validationRules:
+  - rule: days_left is None or days_left >= 0
+    level: error
+    message: 剩余天数不得为负（逾期应转 status=已逾期 而非负值）
+  - rule: status == '已逾期' implies alarm_rule is not None
+    level: warning
+    message: 逾期时限应配置告警规则
+  relationConstraints:
+    can_be_source_of: [Alarms]
+    can_be_target_of: [BoundedByDeadline]
+  examples:
+  - id: DL-M06-202610
+    name: 2026-10 月报报送截止
+    due_date: '2026-10-20'
+    deadline_type: 报送
+    bound_milestone: M06
+    priority: 高

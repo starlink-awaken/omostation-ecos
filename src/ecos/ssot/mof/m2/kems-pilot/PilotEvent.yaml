@@ -1,0 +1,66 @@
+# M2: PilotEvent — 事件/决策/信号（kems-pilot 试点）
+# 蒸馏来源：key-milestones 家医被市卫健委否决（09-17）、大兴开标（09-29，统建区共用结果）、
+#   市政府纪要144号（2026-07-16）、事件卡锚（10 月月报闭环）、9 份简报中的决策信号。
+# 用途：进料自动索引（管道1）事件线/时间线更新的挂载实体。
+
+m2_type: PilotEvent
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+PilotEvent:
+  m3_parent: StructuralElement.Event
+  description: |
+    事件/决策/信号——改变项目路径或触发任务的重要时点
+    （否决/开标/批示/时限临近/口径变更）。
+  icon: ⚡
+  requiredProperties:
+    id:
+      type: string
+      description: 事件编码
+    name:
+      type: string
+      description: 事件名称
+    event_type:
+      type: enum
+      description: 事件类型
+      values: [决策, 信号, 时点, 复盘, 批示]
+  optionalProperties:
+    occurred_date:
+      type: date
+      description: 发生日期（YYYY-MM-DD）
+    impact_projects:
+      type: list
+      description: 受影响项目 (→ProjectPilot.id 引用，图式引用)
+      items:
+        type: string
+    related_milestones:
+      type: list
+      description: 关联里程碑 (→Milestone.id 引用，图式引用)
+      items:
+        type: string
+    severity:
+      type: enum
+      description: 重要度
+      values: [信息, 提醒, 告警, 阻塞]
+    source_ref:
+      type: string
+      description: 记录来源（文件路径）
+    caliber_delta:
+      type: string
+      description: 口径差异/变更记录
+  validationRules:
+  - rule: name != ''
+    level: error
+    message: 事件必须有名称
+  - rule: event_type == '决策' implies source_ref is not None
+    level: warning
+    message: 决策事件应留记录来源（可追溯）
+  relationConstraints:
+    can_be_source_of: [Impacts, TriggersTask]
+    can_be_target_of: [RelatedToEvent]
+  examples:
+  - id: EVT-20260917-FAMDOC-VETO
+    name: 家医健康管理中心被市卫健委否决
+    event_type: 决策
+    occurred_date: '2026-09-17'
+    severity: 阻塞

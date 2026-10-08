@@ -1,0 +1,64 @@
+# M2: Requirement — 依据/要求本体（kems-pilot 试点）
+# 蒸馏来源：申报材料清单「依据材料」列（政策文件依据/经信局审核意见/区领导批示）、
+#   政策简报（市级政策文号）、144号影响评估。
+# 关键规则（申报材料清单原文）：经信局审核意见（函）是财政评审的必备依据之一；
+#   项目可行性/必要性是否在财政资金支持范围由区财政局主管业务科室负责。
+
+m2_type: Requirement
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+Requirement:
+  m3_parent: StructuralElement.Requirement
+  description: |
+    依据/要求——政策文号、清单项、流程依据、口径规则。是进料自动索引（管道1）
+    把新文件挂到正确项目/阶段/依据链上的关键实体。
+  icon: 📜
+  requiredProperties:
+    id:
+      type: string
+      description: 依据编码
+    name:
+      type: string
+      description: 依据/要求名称
+  optionalProperties:
+    doc_number:
+      type: string
+      description: 文号（如 京卫执法〔2024〕2号）
+    level:
+      type: enum
+      description: 层级
+      values: [国家级, 市级, 区级, 委内, 行业]
+    field:
+      type: enum
+      description: 领域
+      values: [卫生, 数据, 安全, AI, 医改, 采购, 财政]
+    source_org:
+      type: string
+      description: 发布主体 (→OrgPilot.id 引用，图式引用)
+    requirement_text:
+      type: string
+      description: 要求内容
+    check_item:
+      type: string
+      description: 清单项（进料核对用）
+    effective_status:
+      type: enum
+      description: 效力状态
+      values: [现行, 征求意见, 废止]
+    related_clauses:
+      type: list
+      description: 关联条款（引用号列表）
+  validationRules:
+  - rule: name != ''
+    level: error
+    message: 依据必须有名称
+  relationConstraints:
+    can_be_source_of: [BasesOn]
+    can_be_target_of: [BasisOfDeliverable]
+  examples:
+  - id: REQ-JXJ-OPINION
+    name: 经信局审核意见（函）
+    level: 区级
+    field: 采购
+    requirement_text: 财政评审必备依据之一；评审以经信局审核金额、区财政局审核金额为准

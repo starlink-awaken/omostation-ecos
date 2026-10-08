@@ -1,0 +1,9 @@
+{
+  "artifacts": {
+    "json-schema": "9514d9c2809dd172c4c26b6a785810c79efdc49c0bfe589ab930a3b242c98268",
+    "pydantic": "958e4750f3d1b70c827b620f01f14ce25da3d0ecd6ab34e84f4136108c7650b2",
+    "sqlite": "81c84e51306b16f273c515ab0cb444e34af5a171844b21e4e2d1c21f826301d5",
+    "zod": "290a8cc07e8d4cdc1ae4906bcd0eb34be4f6580d144f095aa665d1f8d00b6c55"
+  },
+  "source_dir": "kems-pilot"
+}

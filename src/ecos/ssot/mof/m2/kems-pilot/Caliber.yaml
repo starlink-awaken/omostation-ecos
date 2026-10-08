@@ -1,0 +1,62 @@
+# M2: Caliber — 口径条目（kems-pilot 试点）
+# 蒸馏来源：_control/项目口径.yaml 全量键值（项目全称/总投资/周期/机构数/绩效指标）、
+#   领导口径记录（2026-08-12 等保统筹口径）。
+# 用途：融合裁决（管道2）的基准——口径冲突以 Caliber 为真源裁决。
+
+m2_type: Caliber
+version: 1.0.0
+created: '2026-10-08'
+updated: '2026-10-08'
+Caliber:
+  m3_parent: StructuralElement.Caliber
+  description: |
+    口径——项目关键口径 SSOT 条目（金额/周期/机构数/绩效指标/定性口径）。
+    value 为口径原文；confirm_method 区分领导口径/文件/推算/待确认，
+    融合时「未暴露冲突=0 错漏」而非「无差异」。
+  icon: 🎚️
+  requiredProperties:
+    id:
+      type: string
+      description: 口径条目编码
+    key:
+      type: string
+      description: 口径键（如 项目全称/总投资万元/机构口径）
+    value:
+      type: string
+      description: 口径值原文
+    project:
+      type: string
+      description: 所属项目 (→ProjectPilot.id 引用，图式引用)
+  optionalProperties:
+    unit:
+      type: string
+      description: 单位
+    source_file:
+      type: string
+      description: 来源文件（可追溯）
+    confirmed_date:
+      type: date
+      description: 确认日期
+    confirm_method:
+      type: enum
+      description: 确认方式
+      values: [领导口径, 文件, 推算, 待确认]
+    change_log:
+      type: list
+      description: 变更记录（人读）
+  validationRules:
+  - rule: value is not None and value != ''
+    level: error
+    message: 口径值不得为空
+  - rule: confirm_method == '待确认' implies change_log 应记录待确认事项
+    level: warning
+    message: 待确认口径应留待办
+  relationConstraints:
+    can_be_source_of: [Constrains]
+    can_be_target_of: [ConstrainedBy]
+  examples:
+  - id: CAL-DATA-COLLECT-INVEST
+    key: 总投资万元
+    value: "300"
+    project: proj-data-collect
+    confirm_method: 文件
