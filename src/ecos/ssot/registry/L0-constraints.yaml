@@ -352,6 +352,7 @@ version: 1.0.0
 
 trigger_constraints:
   - id: CR-TRIGGER-01
+    wiring_note: "2026-10-10 audit F3: 原 alias 指向 trigger_registry.py (管理面, 非检查); 已取下, 退回候选集. 需真实宿主: 扫描系统内异步触发机制 vs M1 trigger 节点注册表"
     name: "Trigger 注册约束"
     description: "所有异步触发机制必须在 L0 Trigger Registry 注册为 M1 节点"
     rule: "for each Trigger in system: exists M1 node with type='trigger'"
@@ -360,6 +361,7 @@ trigger_constraints:
     violation: "未注册的触发机制无法被系统感知和治理"
 
   - id: CR-TRIGGER-02
+    wiring_note: "2026-10-10 audit F3: 五步 pipeline 无执行检查; 已取下, 退回候选集"
     name: "Trigger Pipeline 约束"
     description: "所有触发机制必须通过标准五步 Pipeline (pre-check → execute → post-validate → audit → heal)"
     rule: "for each Trigger execution: must complete all 5 pipeline steps"
@@ -368,6 +370,7 @@ trigger_constraints:
     violation: "跳过 Pipeline 的触发机制无审计追踪，无法自愈"
 
   - id: CR-TRIGGER-03
+    wiring_note: "2026-10-10 audit F3: derivation_engine._check_trigger_dependencies 只检查已声明依赖的健康, 不检查依赖是否声明; 已取下, 退回候选集"
     name: "Trigger 依赖声明约束"
     description: "触发机制之间的依赖必须显式声明在 dependencies 字段"
     rule: "if Trigger A depends on Trigger B: B must be in A.dependencies"
@@ -376,6 +379,7 @@ trigger_constraints:
     violation: "隐式依赖导致触发顺序不可控"
 
   - id: CR-TRIGGER-04
+    wiring_note: "2026-10-10 audit F3: 每次执行记审计日志无 gate; 已取下, 退回候选集"
     name: "Trigger 审计约束"
     description: "每次触发执行必须记录审计日志"
     rule: "for each Trigger execution: OMOBridge.record_audit must be called"
@@ -384,6 +388,7 @@ trigger_constraints:
     violation: "无审计日志的触发执行无法追溯问题"
 
   - id: CR-TRIGGER-05
+    wiring_note: "2026-10-10 audit F3: M2 trigger schema 不要求 health_check, 无逐 trigger 存在性门禁; 已取下, 退回候选集"
     name: "Trigger 健康检查约束"
     description: "触发机制必须有 health_check 或 freshness 指标"
     rule: "for each Trigger: properties.health_check must be defined"
@@ -392,6 +397,7 @@ trigger_constraints:
     violation: "无法判断触发机制是否正常运行"
 
   - id: CR-TRIGGER-06
+    wiring_note: "2026-10-10 audit F3: TriggerM0Manager.detect_drift 会报 missing_m0_snapshot 但为管理面 advisory, 无硬门禁; 已取下, 退回候选集"
     name: "Trigger M0 快照约束"
     description: "Trigger 必须有 M0 运行时快照 (TriggerM0Manager)"
     rule: "for each Trigger: exists TriggerRuntimeSnapshot in .omo/state/model-driven/"
@@ -413,10 +419,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "manual 入口被 cron 兜底污染, evidence type 不可区分"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (opc cron wrapper) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); 执行器已归档, 约束仍可能随工具迁移恢复; 恢复时须重新接线 (suspended, 非 removed)"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -432,10 +438,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "并发 cron 触发导致 index 漂移, audit 历史断裂"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (index.json writers) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); ADR-0394 记录 scripts/ 工具迁移到 root bin/, 非作废; suspended"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -450,10 +456,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "硬编码 weekly.json 导致 monthly/pre-release cron 复用 weekly 副本, 不可审计"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (mode-aware scripts) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); 工具迁移非作废; suspended"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -468,10 +474,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "回放/replay/手动演练无法注入时间, evidence 不可重现"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (OPC scripts) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); 工具迁移非作废; suspended"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -486,10 +492,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "daemon 双写导致 5repos.json 与 {date}-{mode}.json 内容漂移, fallback chain 不可信"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (5repos/daemon) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); 工具迁移非作废; suspended"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -503,10 +509,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "self-evolution task 推 active/ 绕过人工审批, governance 失效"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (drift/self-evolve scripts) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); 工具迁移非作废; suspended"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -521,10 +527,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "metrics 路径不一致导致 §17 报告与 cron log 无法 cross-reference"
-    lifecycle: removed
-    superseded_at: '2026-08-22'
-    superseded_by: commit 14ad94e5e (#1932)
-    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (5repos.py) 不再存在"
+    lifecycle: suspended
+    suspended_at: '2026-08-22'
+    suspended_by: commit 14ad94e5e (#1932)
+    suspended_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e, #1932); 工具迁移非作废; suspended"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -688,6 +694,7 @@ c2g_v4_constraints:
       - "projects/omo/src/omo/omo_bridge.py:_import_pitch"
 
   - id: CR-STRATEGY-02
+    wiring_note: "2026-10-10 audit F3: vector 数据流存在 (save_bet 持久化 / get_pitches 读取) 但 reader 默认 V1, 谓词 trivially satisfiable; 已取下, 退回候选集, 需真实校验点"
     name: "C2G v4 向量打分约束"
     description: "愿景必须提供 3 个维度的 Vector，所有的 Pitch 下注时，必须携带 Vector 权重。以对抗偏离。"
     rule: "pitch.vectors != null"
@@ -1083,10 +1090,10 @@ governance_closure_constraints:
       - protocols/port-registry.yaml
       - X1-C2G-INGRESS-SELF-CORRECTION-20260703
     violation: "新端口/服务 Pitch 绕过 C2G Ingress 预审直接落盘"
-    lifecycle: removed
-    superseded_at: '2026-08-08'
-    superseded_by: commit d00c4b97f (#1209)
-    superseded_reason: "gac-ingress-check.py 归档至 bin/_archive/ (commit d00c4b97f, T6-05 减法配额制门禁); 规则前提 (工具存在) 不再成立"
+    lifecycle: suspended
+    suspended_at: '2026-08-08'
+    suspended_by: commit d00c4b97f (#1209)
+    suspended_reason: "gac-ingress-check.py 被 T6 批次 bulk 归档 (commit d00c4b97f, #1209); T6-03 复盘自陈误归档 (BET-Y1Q2-T6-03: 两个 gate 引用脚本被误归档), bulk 归档不等于作废; suspended"
 
   - id: CR-KOS-ONTOLOGY-DRIFT-01
     applies_to: [L0, meta]
@@ -1106,17 +1113,18 @@ governance_closure_constraints:
       - bin/gac-kos-sync.py
       - kos/kos-index.sqlite (compute_nodes)
     violation: "未注册的计算节点活动在算力网格中"
-    lifecycle: removed
-    superseded_at: '2026-08-08'
-    superseded_by: commit d00c4b97f (#1209)
-    superseded_reason: "gac-kos-sync.py 归档至 bin/_archive/ (commit d00c4b97f, T6-05 减法配额制门禁); 规则前提 (工具存在) 不再成立"
+    lifecycle: suspended
+    suspended_at: '2026-08-08'
+    suspended_by: commit d00c4b97f (#1209)
+    suspended_reason: "gac-kos-sync.py 被 T6 批次 bulk 归档 (commit d00c4b97f, #1209); T6-03 复盘自陈误归档 (BET-Y1Q2-T6-03), bulk 归档不等于作废; suspended"
 
 # AGT OWASP ASI 2026 Conformance — retained as ALIGNMENT REFERENCES (not active constraints)
 # ADR: ADR-0415 (status: archived, 2026-08-18) 拒绝 AGT 整体接入; commit edca41109 (ecos#84)
 # 已归档 8 个 AGT BOSRoute M1 节点 (status: archived, reason: adr_0415_agt_integration_rejected).
 # 下面 CR-AGT-ASI-* 条目不再是活跃 required 约束: type 降为 advisory (符合本文件 type 枚举
-# required/preferred/advisory), enforcement 无 block-write。2026-10-09 起逐条标注
-# lifecycle: removed + superseded_by: ADR-0415 (与 governance-checks.yaml 的 removed 约定一致)。
+# required/preferred/advisory), enforcement 无 block-write。2026-10-10 起逐条标注
+# lifecycle: rejected + rejected_by: ADR-0415 (镜像被拒提案; 与 governance-checks.yaml 的
+# removed 约定区分 —— rejected 表示前提是"提案被拒", 不是"执行器退役")。
 # 它们保留为 OWASP-ASI 能力对齐 (capability-parity) 参照, 与 ADR-0415 第 2 节一致。
 # 审计备注: 这些条目保留了 OWASP-ASI capability-parity 价值 (ADR-0415 路线), 故不删除。
 agt_constraints:
@@ -1138,10 +1146,10 @@ agt_constraints:
       - bos://capability/agt/trust
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT agent identity not verified — Ed25519/SPIFFE missing (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-02
     applies_to: [L0, L1, I0]
@@ -1161,10 +1169,10 @@ agt_constraints:
       - bos://governance/agt/policy
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT policy evaluation is non-deterministic (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-03
     applies_to: [L1]
@@ -1184,10 +1192,10 @@ agt_constraints:
       - bos://capability/agt/sandbox
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT sandbox isolation ring count below 4 (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-04
     applies_to: [X2]
@@ -1207,10 +1215,10 @@ agt_constraints:
       - bos://capability/agt/sre
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT SLO error budget tracking not configured (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-05
     applies_to: [I0]
@@ -1230,10 +1238,10 @@ agt_constraints:
       - bos://capability/agt/mcp-security
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT MCP call not inspected by security gateway (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-06
     applies_to: [X]
@@ -1253,10 +1261,10 @@ agt_constraints:
       - bos://capability/agt/marketplace
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT plugin signature not verified (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-07
     applies_to: [X]
@@ -1276,10 +1284,10 @@ agt_constraints:
       - bos://capability/agt/lightning
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT RL training not governed by policy (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-08
     applies_to: [L1, X1]
@@ -1299,10 +1307,10 @@ agt_constraints:
       - bos://governance/agt/hypervisor
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT audit trail Merkle verification failed (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-09
     applies_to: [L1]
@@ -1322,10 +1330,10 @@ agt_constraints:
       - bos://capability/agt/sre
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT circuit breaker not enabled (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"
 
   - id: CR-AGT-ASI-10
     applies_to: [L0, I0]
@@ -1345,7 +1353,7 @@ agt_constraints:
       - .omo/_truth/x1-governance-policies.yaml
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT cross-layer call bypasses I0/Agora gateway (retained alignment reference only)"
-    lifecycle: removed
-    superseded_at: '2026-08-18'
-    superseded_by: ADR-0415
-    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
+    lifecycle: rejected
+    rejected_at: '2026-08-18'
+    rejected_by: ADR-0415
+    rejected_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目镜像被拒提案, 仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束 (rejected, 非工具退役)"

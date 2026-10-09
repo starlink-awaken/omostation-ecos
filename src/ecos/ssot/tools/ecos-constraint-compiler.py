@@ -110,6 +110,12 @@ def compile_constraints(data: dict) -> str:
             lines.append("    passed = len(missing) == 0")
             lines.append('    detail = f"missing: {missing}" if missing else "all declared"')
         elif rule == "non_broker.python_mutation(target in ['.omo/', 'spaces/']) == false":
+            # 真实数据源: 本分支的 state['direct_omo_io'] 没有任何组件填充 —— 编译器默认
+            # state 硬编码 direct_omo_io: [] (见下方 run()), 因此本分支恒 passed=True,
+            # 结构性不可红 (audit F2, 2026-10-10 标注)。
+            # 该约束的**真实执行宿主**是 `omo.cli lint direct-omo-io` →
+            # projects/ecos/scripts/contract_gatekeeper.py (AST 扫描 .omo//spaces/ 直写,
+            # CI governance-check.yml 执行; 合成违规实测 exit 1)。
             lines.append('    mutations = state.get("direct_omo_io", [])')
             lines.append("    passed = len(mutations) == 0")
             lines.append('    detail = f"direct mutations: {len(mutations)}"')
