@@ -22,6 +22,8 @@ properties:
   model_driven: 'ecos/ssot/mof/m2/kems-pilot/*.yaml'
   validator_source: 'mof/generated/kems-pilot/mof_control_models.py (MofCompiler deterministic build)'
   aligned_with: '域本体 C1-C9 (_entities/ontology/classes.yaml)'
+  bos_uri_pattern: 'bos://work-weijian/**'
+  domain_type: document
 
 # ── 实体类（≤10，每类 ≥3 份真实文件支撑，见 evidence） ──
 classes:
