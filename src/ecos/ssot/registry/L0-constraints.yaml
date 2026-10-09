@@ -413,6 +413,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "manual 入口被 cron 兜底污染, evidence type 不可区分"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (opc cron wrapper) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -428,6 +432,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "并发 cron 触发导致 index 漂移, audit 历史断裂"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (index.json writers) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -442,6 +450,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "硬编码 weekly.json 导致 monthly/pre-release cron 复用 weekly 副本, 不可审计"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (mode-aware scripts) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -456,6 +468,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "回放/replay/手动演练无法注入时间, evidence 不可重现"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (OPC scripts) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -470,6 +486,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "daemon 双写导致 5repos.json 与 {date}-{mode}.json 内容漂移, fallback chain 不可信"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (5repos/daemon) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -483,6 +503,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "self-evolution task 推 active/ 绕过人工审批, governance 失效"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (drift/self-evolve scripts) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -497,6 +521,10 @@ opc_cadence_constraints:
     type: required
     severity: error
     violation: "metrics 路径不一致导致 §17 报告与 cron log 无法 cross-reference"
+    lifecycle: removed
+    superseded_at: '2026-08-22'
+    superseded_by: commit 14ad94e5e (#1932)
+    superseded_reason: "OPC closeout cron 退役 + scripts/ 断链 (commit 14ad94e5e); 规则前提 (5repos.py) 不再存在"
     introduced: '2026-06-12'
     value_tier: 1
     references:
@@ -872,26 +900,10 @@ governance_closure_constraints:
       - "projects/omo/src/omo/omo_lint.py (cmd_lint_doc_lifecycle)"
     violation: "文档分类或 status 字段缺失; 4 类语义不清"
 
-  - id: CR-GOV-DIMENSION-SATURATION-01
-    applies_to:
-      - L2
-    description: |
-      linter 维度饱和预警。
-      当 omo lint 维度 ≥ 15 时, 新增能力应以独立 bin 工具形式实现, 不得再增 linter 子命令。
-      P57 ADR-0053 记录此铁律; P58 沿用 (check-cross-refs + status-distribution 都是独立 bin 工具)。
-      目的: 防止 linter 维护成本线性增长, 边际收益递减。
-    dimension: X4
-    rule: "if linter_dimension_count >= 15 then new_capability_implementation == 'independent_bin_tool'"
-    type: advisory
-    severity: warn
-    enforcement: linter-developer-guide (review checklist)
-    introduced: '2026-06-23'
-    value_tier: 2
-    references:
-      - ".omo/_knowledge/decisions/0053-p56-frontmatter-100-and-doc-lifecycle.md"
-      - "bin/check-cross-refs.py"
-      - "bin/status-distribution.py"
-    violation: "linter 维度 ≥ 15 后仍提议新增子命令; 违反维度饱和律"
+  - pointer_to: CR-GOV-DIMENSION-SATURATION-01
+    relocated_to: L0-norms.yaml#CR-GOV-DIMENSION-SATURATION-01
+    summary: linter 维度饱和预警 — 当 omo lint 维度 ≥ 15 时新增能力应以独立 bin 工具实现
+    reason: 规范性开发准则 (enforcement=review checklist), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
   - id: CR-GOV-COMMIT-FREQUENCY-01
     applies_to:
@@ -959,110 +971,35 @@ governance_closure_constraints:
       - "bin/compass_radar.py (health sync)"
     violation: "易变值 (health/phase) 硬编码在多处文档; SSOT 失序"
 
-  - id: CR-ENG-BUG-CHAIN-01
-    applies_to: [L0, L1, L2, L3]
-    description: |
-      bug 修复必须治本 (消除错误路径), 禁加 fallback/workaround 层 (slop).
-      洋葱模型: bug 互相掩盖 (radar None 掩盖 get_omo_dir home, 后者掩盖 frontmatter),
-      修一个暴露下一个. 修完验证 (import+test+全量) 再扫相关模块 (闭环扫描).
-      治本例: pending_metrics=None → 不加层, 改为始终返回有效 metrics dict (消 None 路径).
-    dimension: X4
-    rule: "bug_fix.eliminates_path == true (not adds_fallback_layer)"
-    type: required
-    severity: warn
-    enforcement: skill (bug-chain-diagnostic) + code review
-    introduced: '2026-06-24'
-    value_tier: 1
-    references:
-      - "复盘: radar/get_omo_dir/frontmatter bug 链 (3 链 ~8 bug)"
-      - "ADR-0051 (gbrain v5 收敛)"
-    violation: "bug 修复加 fallback 层 (治标); 或未做洋葱闭环扫描"
+  - pointer_to: CR-ENG-BUG-CHAIN-01
+    relocated_to: L0-norms.yaml#CR-ENG-BUG-CHAIN-01
+    summary: bug 修复必须治本 (消除错误路径), 禁加 fallback/workaround 层 (slop)
+    reason: 规范性 agent 行为准则 (enforcement=skill+code review), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
-  - id: CR-ENG-CWD-ABSOLUTE-01
-    applies_to: [L3]
-    description: |
-      Bash 工具调用跨项目必须用绝对路径 (防 cwd 漂移).
-      坑: cd projects/X 改 Bash cwd (persists across calls), 后续相对路径 (find/ls projects/Y)
-      相对 X/ 全空. 复盘案例: cd cockpit 后 find agora 返回空, 误判目录不存在.
-    dimension: X4
-    rule: "bash_call.cross_project == true implies uses_absolute_path == true"
-    type: required
-    severity: warn
-    enforcement: Agent 行为规范 (根 CLAUDE.md) + skill 纪律
-    introduced: '2026-06-24'
-    value_tier: 2
-    references:
-      - "复盘: agora 测试定位 cwd 漂移耗时"
-    violation: "Bash 跨项目用相对路径; cwd 漂移导致 find/ls 空返回"
+  - pointer_to: CR-ENG-CWD-ABSOLUTE-01
+    relocated_to: L0-norms.yaml#CR-ENG-CWD-ABSOLUTE-01
+    summary: Bash 工具调用跨项目必须用绝对路径 (防 cwd 漂移)
+    reason: 规范性 agent 行为准则 (enforcement=CLAUDE.md+skill 纪律), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
-  - id: CR-ENG-TOOL-GREP-01
-    applies_to: [L3]
-    description: |
-      调用不熟悉的 CLI 工具前必须 grep 用法/argparse (防 --help 误触发副作用).
-      坑: bin/mof-version record --help 把 --help 当 description 录入 (无 --help 参数).
-      工具可能有副作用 (record/write/mutate), 盲跑 --help 会误操作.
-    dimension: X4
-    rule: "cli_call.unknown_tool == true implies grep_usage_first == true"
-    type: required
-    severity: warn
-    enforcement: Agent 行为规范 + skill 纪律
-    introduced: '2026-06-24'
-    value_tier: 2
-    references:
-      - "复盘: mof-version record --help 误录 v0.0.40 description"
-    violation: "盲跑未知工具 --help (或任意参数); 触发未预期副作用"
+  - pointer_to: CR-ENG-TOOL-GREP-01
+    relocated_to: L0-norms.yaml#CR-ENG-TOOL-GREP-01
+    summary: 调用不熟悉的 CLI 工具前必须 grep 用法/argparse (防 --help 误触发副作用)
+    reason: 规范性 agent 行为准则 (enforcement=CLAUDE.md+skill 纪律), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
-  - id: CR-ENG-SRP-INCREMENTAL-01
-    applies_to: [L0, L2]
-    description: |
-      God Module (>1000 行) 拆分必须渐进: 低风险先 (纯函数/paths/trail), 核心后 (task lifecycle).
-      每步验证 (import + test) 才下一步 — 地基不过别盖楼.
-      拆分蓝图先给 (子模块清单), 执行分多 phase. 复盘案例: omo_ingress 2957 行拆 paths 先.
-    dimension: X3
-    rule: "god_module_split.first_step == 'low_risk_pure_functions' and validates_before_next == true"
-    type: required
-    severity: warn
-    enforcement: skill (governance-phase-orchestrator Strategize) + ADR
-    introduced: '2026-06-24'
-    value_tier: 2
-    references:
-      - "复盘: omo_ingress.py SRP 拆分 (2957→~2890, paths 子模块)"
-    violation: "God Module 一次性大拆 (高风险); 或拆分步骤未验证就下一步"
+  - pointer_to: CR-ENG-SRP-INCREMENTAL-01
+    relocated_to: L0-norms.yaml#CR-ENG-SRP-INCREMENTAL-01
+    summary: "God Module (>1000 行) 拆分必须渐进: 低风险先, 核心后, 每步验证"
+    reason: 规范性工程准则 (enforcement=skill+ADR), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
-  - id: CR-ENG-TEST-ISOLATION-01
-    applies_to: [L1, L2]
-    description: |
-      单元测试必须隔离外部依赖 (网络/Ollama/MCP/subprocess), 用 monkeypatch/mock.
-      禁: 测试依赖外部服务是否在跑 (flaky). 禁: 无条件 xfail (该用 conditional + strict).
-      复盘案例: kronos test 依赖 Ollama (flaky); agora 3 无条件 xfail (XPASS 误标).
-    dimension: X1
-    rule: "unit_test.external_dependency == true implies uses_mock == true"
-    type: required
-    severity: warn
-    enforcement: code review + CI (flaky 检测)
-    introduced: '2026-06-24'
-    value_tier: 2
-    references:
-      - "复盘: kronos flaky (Ollama) + agora XPASS (无条件 xfail)"
-    violation: "单元测试依赖外部服务 (flaky); 或无条件 xfail (XPASS 误标)"
+  - pointer_to: CR-ENG-TEST-ISOLATION-01
+    relocated_to: L0-norms.yaml#CR-ENG-TEST-ISOLATION-01
+    summary: 单元测试必须隔离外部依赖 (网络/Ollama/MCP/subprocess), 用 monkeypatch/mock; 禁无条件 xfail
+    reason: 规范性工程准则 (enforcement=code review+CI), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
-  - id: CR-ENG-LOOP-HONESTY-01
-    applies_to: [L3, L4]
-    description: |
-      Agent 元认知纪律: 同一操作反复 3+ 次不执行 → 思维循环, 必须 stop/compact.
-      禁: 装懂/原地反复/想跑不执行. 诚实承认上下文疲劳, 新上下文清爽执行.
-      这是最特殊的 CR — 防"认知坑" (非技术坑), 是"能力的能力" (元能力).
-      复盘案例: 2 次循环 (radar/add-evidence, c2g radar/gc), 各 14+ 轮.
-    dimension: X4
-    rule: "agent.same_op_repeated >= 3 implies triggers_stop_or_compact == true"
-    type: required
-    severity: warn
-    enforcement: Agent 元认知 (skill 循环检测)
-    introduced: '2026-06-24'
-    value_tier: 1
-    references:
-      - "复盘: 2 次思维循环 (compact 疲劳)"
-    violation: "思维循环 (同操作反复不执行); 装懂不承认"
+  - pointer_to: CR-ENG-LOOP-HONESTY-01
+    relocated_to: L0-norms.yaml#CR-ENG-LOOP-HONESTY-01
+    summary: Agent 元认知纪律 — 同一操作反复 3+ 次不执行 → 思维循环, 必须 stop/compact
+    reason: 规范性 agent 元认知准则 (enforcement=skill 循环检测), 无可机检谓词; 移出可执行注册表 (2026-10-09 L0 debt closeout)
 
   - id: CR-GAC-M1-INSTANCE-DRIFT-01
     applies_to: [L0, meta]
@@ -1104,6 +1041,10 @@ governance_closure_constraints:
       - bin/gac-mesh-router.py
       - X1-OMLX-COMPUTE-MESH-ROUTING-20260703
     violation: "LLM 请求绕过网格路由器直连未注册节点"
+    lifecycle: removed
+    superseded_at: '2026-08-24'
+    superseded_by: ADR-0423 + commit c19365fba (#2093)
+    superseded_reason: "gac-mesh-router.py 按 ADR-0423 归档至 bin/_archive/2026-08-conv3/ (commit c19365fba); 规则前提 (router :7435) 不再存在"
 
   - id: CR-KOS-CONSENSUS-RAG-01
     applies_to: [L0, meta]
@@ -1142,6 +1083,10 @@ governance_closure_constraints:
       - protocols/port-registry.yaml
       - X1-C2G-INGRESS-SELF-CORRECTION-20260703
     violation: "新端口/服务 Pitch 绕过 C2G Ingress 预审直接落盘"
+    lifecycle: removed
+    superseded_at: '2026-08-08'
+    superseded_by: commit d00c4b97f (#1209)
+    superseded_reason: "gac-ingress-check.py 归档至 bin/_archive/ (commit d00c4b97f, T6-05 减法配额制门禁); 规则前提 (工具存在) 不再成立"
 
   - id: CR-KOS-ONTOLOGY-DRIFT-01
     applies_to: [L0, meta]
@@ -1161,13 +1106,18 @@ governance_closure_constraints:
       - bin/gac-kos-sync.py
       - kos/kos-index.sqlite (compute_nodes)
     violation: "未注册的计算节点活动在算力网格中"
+    lifecycle: removed
+    superseded_at: '2026-08-08'
+    superseded_by: commit d00c4b97f (#1209)
+    superseded_reason: "gac-kos-sync.py 归档至 bin/_archive/ (commit d00c4b97f, T6-05 减法配额制门禁); 规则前提 (工具存在) 不再成立"
 
 # AGT OWASP ASI 2026 Conformance — retained as ALIGNMENT REFERENCES (not active constraints)
 # ADR: ADR-0415 (status: archived, 2026-08-18) 拒绝 AGT 整体接入; commit edca41109 (ecos#84)
 # 已归档 8 个 AGT BOSRoute M1 节点 (status: archived, reason: adr_0415_agt_integration_rejected).
 # 下面 CR-AGT-ASI-* 条目不再是活跃 required 约束: type 降为 advisory (符合本文件 type 枚举
-# required/preferred/advisory), enforcement 无 block-write。它们保留为 OWASP-ASI 能力对齐
-# (capability-parity) 参照, 与 ADR-0415 第 2 节一致。
+# required/preferred/advisory), enforcement 无 block-write。2026-10-09 起逐条标注
+# lifecycle: removed + superseded_by: ADR-0415 (与 governance-checks.yaml 的 removed 约定一致)。
+# 它们保留为 OWASP-ASI 能力对齐 (capability-parity) 参照, 与 ADR-0415 第 2 节一致。
 # 审计备注: 这些条目保留了 OWASP-ASI capability-parity 价值 (ADR-0415 路线), 故不删除。
 agt_constraints:
   - id: CR-AGT-ASI-01
@@ -1188,6 +1138,10 @@ agt_constraints:
       - bos://capability/agt/trust
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT agent identity not verified — Ed25519/SPIFFE missing (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-02
     applies_to: [L0, L1, I0]
@@ -1207,6 +1161,10 @@ agt_constraints:
       - bos://governance/agt/policy
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT policy evaluation is non-deterministic (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-03
     applies_to: [L1]
@@ -1226,6 +1184,10 @@ agt_constraints:
       - bos://capability/agt/sandbox
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT sandbox isolation ring count below 4 (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-04
     applies_to: [X2]
@@ -1245,6 +1207,10 @@ agt_constraints:
       - bos://capability/agt/sre
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT SLO error budget tracking not configured (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-05
     applies_to: [I0]
@@ -1264,6 +1230,10 @@ agt_constraints:
       - bos://capability/agt/mcp-security
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT MCP call not inspected by security gateway (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-06
     applies_to: [X]
@@ -1283,6 +1253,10 @@ agt_constraints:
       - bos://capability/agt/marketplace
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT plugin signature not verified (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-07
     applies_to: [X]
@@ -1302,6 +1276,10 @@ agt_constraints:
       - bos://capability/agt/lightning
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT RL training not governed by policy (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-08
     applies_to: [L1, X1]
@@ -1321,6 +1299,10 @@ agt_constraints:
       - bos://governance/agt/hypervisor
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT audit trail Merkle verification failed (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-09
     applies_to: [L1]
@@ -1340,6 +1322,10 @@ agt_constraints:
       - bos://capability/agt/sre
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT circuit breaker not enabled (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"
 
   - id: CR-AGT-ASI-10
     applies_to: [L0, I0]
@@ -1359,3 +1345,7 @@ agt_constraints:
       - .omo/_truth/x1-governance-policies.yaml
       - .omo/_knowledge/decisions/0415-reject-agt-integration-adopt-capability-parity.md
     violation: "AGT cross-layer call bypasses I0/Agora gateway (retained alignment reference only)"
+    lifecycle: removed
+    superseded_at: '2026-08-18'
+    superseded_by: ADR-0415
+    superseded_reason: "ADR-0415 (status: archived, 2026-08-18, commit edca41109 ecos#84) 拒绝 AGT 整体接入; 条目仅为 OWASP-ASI capability-parity 对齐参照, 非活跃约束"

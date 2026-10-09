@@ -1,0 +1,152 @@
+# L0 Normative Rules — 规范性行为/工程准则 (非可执行)
+# =====================================================================
+# status: non-executable
+# owner: governance-team
+# relocated_from: L0-constraints.yaml (2026-10-09, L0 governance debt closeout)
+#
+# 这些条目是**规范性散文政策** (declarative prose policy): 面向 agent 与
+# 开发者的行为/工程准则, 无可机检谓词, 也没有执行宿主。它们此前错误地
+# 停放在可执行注册表 (L0-constraints.yaml) 中, 被接线覆盖率清单当作
+# "未接线候选"。移出后, 原注册表保留 pointer 条目 (pointer_to /
+# relocated_to) 使查找仍可解析; 本文件不被任何编译器/校验器读取,
+# 不进入执行语料。
+#
+# 与 L0-constraints.yaml 的关系:
+#   - 本文件: 规范性准则全文 (唯一内容持有者)
+#   - L0-constraints.yaml: pointer 条目 (pointer_to: <id>, relocated_to:
+#     L0-norms.yaml#<id>) — 只作查找解析, 不再作为可执行注册表声明。
+#
+# 引入规则: 新增规范性准则写在本文件; 新增**可机检不变量**写回
+# L0-constraints.yaml 并配真实执行宿主 (bin/gac/check-*.py / CI / hook / cron)。
+
+version: 1.0.0
+generated: '2026-10-09'
+
+norms:
+  # ── linter 维度饱和 (P57 ADR-0053 铁律) ──
+  - id: CR-GOV-DIMENSION-SATURATION-01
+    applies_to: [L2]
+    description: |
+      linter 维度饱和预警。
+      当 omo lint 维度 ≥ 15 时, 新增能力应以独立 bin 工具形式实现, 不得再增 linter 子命令。
+      P57 ADR-0053 记录此铁律; P58 沿用 (check-cross-refs + status-distribution 都是独立 bin 工具)。
+      目的: 防止 linter 维护成本线性增长, 边际收益递减。
+    dimension: X4
+    type: advisory
+    severity: warn
+    enforcement: linter-developer-guide (review checklist)
+    introduced: '2026-06-23'
+    value_tier: 2
+    references:
+      - ".omo/_knowledge/decisions/0053-p56-frontmatter-100-and-doc-lifecycle.md"
+    normative_rule: "if linter_dimension_count >= 15 then new_capability_implementation == 'independent_bin_tool'"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
+
+  # ── P60+ Agent 工程纪律 (CR-ENG-*) — 复盘规律物化 (2026-06-24) ──
+  # 来源: mypy 清零/bug 链/kronos flaky/radar/omo_ingress 拆分等实战提炼.
+  # 目的: 把"人肉经验"变"机器纪律", 未来 agent 自主感知→判断→治本行动.
+
+  - id: CR-ENG-BUG-CHAIN-01
+    applies_to: [L0, L1, L2, L3]
+    description: |
+      bug 修复必须治本 (消除错误路径), 禁加 fallback/workaround 层 (slop).
+      洋葱模型: bug 互相掩盖 (radar None 掩盖 get_omo_dir home, 后者掩盖 frontmatter),
+      修一个暴露下一个. 修完验证 (import+test+全量) 再扫相关模块 (闭环扫描).
+      治本例: pending_metrics=None → 不加层, 改为始终返回有效 metrics dict (消 None 路径).
+    dimension: X4
+    type: required
+    severity: warn
+    enforcement: skill (bug-chain-diagnostic) + code review
+    introduced: '2026-06-24'
+    value_tier: 1
+    references:
+      - "复盘: radar/get_omo_dir/frontmatter bug 链 (3 链 ~8 bug)"
+      - "ADR-0051 (gbrain v5 收敛)"
+    normative_rule: "bug_fix.eliminates_path == true (not adds_fallback_layer)"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
+
+  - id: CR-ENG-CWD-ABSOLUTE-01
+    applies_to: [L3]
+    description: |
+      Bash 工具调用跨项目必须用绝对路径 (防 cwd 漂移).
+      坑: cd projects/X 改 Bash cwd (persists across calls), 后续相对路径 (find/ls projects/Y)
+      相对 X/ 全空. 复盘案例: cd cockpit 后 find agora 返回空, 误判目录不存在.
+    dimension: X4
+    type: required
+    severity: warn
+    enforcement: Agent 行为规范 (根 CLAUDE.md) + skill 纪律
+    introduced: '2026-06-24'
+    value_tier: 2
+    references:
+      - "复盘: agora 测试定位 cwd 漂移耗时"
+    normative_rule: "bash_call.cross_project == true implies uses_absolute_path == true"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
+
+  - id: CR-ENG-TOOL-GREP-01
+    applies_to: [L3]
+    description: |
+      调用不熟悉的 CLI 工具前必须 grep 用法/argparse (防 --help 误触发副作用).
+      坑: bin/mof-version record --help 把 --help 当 description 录入 (无 --help 参数).
+      工具可能有副作用 (record/write/mutate), 盲跑 --help 会误操作.
+    dimension: X4
+    type: required
+    severity: warn
+    enforcement: Agent 行为规范 + skill 纪律
+    introduced: '2026-06-24'
+    value_tier: 2
+    references:
+      - "复盘: mof-version record --help 误录 v0.0.40 description"
+    normative_rule: "cli_call.unknown_tool == true implies grep_usage_first == true"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
+
+  - id: CR-ENG-SRP-INCREMENTAL-01
+    applies_to: [L0, L2]
+    description: |
+      God Module (>1000 行) 拆分必须渐进: 低风险先 (纯函数/paths/trail), 核心后 (task lifecycle).
+      每步验证 (import + test) 才下一步 — 地基不过别盖楼.
+      拆分蓝图先给 (子模块清单), 执行分多 phase. 复盘案例: omo_ingress 2957 行拆 paths 先.
+    dimension: X3
+    type: required
+    severity: warn
+    enforcement: skill (governance-phase-orchestrator Strategize) + ADR
+    introduced: '2026-06-24'
+    value_tier: 2
+    references:
+      - "复盘: omo_ingress.py SRP 拆分 (2957→~2890, paths 子模块)"
+    normative_rule: "god_module_split.first_step == 'low_risk_pure_functions' and validates_before_next == true"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
+
+  - id: CR-ENG-TEST-ISOLATION-01
+    applies_to: [L1, L2]
+    description: |
+      单元测试必须隔离外部依赖 (网络/Ollama/MCP/subprocess), 用 monkeypatch/mock.
+      禁: 测试依赖外部服务是否在跑 (flaky). 禁: 无条件 xfail (该用 conditional + strict).
+      复盘案例: kronos test 依赖 Ollama (flaky); agora 3 无条件 xfail (XPASS 误标).
+    dimension: X1
+    type: required
+    severity: warn
+    enforcement: code review + CI (flaky 检测)
+    introduced: '2026-06-24'
+    value_tier: 2
+    references:
+      - "复盘: kronos flaky (Ollama) + agora XPASS (无条件 xfail)"
+    normative_rule: "unit_test.external_dependency == true implies uses_mock == true"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
+
+  - id: CR-ENG-LOOP-HONESTY-01
+    applies_to: [L3, L4]
+    description: |
+      Agent 元认知纪律: 同一操作反复 3+ 次不执行 → 思维循环, 必须 stop/compact.
+      禁: 装懂/原地反复/想跑不执行. 诚实承认上下文疲劳, 新上下文清爽执行.
+      这是最特殊的 CR — 防"认知坑" (非技术坑), 是"能力的能力" (元能力).
+      复盘案例: 2 次循环 (radar/add-evidence, c2g radar/gc), 各 14+ 轮.
+    dimension: X4
+    type: required
+    severity: warn
+    enforcement: Agent 元认知 (skill 循环检测)
+    introduced: '2026-06-24'
+    value_tier: 1
+    references:
+      - "复盘: 2 次思维循环 (compact 疲劳)"
+    normative_rule: "agent.same_op_repeated >= 3 implies triggers_stop_or_compact == true"
+    relocated_from: L0-constraints.yaml#governance_closure_constraints
