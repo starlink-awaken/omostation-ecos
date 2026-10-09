@@ -476,6 +476,64 @@
         ]
       }
     },
+    "Caliber": {
+      "$id": "urn:mof:Caliber:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u53e3\u5f84\u2014\u2014\u9879\u76ee\u5173\u952e\u53e3\u5f84 SSOT \u6761\u76ee\uff08\u91d1\u989d/\u5468\u671f/\u673a\u6784\u6570/\u7ee9\u6548\u6307\u6807/\u5b9a\u6027\u53e3\u5f84\uff09\u3002\nvalue \u4e3a\u53e3\u5f84\u539f\u6587\uff1bconfirm_method \u533a\u5206\u9886\u5bfc\u53e3\u5f84/\u6587\u4ef6/\u63a8\u7b97/\u5f85\u786e\u8ba4\uff0c\n\u878d\u5408\u65f6\u300c\u672a\u66b4\u9732\u51b2\u7a81=0 \u9519\u6f0f\u300d\u800c\u975e\u300c\u65e0\u5dee\u5f02\u300d\u3002",
+      "properties": {
+        "change_log": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "confirm_method": {
+          "enum": [
+            "\u9886\u5bfc\u53e3\u5f84",
+            "\u6587\u4ef6",
+            "\u63a8\u7b97",
+            "\u5f85\u786e\u8ba4"
+          ]
+        },
+        "confirmed_date": {
+          "description": "\u786e\u8ba4\u65e5\u671f",
+          "format": "date",
+          "type": "string"
+        },
+        "id": {
+          "description": "\u53e3\u5f84\u6761\u76ee\u7f16\u7801",
+          "type": "string"
+        },
+        "key": {
+          "description": "\u53e3\u5f84\u952e\uff08\u5982 \u9879\u76ee\u5168\u79f0/\u603b\u6295\u8d44\u4e07\u5143/\u673a\u6784\u53e3\u5f84\uff09",
+          "type": "string"
+        },
+        "project": {
+          "description": "\u6240\u5c5e\u9879\u76ee (\u2192ProjectPilot.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "source_file": {
+          "description": "\u6765\u6e90\u6587\u4ef6\uff08\u53ef\u8ffd\u6eaf\uff09",
+          "type": "string"
+        },
+        "unit": {
+          "description": "\u5355\u4f4d",
+          "type": "string"
+        },
+        "value": {
+          "description": "\u53e3\u5f84\u503c\u539f\u6587",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "value",
+        "project"
+      ],
+      "title": "Caliber",
+      "type": "object"
+    },
     "CognitiveFramework": {
       "$id": "urn:mof:CognitiveFramework:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -1249,6 +1307,76 @@
         ]
       }
     },
+    "Deadline": {
+      "$id": "urn:mof:Deadline:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u65f6\u9650\u2014\u2014\u62a5\u9001/\u8bc4\u5206/\u5f00\u6807/\u6279\u590d\u7b49\u786c\u65f6\u9650\u4e0e\u63d0\u9192\u3002due_date \u4e3a\u7edd\u5bf9\u65e5\u671f\n\uff08MM-DD \u91cc\u7a0b\u7891\u6bcf\u5e74\u590d\u7528\uff0c\u7531\u95e8\u7981\u5f15\u64ce\u6309\u5f53\u5e74\u8f6c YYYY-MM-DD\uff09\u3002",
+      "properties": {
+        "alarm_rule": {
+          "description": "\u544a\u8b66\u89c4\u5219\uff08\u5982 \u63d0\u524d3\u5929\u544a\u8b66/\u65e5\u62a5\u5de1\u68c0\uff09",
+          "type": "string"
+        },
+        "bound_milestone": {
+          "description": "\u7ed1\u5b9a\u91cc\u7a0b\u7891 (\u2192Milestone.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "bound_task": {
+          "description": "\u7ed1\u5b9a\u4efb\u52a1 (\u2192ProjectTask.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "days_left": {
+          "description": "\u5269\u4f59\u5929\u6570\uff08\u95e8\u7981\u5f15\u64ce\u6309\u65e5\u8ba1\u7b97\uff09",
+          "type": "integer"
+        },
+        "deadline_type": {
+          "enum": [
+            "\u786c\u65f6\u9650",
+            "\u62a5\u9001",
+            "\u8bc4\u5206",
+            "\u6279\u590d",
+            "\u5f00\u6807",
+            "\u63d0\u9192"
+          ]
+        },
+        "due_date": {
+          "description": "\u5230\u671f\u65e5\u671f\uff08YYYY-MM-DD\uff09",
+          "format": "date",
+          "type": "string"
+        },
+        "id": {
+          "description": "\u65f6\u9650\u7f16\u7801",
+          "type": "string"
+        },
+        "name": {
+          "description": "\u65f6\u9650\u540d\u79f0",
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "\u9ad8",
+            "\u4e2d",
+            "\u4f4e"
+          ]
+        },
+        "status": {
+          "enum": [
+            "\u672a\u5230\u671f",
+            "\u5373\u5c06\u5230\u671f",
+            "\u5df2\u5230\u671f",
+            "\u5df2\u903e\u671f",
+            "\u5df2\u95ed\u73af"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "due_date",
+        "deadline_type"
+      ],
+      "title": "Deadline",
+      "type": "object"
+    },
     "Decision": {
       "$id": "urn:mof:Decision:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -1486,6 +1614,74 @@
         ],
         "revoked": []
       }
+    },
+    "Deliverable": {
+      "$id": "urn:mof:Deliverable:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u4ea4\u4ed8\u7269/\u7533\u62a5\u6750\u6599\u2014\u2014\u6d41\u7a0b\u4ea7\u7269\u3002deliverable_type \u679a\u4e3e\u8986\u76d6\u7533\u62a5\u5168\u94fe\u4e0e\u65e5\u5e38\u62a5\u544a\u3002",
+      "properties": {
+        "approval_status": {
+          "enum": [
+            "\u5f85\u5ba1\u6279",
+            "\u5df2\u62a5\u9001",
+            "\u5df2\u6279\u590d",
+            "\u5df2\u5907\u6848",
+            "\u672a\u8981\u6c42"
+          ]
+        },
+        "deliverable_type": {
+          "enum": [
+            "\u7533\u62a5\u8868",
+            "\u5efa\u8bbe\u65b9\u6848",
+            "\u8bba\u8bc1\u610f\u89c1",
+            "\u7533\u62a5\u51fd",
+            "\u8d44\u91d1\u8bf7\u793a",
+            "\u8bc4\u5ba1\u6750\u6599",
+            "\u6279\u590d",
+            "\u91c7\u8d2d\u6587\u4ef6",
+            "\u5408\u540c",
+            "\u6708\u62a5",
+            "\u7b80\u62a5",
+            "\u62a5\u544a",
+            "\u6e05\u5355"
+          ]
+        },
+        "destination": {
+          "description": "\u843d\u70b9\uff08\u683c\u5f0f\u5408\u89c4\u8981\u6c42\uff09",
+          "type": "string"
+        },
+        "file_path": {
+          "description": "\u6587\u4ef6\u8def\u5f84\uff08\u53ef\u8ffd\u6eaf\uff09",
+          "type": "string"
+        },
+        "format_req": {
+          "description": "\u683c\u5f0f\u8981\u6c42\uff08artifact-contract\uff09",
+          "type": "string"
+        },
+        "id": {
+          "description": "\u4ea4\u4ed8\u7269\u7f16\u7801\uff08\u7a33\u5b9a\u5f15\u7528\uff09",
+          "type": "string"
+        },
+        "name": {
+          "description": "\u4ea4\u4ed8\u7269\u540d\u79f0",
+          "type": "string"
+        },
+        "source_note": {
+          "description": "\u6765\u6e90\u4f9d\u636e",
+          "type": "string"
+        },
+        "stage": {
+          "description": "\u6240\u5c5e\u73af\u8282 (\u2192WorkflowStage.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "deliverable_type"
+      ],
+      "title": "Deliverable",
+      "type": "object"
     },
     "Domain": {
       "$id": "urn:mof:Domain:1.0.0",
@@ -3385,6 +3581,91 @@
         ]
       }
     },
+    "Milestone": {
+      "$id": "urn:mof:Milestone:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "\u26d4"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "required": [
+              "blocked_reason",
+              "impact"
+            ]
+          }
+        }
+      ],
+      "description": "\u5173\u952e\u91cc\u7a0b\u7891\u8282\u70b9\u2014\u2014key-milestones.yaml \u7684 M0x \u8282\u70b9\u3002severity \u5b9e\u4e3a\u72b6\u6001\u8bed\u4e49\uff1a\n\u2705\u5df2\u5b8c\u6210 / \ud83d\udfe1\u903e\u671f / \ud83d\udfe1\u5373\u5c06\u5230\u671f / \u26d4\u963b\u585e / \u26a0\ufe0f\u5b58\u7591 / \u274c\u5931\u8d25\u3002",
+      "properties": {
+        "blocked_reason": {
+          "description": "\u963b\u585e\u539f\u56e0\uff08severity=\u26d4 \u65f6\u5fc5\u586b\uff09",
+          "type": "string"
+        },
+        "date": {
+          "description": "MM-DD\uff08\u6bcf\u5e74\u590d\u7528\uff09",
+          "pattern": "^\\d{2}-\\d{2}$",
+          "type": "string"
+        },
+        "gap_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "\u91cc\u7a0b\u7891\u7f16\u7801\uff08\u7a33\u5b9a\u5f15\u7528\uff0c\u5982 M01\uff09",
+          "type": "string"
+        },
+        "impact": {
+          "description": "\u5f71\u54cd\u8303\u56f4\uff08severity=\u26d4 \u65f6\u5fc5\u586b\uff09",
+          "type": "string"
+        },
+        "note": {
+          "description": "\u5907\u6ce8\uff08\u542b\u8bc1\u636e/\u5f71\u54cd\uff09",
+          "type": "string"
+        },
+        "owner": {
+          "description": "\u8d23\u4efb\u65b9",
+          "type": "string"
+        },
+        "project": {
+          "description": "\u6240\u5c5e\u9879\u76ee (\u2192ProjectPilot.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "req_files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "severity": {
+          "description": "\u72b6\u6001\u6807\u8bb0\uff08\u540d\u5b9e\u4e3a\u72b6\u6001\uff0c\u89c1\u6587\u4ef6\u5934\u6ce8\u8bb0\uff1b\u5b57\u7b26\u4e32+\u8fd0\u884c\u65f6\u89c4\u5219\u6821\u9a8c\uff0c \u89c4\u907f pydantic Literal \u5bf9\u56db\u5b57\u8282 emoji \u7684\u6784\u5efa\u9650\u5236\uff1b\u771f\u5b9e\u6570\u636e\u5f62\u6001\u4e3a \u300c\u6807\u8bb0+\u8bed\u4e49\u540e\u7f00\u300d\uff0c\u5982 \u26d4\u963b\u585e/\ud83d\udfe1\u5373\u5c06\u5230\u671f\uff0c\u89c4\u5219\u6309\u524d\u7f00\u5339\u914d\uff09",
+          "type": "string"
+        },
+        "title": {
+          "description": "\u91cc\u7a0b\u7891\u540d\u79f0",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "title",
+        "severity",
+        "owner"
+      ],
+      "title": "Milestone",
+      "type": "object"
+    },
     "Model": {
       "$id": "urn:mof:Model:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -3760,6 +4041,59 @@
         ]
       }
     },
+    "OrgPilot": {
+      "$id": "urn:mof:OrgPilot:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u7ec4\u7ec7/\u5ba1\u6279\u4e3b\u4f53\u2014\u2014\u884c\u653f\u76d1\u7ba1\u94fe\u3001\u533b\u7597\u673a\u6784\u3001\u4f9b\u5e94\u5546\u3001\u534f\u4f5c\u673a\u6784\u3002\n\u5ba1\u6279\u4e3b\u4f53\u4e0e\u7533\u62a5\u73af\u8282\uff08WorkflowStage.approver\uff09\u53cc\u5411\u5173\u8054\u3002",
+      "properties": {
+        "approval_stages": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "contact": {
+          "description": "\u8054\u7cfb\u4eba",
+          "type": "string"
+        },
+        "id": {
+          "description": "\u7ec4\u7ec7\u7f16\u7801\uff08\u5bf9\u9f50 C2 \u5b9e\u4f8b\u5982 org-jxj\uff09",
+          "type": "string"
+        },
+        "level": {
+          "enum": [
+            "\u56fd\u5bb6\u7ea7",
+            "\u5e02\u7ea7",
+            "\u533a\u7ea7",
+            "\u59d4\u5185"
+          ]
+        },
+        "name": {
+          "description": "\u7ec4\u7ec7\u540d\u79f0",
+          "type": "string"
+        },
+        "org_type": {
+          "enum": [
+            "\u884c\u653f\u76d1\u7ba1",
+            "\u533b\u7597\u673a\u6784",
+            "\u4f9b\u5e94\u5546",
+            "\u534f\u4f5c\u673a\u6784",
+            "\u5ba1\u6279\u4e3b\u4f53"
+          ]
+        },
+        "parent": {
+          "description": "\u4e0a\u7ea7\u7ec4\u7ec7 (\u2192OrgPilot.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "org_type"
+      ],
+      "title": "OrgPilot",
+      "type": "object"
+    },
     "Outcome": {
       "$id": "urn:mof:Outcome:1.1.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -3880,6 +4214,70 @@
           "deprecated"
         ]
       }
+    },
+    "PilotEvent": {
+      "$id": "urn:mof:PilotEvent:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u4e8b\u4ef6/\u51b3\u7b56/\u4fe1\u53f7\u2014\u2014\u6539\u53d8\u9879\u76ee\u8def\u5f84\u6216\u89e6\u53d1\u4efb\u52a1\u7684\u91cd\u8981\u65f6\u70b9\n\uff08\u5426\u51b3/\u5f00\u6807/\u6279\u793a/\u65f6\u9650\u4e34\u8fd1/\u53e3\u5f84\u53d8\u66f4\uff09\u3002",
+      "properties": {
+        "caliber_delta": {
+          "description": "\u53e3\u5f84\u5dee\u5f02/\u53d8\u66f4\u8bb0\u5f55",
+          "type": "string"
+        },
+        "event_type": {
+          "enum": [
+            "\u51b3\u7b56",
+            "\u4fe1\u53f7",
+            "\u65f6\u70b9",
+            "\u590d\u76d8",
+            "\u6279\u793a"
+          ]
+        },
+        "id": {
+          "description": "\u4e8b\u4ef6\u7f16\u7801",
+          "type": "string"
+        },
+        "impact_projects": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "\u4e8b\u4ef6\u540d\u79f0",
+          "type": "string"
+        },
+        "occurred_date": {
+          "description": "\u53d1\u751f\u65e5\u671f\uff08YYYY-MM-DD\uff09",
+          "format": "date",
+          "type": "string"
+        },
+        "related_milestones": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "severity": {
+          "enum": [
+            "\u4fe1\u606f",
+            "\u63d0\u9192",
+            "\u544a\u8b66",
+            "\u963b\u585e"
+          ]
+        },
+        "source_ref": {
+          "description": "\u8bb0\u5f55\u6765\u6e90\uff08\u6587\u4ef6\u8def\u5f84\uff09",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "event_type"
+      ],
+      "title": "PilotEvent",
+      "type": "object"
     },
     "Pitch": {
       "$id": "urn:mof:Pitch:1.0.0",
@@ -4443,6 +4841,277 @@
         ]
       }
     },
+    "ProjectPilot": {
+      "$id": "urn:mof:ProjectPilot:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u4fe1\u606f\u5316\u9879\u76ee\u2014\u2014\u623f\u5c71\u533a\u536b\u5065\u59d4\u8bd5\u70b9\u57df\u9879\u76ee\u5de5\u7a0b\uff08\u65b0\u5efa/\u5347\u7ea7\u6539\u9020/\u8fd0\u7ef4/\u4e13\u9879/\u5173\u6ce8\uff09\u3002\n\u627f\u8f7d \u9879\u76ee\u53e3\u5f84.yaml \u7684\u5173\u952e\u4e1a\u52a1\u53e3\u5f84\u4e0e\u7ee9\u6548\u6307\u6807\uff08\u56db\u7c7b\u95ed\u5f0f\u5b50\u6620\u5c04\uff09\uff0c\n\u662f\u8bd5\u70b9\u56db\u7ba1\u9053\uff08\u8fdb\u6599/\u878d\u5408/\u4ea7\u7269\u5951\u7ea6/\u4efb\u52a1\u95e8\u7981\uff09\u7684\u9879\u76ee\u7ea7\u805a\u5408\u951a\u3002",
+      "properties": {
+        "build_period": {
+          "description": "\u5efa\u8bbe\u5468\u671f\uff08\u5982 2026\u5e7411\u6708\u20142027\u5e744\u6708\uff09",
+          "type": "string"
+        },
+        "calibers": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "contact": {
+          "description": "\u8054\u7edc\u4eba",
+          "type": "string"
+        },
+        "data_scope": {
+          "description": "\u6570\u636e\u8303\u56f4\uff08\u5982 \u95e8\u8bca/\u4f4f\u9662/\u4f53\u68c0\uff09",
+          "type": "string"
+        },
+        "deployment": {
+          "description": "\u90e8\u7f72\u73af\u5883",
+          "type": "string"
+        },
+        "full_name": {
+          "description": "\u9879\u76ee\u5168\u79f0\uff08\u53e3\u5f84 SSOT \u539f\u6587\uff09",
+          "type": "string"
+        },
+        "funding_source": {
+          "description": "\u8d44\u91d1\u6765\u6e90",
+          "type": "string"
+        },
+        "id": {
+          "description": "\u9879\u76ee\u7f16\u7801\uff08\u7a33\u5b9a\u5f15\u7528\uff0c\u5982 proj-data-collect\uff09",
+          "type": "string"
+        },
+        "institution_count": {
+          "description": "\u8986\u76d6\u673a\u6784\u6570",
+          "type": "integer"
+        },
+        "investment_wan": {
+          "description": "\u603b\u6295\u8d44\uff08\u4e07\u5143\uff09",
+          "type": "number"
+        },
+        "milestones": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "nature": {
+          "enum": [
+            "\u65b0\u5efa",
+            "\u5347\u7ea7\u6539\u9020",
+            "\u8fd0\u7ef4",
+            "\u4e13\u9879",
+            "\u5173\u6ce8"
+          ]
+        },
+        "owner": {
+          "description": "\u9879\u76ee\u8d1f\u8d23\u4eba",
+          "type": "string"
+        },
+        "parent_project": {
+          "description": "\u5f52\u5c5e\u9879\u76ee\uff08\u5982 \u623f\u5c71\u533a\u57fa\u5c42\u4fe1\u606f\u7cfb\u7edf\u5347\u7ea7\uff09",
+          "type": "string"
+        },
+        "performance_indicators": {
+          "additionalProperties": false,
+          "description": "\u7ee9\u6548\u6307\u6807\uff08\u53e3\u5f84 SSOT\uff0c\u56db\u7c7b\u95ed\u5f0f\u5b50\u6620\u5c04\uff09",
+          "properties": {
+            "\u6210\u672c": {
+              "additionalProperties": false,
+              "description": "\u6210\u672c\u6307\u6807\u6761\u76ee\u5217\u8868",
+              "properties": {
+                "items": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "type": "object"
+            },
+            "\u6548\u679c": {
+              "additionalProperties": false,
+              "description": "\u6548\u679c\u6307\u6807\u6761\u76ee\u5217\u8868",
+              "properties": {
+                "items": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "type": "object"
+            },
+            "\u6570\u91cf": {
+              "additionalProperties": false,
+              "description": "\u6570\u91cf\u6307\u6807\u6761\u76ee\u5217\u8868",
+              "properties": {
+                "items": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "type": "object"
+            },
+            "\u8d28\u91cf": {
+              "additionalProperties": false,
+              "description": "\u8d28\u91cf\u6307\u6807\u6761\u76ee\u5217\u8868",
+              "properties": {
+                "items": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "type": "object"
+            },
+            "\u8fdb\u5ea6": {
+              "additionalProperties": false,
+              "description": "\u8fdb\u5ea6\u6307\u6807\u6761\u76ee\u5217\u8868",
+              "properties": {
+                "items": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "\u6570\u91cf",
+            "\u8d28\u91cf",
+            "\u8fdb\u5ea6",
+            "\u6210\u672c",
+            "\u6548\u679c"
+          ],
+          "type": "object"
+        },
+        "software_fee_wan": {
+          "description": "\u8f6f\u4ef6\u5f00\u53d1\u8d39\uff08\u4e07\u5143\uff09",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "\u7533\u62a5\u4e2d",
+            "\u7ecf\u4fe1\u5c40\u5ba1\u6838",
+            "\u8d22\u653f\u8bc4\u5ba1",
+            "\u5df2\u7acb\u9879",
+            "\u5b9e\u65bd\u4e2d",
+            "\u9a8c\u6536",
+            "\u5f52\u6863",
+            "\u88ab\u5426\u51b3"
+          ]
+        },
+        "supervising_leader": {
+          "description": "\u4e3b\u7ba1\u9886\u5bfc",
+          "type": "string"
+        },
+        "supervision_fee_wan": {
+          "description": "\u76d1\u7406\u8d39\uff08\u4e07\u5143\uff09",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "full_name",
+        "nature"
+      ],
+      "title": "ProjectPilot",
+      "type": "object"
+    },
+    "ProjectTask": {
+      "$id": "urn:mof:ProjectTask:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u6d41\u7a0b\u5951\u7ea6\u4efb\u52a1\u2014\u2014\u4efb\u52a1\u95e8\u7981\u7684\u6267\u884c\u5355\u5143\u3002task_type \u8986\u76d6\u6708\u62a5\u95ed\u73af\u4e94\u6b65\n\uff08\u6570\u636e\u91c7\u96c6/\u878d\u5408\u88c1\u51b3/\u64b0\u5199/\u95e8\u7981\u6838\u67e5/\u62a5\u9001/\u8bc4\u5206/\u590d\u76d8\uff09\u3002",
+      "properties": {
+        "checked_deliverables": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "deadline": {
+          "description": "\u7ed1\u5b9a\u65f6\u9650 (\u2192Deadline.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "event": {
+          "description": "\u6240\u5c5e\u4e8b\u4ef6 (\u2192PilotEvent.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "evidence_path": {
+          "description": "\u6267\u884c\u8bc1\u636e\u8def\u5f84\uff08\u53ef\u8ffd\u6eaf\uff09",
+          "type": "string"
+        },
+        "gate_rules": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "\u4efb\u52a1\u7f16\u7801",
+          "type": "string"
+        },
+        "name": {
+          "description": "\u4efb\u52a1\u540d\u79f0",
+          "type": "string"
+        },
+        "owner": {
+          "description": "\u8d23\u4efb\u65b9",
+          "type": "string"
+        },
+        "stage": {
+          "description": "\u6240\u5c5e\u73af\u8282 (\u2192WorkflowStage.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "in_progress",
+            "done",
+            "blocked",
+            "failed"
+          ]
+        },
+        "task_type": {
+          "enum": [
+            "\u6570\u636e\u91c7\u96c6",
+            "\u878d\u5408\u88c1\u51b3",
+            "\u64b0\u5199",
+            "\u95e8\u7981\u6838\u67e5",
+            "\u62a5\u9001",
+            "\u8bc4\u5206",
+            "\u590d\u76d8"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "task_type"
+      ],
+      "title": "ProjectTask",
+      "type": "object"
+    },
     "Protocol": {
       "$id": "urn:mof:Protocol:1.0.0",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -4566,6 +5235,76 @@
           "active"
         ]
       }
+    },
+    "Requirement": {
+      "$id": "urn:mof:Requirement:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u4f9d\u636e/\u8981\u6c42\u2014\u2014\u653f\u7b56\u6587\u53f7\u3001\u6e05\u5355\u9879\u3001\u6d41\u7a0b\u4f9d\u636e\u3001\u53e3\u5f84\u89c4\u5219\u3002\u662f\u8fdb\u6599\u81ea\u52a8\u7d22\u5f15\uff08\u7ba1\u90531\uff09\n\u628a\u65b0\u6587\u4ef6\u6302\u5230\u6b63\u786e\u9879\u76ee/\u9636\u6bb5/\u4f9d\u636e\u94fe\u4e0a\u7684\u5173\u952e\u5b9e\u4f53\u3002",
+      "properties": {
+        "check_item": {
+          "description": "\u6e05\u5355\u9879\uff08\u8fdb\u6599\u6838\u5bf9\u7528\uff09",
+          "type": "string"
+        },
+        "doc_number": {
+          "description": "\u6587\u53f7\uff08\u5982 \u4eac\u536b\u6267\u6cd5\u30142024\u30152\u53f7\uff09",
+          "type": "string"
+        },
+        "effective_status": {
+          "enum": [
+            "\u73b0\u884c",
+            "\u5f81\u6c42\u610f\u89c1",
+            "\u5e9f\u6b62"
+          ]
+        },
+        "field": {
+          "enum": [
+            "\u536b\u751f",
+            "\u6570\u636e",
+            "\u5b89\u5168",
+            "AI",
+            "\u533b\u6539",
+            "\u91c7\u8d2d",
+            "\u8d22\u653f"
+          ]
+        },
+        "id": {
+          "description": "\u4f9d\u636e\u7f16\u7801",
+          "type": "string"
+        },
+        "level": {
+          "enum": [
+            "\u56fd\u5bb6\u7ea7",
+            "\u5e02\u7ea7",
+            "\u533a\u7ea7",
+            "\u59d4\u5185",
+            "\u884c\u4e1a"
+          ]
+        },
+        "name": {
+          "description": "\u4f9d\u636e/\u8981\u6c42\u540d\u79f0",
+          "type": "string"
+        },
+        "related_clauses": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "requirement_text": {
+          "description": "\u8981\u6c42\u5185\u5bb9",
+          "type": "string"
+        },
+        "source_org": {
+          "description": "\u53d1\u5e03\u4e3b\u4f53 (\u2192OrgPilot.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Requirement",
+      "type": "object"
     },
     "RoutingPolicy": {
       "$id": "urn:mof:RoutingPolicy:1.0.0",
@@ -5475,6 +6214,78 @@
         ],
         "deprecated": [
           "archived"
+        ]
+      }
+    },
+    "WorkflowStage": {
+      "$id": "urn:mof:WorkflowStage:1.0.0",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "\u73af\u8282/\u9636\u6bb5\u2014\u2014\u4fe1\u606f\u5316\u9879\u76ee\u7533\u62a5\u4e0e\u751f\u547d\u5468\u671f\u9636\u6bb5\u3002seq \u5728\u7533\u62a5\u6d41\u7a0b\u5185\u8fde\u7eed\uff081..7\uff09\u3002",
+      "properties": {
+        "approver": {
+          "description": "\u5ba1\u6279\u4e3b\u4f53 (\u2192OrgPilot.id \u5f15\u7528\uff0c\u56fe\u5f0f\u5f15\u7528)",
+          "type": "string"
+        },
+        "basis_materials": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "formed_materials": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "\u73af\u8282\u7f16\u7801\uff08\u5982 STG-01\uff09",
+          "type": "string"
+        },
+        "name": {
+          "description": "\u73af\u8282\u540d\u79f0",
+          "type": "string"
+        },
+        "note": {
+          "description": "\u5907\u6ce8\uff08\u53e3\u5f84/\u5f71\u54cd\uff09",
+          "type": "string"
+        },
+        "seq": {
+          "description": "\u73af\u8282\u5e8f\u53f7\uff08\u7533\u62a5\u6d41\u7a0b 1..7 \u8fde\u7eed\uff09",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "\u672a\u5f00\u59cb",
+            "\u8fdb\u884c\u4e2d",
+            "\u963b\u585e",
+            "\u5b8c\u6210"
+          ]
+        },
+        "work_content": {
+          "description": "\u5de5\u4f5c\u5185\u5bb9\uff08\u7533\u62a5\u6e05\u5355\u539f\u6587\uff09",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "seq",
+        "name"
+      ],
+      "title": "WorkflowStage",
+      "type": "object",
+      "x-mof-state-machine": {
+        "\u5b8c\u6210": [],
+        "\u672a\u5f00\u59cb": [
+          "\u8fdb\u884c\u4e2d"
+        ],
+        "\u8fdb\u884c\u4e2d": [
+          "\u5b8c\u6210",
+          "\u963b\u585e"
+        ],
+        "\u963b\u585e": [
+          "\u8fdb\u884c\u4e2d",
+          "\u5b8c\u6210"
         ]
       }
     }

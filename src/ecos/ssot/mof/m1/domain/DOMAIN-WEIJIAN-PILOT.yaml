@@ -90,7 +90,7 @@ constraints:
   - {id: P-C3, rule: 评审金额以经信局/区财政局审核金额为准, evidence: 申报材料清单「说明」段}
   - {id: P-C4, rule: 里程碑 severity=⛔ 必须声明阻塞原因与影响, evidence: key-milestones M04b/M05/M05b 注记}
   - {id: P-C5, rule: 月报 20 日报送、收入评分月底（每年复用）, evidence: key-milestones M06 + 事件卡 G5}
-  - {id: P-C6, rule: 每类实体实例 ≥3 份真实文件支撑（蒸馏纪律）, evidence: 本文件 classes[].source 全量非空}
+  - {id: P-C6, rule: "每类实体实例 ≥3 份真实文件支撑（蒸馏纪律）", evidence: "本文件 classes[].source 全量非空"}
   - {id: P-C7, rule: 任务置 done 前必须核查交付物（门禁契约）, evidence: 事件卡任务契约 + 场景4痛点}
 
 # ── 蒸馏证据（真实文件支撑表） ──
