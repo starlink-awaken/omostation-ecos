@@ -250,6 +250,15 @@ def main():
     parser.add_argument("--output", type=str, default=str(DEFAULT_OUTPUT))
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--enforce", action="store_true", help="exit 1 on required violations")
+    parser.add_argument(
+        "--enforce-strict",
+        action="store_true",
+        help=(
+            "exit 1 on required violations AND on any required rule that was NOT "
+            "EVALUATED (no state producer / no compiler branch). Use for CI steps that "
+            "must not be green while enforcing nothing (P2 truth-telling, 2026-10-10)."
+        ),
+    )
     args = parser.parse_args()
 
     if not CONSTRAINTS_FILE.exists():
@@ -267,7 +276,7 @@ def main():
         print(format_report(result))
         print(f"  hash: {state['hash']}  output: {args.output}")
 
-    if args.enforce:
+    if args.enforce or args.enforce_strict:
         failed = [c for c in result.get("constraints", []) if c["status"] == "fail" and c["type"] == "required"]
         if failed:
             print(f"\nENFORCE: {len(failed)} required constraint(s) FAILED", file=sys.stderr)
@@ -278,12 +287,20 @@ def main():
         ]
         if not_eval_required:
             # P2 (2026-10-10): 未评估的 required 规则绝不当作 pass —— 响亮地报出来。
-            # exit code 仍为 0 (只有真 FAIL 才 exit 1); 但输出/JSON 明确区分 not_evaluated。
+            # 普通 --enforce: exit 0 (只有真 FAIL 才 exit 1); 但输出/JSON 明确区分
+            # not_evaluated。--enforce-strict: 未评估的 required 规则也 exit 1,
+            # 供 CI 中"标为 enforce 就必须 enforce"的步骤使用 (truth-telling)。
             print(
                 f"\nENFORCE: {len(not_eval_required)} required constraint(s) NOT EVALUATED "
                 "(no compiler branch or no state producer — **not enforced here**)",
                 file=sys.stderr,
             )
+            if args.enforce_strict:
+                print(
+                    "ENFORCE-STRICT: required rules were not evaluated → step cannot be green.",
+                    file=sys.stderr,
+                )
+                sys.exit(3)
 
 
 if __name__ == "__main__":

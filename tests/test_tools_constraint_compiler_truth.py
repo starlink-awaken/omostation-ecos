@@ -141,3 +141,44 @@ def test_healthy_state_passes_branch_rules():
         assert by_id[rid]["status"] == "pass", f"{rid} 健康 state 应绿: {by_id[rid]}"
     ne = [c for c in res if c["status"] == "not_evaluated"]
     assert ne, "无编译器分支的规则必须仍显式 not_evaluated, 不能被当作 pass"
+
+@pytest.mark.skipif(not CONSTRAINTS.exists(), reason="L0 registry not checked out")
+def test_enforce_strict_exits_3_on_not_evaluated_without_state():
+    """P2 (2026-10-10): --enforce-strict 在无 state (required 规则未评估) 时 exit 3.
+
+    这是给 CI 中"标为 enforce 就必须 enforce"的步骤用的 strict 语义 —— 不能一边
+    显示绿色一边实际什么都没 enforce。普通 --enforce 仍 exit 0 (报告 NOT EVALUATED
+    桶), 供 observability 调用方保持 ok 语义。
+    """
+    r = _run_tool("--enforce-strict")
+    assert r.returncode == 3, f"enforce-strict 无 state 必须 exit 3, got {r.returncode}: {r.stderr}"
+    assert "NOT EVALUATED" in r.stderr, r.stderr
+    assert "ENFORCE-STRICT" in r.stderr, r.stderr
+    # 对照组: 普通 --enforce 无 state 仍 exit 0 (只有真 FAIL 才 exit 1)
+    r2 = _run_tool("--enforce")
+    assert r2.returncode == 0, f"--enforce 无 state 应 exit 0, got {r2.returncode}"
+
+
+@pytest.mark.skipif(not CONSTRAINTS.exists(), reason="L0 registry not checked out")
+def test_enforce_strict_exits_1_on_real_required_failure():
+    """--enforce-strict 喂违规 state: 真 FAIL 的 required 规则 exit 1 (优先于 not_evaluated)."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "compiled.py"
+        r = _run_tool("--output", str(out))
+        assert r.returncode == 0, r.stdout + r.stderr
+        spec = importlib.util.spec_from_file_location("compiled_cc_s", out)
+        assert spec is not None and spec.loader is not None
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+    res = m.run({
+        "protocol": {"registered": False, "version": None},
+        "layer": {"cross_call": {"route": "direct"}},
+        "write": {"entry": "other"},
+        "claude_md": {"age_days": 100},
+        "direct_omo_io": [".omo/x"],
+        "domain": {"k": {"value_tier": 1, "cost_attribution": "none"}},
+    })["constraints"]
+    failed_required = [c for c in res if c["status"] == "fail" and c["type"] == "required"]
+    assert failed_required, "合成违规必须产生 required FAIL"
