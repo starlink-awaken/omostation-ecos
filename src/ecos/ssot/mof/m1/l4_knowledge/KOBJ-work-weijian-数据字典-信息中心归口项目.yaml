@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/数据字典-信息中心归口项目.md
-content_hash: sha256:bca408c24769268fcc16bb3aa55aa172e491120f411916fb43ef9d9a36fb8bf6
+content_hash: sha256:93b3be0c3f6ba22b378e9bff9d446046114a7ac4b8741af32cd4566a4cd7a4c1
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-10
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/数据字典-信息中心归口项目.md
-  content_hash: sha256:bca408c24769268fcc16bb3aa55aa172e491120f411916fb43ef9d9a36fb8bf6
+  content_hash: sha256:93b3be0c3f6ba22b378e9bff9d446046114a7ac4b8741af32cd4566a4cd7a4c1
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

@@ -6,7 +6,7 @@ id: KOBJ-work-guozhuan-index
 type: L4KnowledgeObject
 subtype: DomainKnowledgeIndex
 name: work-guozhuan 域知识索引 (KEMS)
-description: KEMS 域知识体系投影 — 9 实体类 / 108 实例 / 2 模型. Canonical at /Users/xiamingxing/Documents/@工作文档/国转中心/_entities
+description: KEMS 域知识体系投影 — 9 实体类 / 69 实例 / 2 模型. Canonical at /Users/xiamingxing/Documents/@工作文档/国转中心/_entities
 status: canonical
 domain: work-guozhuan
 created: '2026-09-06'
@@ -21,7 +21,7 @@ domain_id: work-guozhuan
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/国转中心/_entities/ontology/classes.yaml
-content_hash: sha256:9bda001244ccfd24e960eecb630d36ac3517d39f0f18be64959338c7dbd120c9
+content_hash: sha256:9c1a96429adc61e58b87a03357ca144fd35f89fcdd94a1f11622c3d55678c44d
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -59,7 +59,7 @@ properties:
   - id: C7
     code: Actor
     name_cn: 人员角色类
-    instance_count: 68
+    instance_count: 29
   - id: C8
     code: Assessment
     name_cn: 监管考核类
@@ -68,7 +68,7 @@ properties:
     code: Intelligence
     name_cn: 智能化应用类
     instance_count: 0
-  kems_instance_total: 108
+  kems_instance_total: 69
   model_count: 2
   taxonomy:
   - analysis
@@ -82,8 +82,11 @@ evidence_refs:
 - /Users/xiamingxing/Documents/@工作文档/国转中心/_entities/ontology
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/国转中心/_entities/ontology/classes.yaml
-  content_hash: sha256:9bda001244ccfd24e960eecb630d36ac3517d39f0f18be64959338c7dbd120c9
+  content_hash: sha256:9c1a96429adc61e58b87a03357ca144fd35f89fcdd94a1f11622c3d55678c44d
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

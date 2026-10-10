@@ -2,14 +2,14 @@
 # Source of truth: KEMS _entities/ (Documents canonical)
 # Rebuild: python3 src/ecos/ssot/tools/mof-kems-bridge.py --write
 
-id: KOBJ-family-域模型-家庭
+id: KOBJ-family-模型-家庭资产与车辆
 type: L4KnowledgeObject
 subtype: KnowledgeModel
-name: 域模型-家庭
-description: KEMS domain-model 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
+name: 模型-家庭资产与车辆
+description: KEMS domain-model 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@家庭生活/_entities/models/模型-家庭资产与车辆.md
 status: canonical
 domain: family
-created: '2026-09-06'
+created: '2026-09-22'
 version: 1.0.0
 layer: L4
 api_version: l4/v1
@@ -20,8 +20,8 @@ space_id: personal-space
 domain_id: family
 authority: canonical
 lifecycle_state: canonical
-source_ref: /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
-content_hash: sha256:da49cd2370446fb7e37a53e9746cad2712ee7d9e0c8a63dfb4b0b997ed4da7cf
+source_ref: /Users/xiamingxing/Documents/@家庭生活/_entities/models/模型-家庭资产与车辆.md
+content_hash: sha256:2c98711d156427fa0a90438fae9f8a120f212a1d05588f58e0dbec7bbfdf457a
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -36,12 +36,9 @@ properties:
   kems_owner: 家庭
   kems_review_date: 2026-09-17
 model_driven_refs:
-  source_file: /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
-  content_hash: sha256:da49cd2370446fb7e37a53e9746cad2712ee7d9e0c8a63dfb4b0b997ed4da7cf
+  source_file: /Users/xiamingxing/Documents/@家庭生活/_entities/models/模型-家庭资产与车辆.md
+  content_hash: sha256:2c98711d156427fa0a90438fae9f8a120f212a1d05588f58e0dbec7bbfdf457a
 state_history:
-- state: canonical
-  timestamp: '2026-09-06T11:53:01.878240+00:00'
-  reason: kems_bridge_projection
 - state: canonical
   timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection
