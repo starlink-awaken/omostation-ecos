@@ -48,6 +48,10 @@ constraints:
   rule: test.is_vibeops implies 'vibeops' in test.markers
   type: required
   violation: 'E-L0-013: 混合裁判测试未被隔离，可能影响基础 CI 时效'
+  wiring_note: >-
+    (2026-10-10 更正) @pytest.mark.vibeops 真实被使用 (kairon-observability 集成测试), 
+    但无 pyproject marker 配置 (--strict-markers 下会误报 unknown marker)、
+    且无"混合测试必须携带该 marker"的检查。无执行宿主 (annotation only)。
 - applies_to:
   - L2
   - I0
@@ -57,6 +61,10 @@ constraints:
   rule: vibeops.llm_calls.target == 'bos://capability/llm-gateway'
   type: required
   violation: 'E-L0-014: LLM 裁判绕过内部 Gateway，破坏安全合规与成本追踪'
+  wiring_note: >-
+    (2026-10-10) premise 漂移: AgoraGatewayLLM.generate() 仍是返回 mock 字符串的 stub,
+    仓库内无任何调用路由到 bos://capability/llm-gateway。在真实路由存在前标注为
+    不可执行 (annotation only); 届时需重新评估谓词。
 - applies_to:
   - I0
   description: bos://capability/evaluator 及其子域工具，拒绝任何 role != evaluator 的请求
@@ -140,6 +148,12 @@ constraints:
   rule: protocol.age_major_versions <= 2
   type: preferred
   violation: 'W-L0-001: 协议版本老化'
+  wiring_note: >-
+    (2026-10-10) dead premise: 谓词字段 age_major_versions 仅出现在本注册表
+    两条规则副本 (此处与 compiler 派生的 l0-constraints) 与
+    src/ecos/l0/constraints.yaml 的规则文本, 代码与数据模型零引用;
+    protocol_registry 条目 (本文件 319 行起) 不携带 MAJOR 版本史。
+    字段无生产者 ⇒ 谓词不可能为真。annotation only, 待字段引入后重新评估。
 - applies_to:
   - L4
   description: CLAUDE.md 超过 60 天未更新应触发保鲜告警
@@ -297,17 +311,23 @@ execution:
   # (Path(__file__).parent / "L0-constraints.yaml") 解析到 tools/L0-constraints.yaml,
   # 该文件不存在, 无法运行。
   # 实际执行体是 ecos-constraint-compiler.py --enforce (ecos-ci.yml "L0 constraint
-  # compiler (enforce)"), 它只读取 `constraints` 键 (31 条), 其中 8 条有硬编码规则分支
-  # (X1-C01/X1-C02/X1-C03/CR-OMO-DIRECT-IO-01/X2-C01/X2-C03/X3-C01/X3-C02) 会被真实评估,
-  # 其余 23 条默认 pass ("rule not auto-evaluated")。
-  # trigger_constraints / opc_cadence_constraints / agt_constraints 等其他族不在编译器
-  # 的读取范围 (data.get("constraints")), 同样未评估。
+  # compiler (enforce)"), 它读取 `constraints` 键。
+  # 2026-10-10 (P2 truth-telling): 编译器曾对 32 条中的 8 条用硬编码健康默认值评估
+  # (恒绿), 其余 24 条 else 分支 passed=True —— 整个 --enforce 装饰性。现在:
+  #   - run() 无 state 时**所有**约束 status=not_evaluated (不再有假 pass);
+  #   - 喂真实 state 时仅 8 条有实现分支会真评估 (protocol registered/version,
+  #     layer route, write entry, claude_md age, direct_omo_io, X3-C01, X3-C02),
+  #     其余 24 条 status=not_evaluated (detail: no compiler branch);
+  #   - --enforce 只对 status=fail 的 required 规则 exit 1; not_evaluated 规则
+  #     在报告/JSON 里明确分桶, 绝不当 pass。
+  # 结论: 本编译器目前**没有**强制执行全部 32 条 —— 有分支的 8 条需要真实 state 生产者,
+  # 其余 24 条靠别处宿主 (见 wiring-coverage / registry-alias-map)。
   last_run: null
   mode: warn
   validator: ecos-constraint-compiler.py
   validator_note: >-
-    CI 实际执行体 (ecos-ci.yml:42, --enforce)。仅对 constraints 族 31 条中的 8 条做真实评估,
-    其余 default-pass; 其他约束族未读取。
+    CI 实际执行体 (ecos-ci.yml:42, --enforce)。无 state 时全部 not_evaluated (不假绿);
+    有 state 时仅 8 条真评估, 其余显式 not_evaluated。--enforce 不把未评估规则当 pass。
   validator_broken: ecos-constraint-validator.py  # 未接线且 CONSTRAINTS_FILE 路径失效, 仅历史记录
 generated: '2026-06-06'
 protocol_registry:
@@ -646,8 +666,18 @@ c2g_v3_constraints:
     violation: "任务完成但未回写 SSOT 文档，引发知识图谱断裂"
     introduced: '2026-06-15'
     value_tier: 1
+    wiring_note: >-
+      (2026-10-10 更正) **写侧存在**: bin/ssot/ssot-writeback.py:30,46 与
+      mof-extract.py:272-285 会置 ssot_written_back=true —— 但此前**无读侧** (无人读该
+      flag) 且**无调度** (writeback 不自动跑)。旧注记"无 ssot write-back 实现"错误。
+      P5 已在 bin/gac/check-l0-constraints.py::check_c2g_v3_01 接**读侧门禁**:
+      done+context_uri 任务必须 ssot_written_back=true。注意该门禁在 2026-10-10 的
+      仓库上会红 —— 5 条既有 done 任务 (QUEST-26/27, TASK-117310A1, TASK-262B9E59,
+      TASK-B3229A65) 未回写, 需真正跑 writeback 或显式推迟。
     references:
       - "projects/ecos/src/ecos/ssot/tools/mof-extract.py"
+      - "bin/ssot/ssot-writeback.py"
+      - "bin/gac/check-l0-constraints.py::check_c2g_v3_01"
       - "omo worker dispatch"
 
   - id: CR-C2G-V3-02
@@ -829,6 +859,12 @@ debt_constraints:
     enforcement: block-write
     introduced: '2026-06-20'
     value_tier: 1
+    wiring_note: >-
+      (2026-10-10) references[3] 指向 bin/mof-version, 该路径**不存在**——真实脚本是
+      bin/mof/mof-version。且该脚本自身有 off-by-one 路径 bug: 
+      `VERSION_FILE = Path(__file__).parent.parent / ".omo/_truth/mof-version.yaml"`
+      在 bin/mof/mof-version 下解析到 bin/mof/.omo/_truth (多退一层), 写不到根仓真文件。
+      两个问题均按 P6 要求只标注不修复 (修复需走独立的 mof-version 通道评审)。
     references:
       - ".omo/_truth/mof-version.yaml"
       - ".omo/_truth/x4-consistency-rules.yaml (X4-CONS-P43-CLOSED-LOOP-SSOT)"
