@@ -16,7 +16,7 @@ properties:
   domain_type: model
   layer: L2-Storage
   governance_tier: 0
-  storage: /Volumes/Model
+  storage: /Volumes/SHAREDMODEL   # 2026-10-11 自 /Volumes/Model 并轨 (BET-Y2Q4-T10-242; Model 1T 转 TM 专用)
   capabilities:
   - model.inventory
   - model.download
