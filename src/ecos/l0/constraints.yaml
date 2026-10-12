@@ -666,7 +666,7 @@ domain_registry:
     name: "Model"
     layer: "L2-Storage"
     domain_type: model
-    storage: "/Volumes/Model/"
+    storage: "/Volumes/SHAREDMODEL/"   # 2026-10-11 Model 1T 卷退役转 TM; 模型存储并轨 SHAREDMODEL (BET-Y2Q4-T10-242)
     description: "AI模型存储 — ollama/LMStudio/models/DockerDesktop/mineru/omlx"
 
 # ── 协议注册表 (含 half_life 价值衰减) ──

@@ -31,12 +31,12 @@ HOME = Path.home()
 CATALOG_DIR = HOME / ".ecos" / "catalog"
 DB_PATH = CATALOG_DIR / "{}.db"
 
-# ── 卷 → 物理路径映射 ──
+# ── 卷 → 物理路径映射 (对齐 protocols/vault-paths.yaml, 2026-10-11 Model 卷退役) ──
 VOLUMES = {
-    "shareddisk": "/Volumes/SharedDisk",
-    "sharedmodel": "/Volumes/SharedModel",
-    "model": "/Volumes/Model",
-    "sharedwork": str(HOME / "SharedWork"),
+    "shareddisk": "/Volumes/SHAREDMODEL",   # 共享盘域主锚点(MB P 盘上另有独立 Model 卷, 不在本机映射)
+    "sharedmodel": "/Volumes/SHAREDMODEL",
+    "model": "/Volumes/SHAREDMODEL",        # model-volume 域已并轨 SHAREDMODEL(Model 1T 转 TM 专用)
+    "sharedwork": "/Volumes/SHAREDWORK",
 }
 
 SCHEMA = """
