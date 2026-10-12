@@ -223,7 +223,6 @@ def format_report(result: dict) -> str:
     lines.append("  eCOS v6 L0 — 编译约束报告")
     lines.append("=" * 56)
     constraints = result.get("constraints", [])
-    evaluated = [c for c in constraints if c.get("evaluated")]
     not_eval = [c for c in constraints if not c.get("evaluated")]
     passed = sum(1 for c in constraints if c["status"] == "pass")
     failed = [c for c in constraints if c["status"] == "fail"]
