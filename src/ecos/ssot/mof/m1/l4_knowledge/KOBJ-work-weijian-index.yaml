@@ -6,7 +6,7 @@ id: KOBJ-work-weijian-index
 type: L4KnowledgeObject
 subtype: DomainKnowledgeIndex
 name: work-weijian 域知识索引 (KEMS)
-description: KEMS 域知识体系投影 — 9 实体类 / 211 实例 / 31 模型. Canonical at /Users/xiamingxing/Documents/@工作文档/卫健委/_entities
+description: KEMS 域知识体系投影 — 9 实体类 / 224 实例 / 31 模型. Canonical at /Users/xiamingxing/Documents/@工作文档/卫健委/_entities
 status: canonical
 domain: work-weijian
 created: '2026-09-06'
@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/ontology/classes.yaml
-content_hash: sha256:8a2600a9082913da5648bd9bc047a6bc08e551b8b85214430f7f7dea9bfd402d
+content_hash: sha256:1254fdad038c721b9962f7c20da5f0d7d238e18e1c3f5b0d1f555529fad57cb0
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -35,11 +35,11 @@ properties:
   - id: C1
     code: Policy
     name_cn: 政策法规类
-    instance_count: 19
+    instance_count: 20
   - id: C2
     code: Organization
     name_cn: 组织机构类
-    instance_count: 38
+    instance_count: 39
   - id: C3
     code: Project
     name_cn: 项目工程类
@@ -47,7 +47,7 @@ properties:
   - id: C4
     code: System
     name_cn: 应用系统类
-    instance_count: 63
+    instance_count: 74
   - id: C5
     code: DataAsset
     name_cn: 数据资源类
@@ -68,7 +68,7 @@ properties:
     code: Intelligence
     name_cn: 智能化应用类
     instance_count: 9
-  kems_instance_total: 211
+  kems_instance_total: 224
   model_count: 31
   taxonomy:
   - analysis
@@ -82,8 +82,11 @@ evidence_refs:
 - /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/ontology
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/ontology/classes.yaml
-  content_hash: sha256:8a2600a9082913da5648bd9bc047a6bc08e551b8b85214430f7f7dea9bfd402d
+  content_hash: sha256:1254fdad038c721b9962f7c20da5f0d7d238e18e1c3f5b0d1f555529fad57cb0
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

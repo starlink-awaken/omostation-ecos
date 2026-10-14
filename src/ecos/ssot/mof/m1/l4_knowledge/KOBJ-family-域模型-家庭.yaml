@@ -6,7 +6,7 @@ id: KOBJ-family-域模型-家庭
 type: L4KnowledgeObject
 subtype: KnowledgeModel
 name: 域模型-家庭
-description: KEMS domain 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
+description: KEMS domain-model 模型投影 (status=active); canonical at /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
 status: canonical
 domain: family
 created: '2026-09-06'
@@ -15,13 +15,13 @@ layer: L4
 api_version: l4/v1
 kind: KnowledgeObject
 schema: l4.knowledge-object/v1
-kind_class: model
+kind_class: reference
 space_id: personal-space
 domain_id: family
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
-content_hash: sha256:dcab3ebb037e347f053247f6457e22917164a0a3144722008968894792abfd43
+content_hash: sha256:da49cd2370446fb7e37a53e9746cad2712ee7d9e0c8a63dfb4b0b997ed4da7cf
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -31,14 +31,17 @@ freshness_policy: kems-review-90d
 value_tier: 3
 properties:
   layer: L4
-  kems_model_type: domain
+  kems_model_type: domain-model
   kems_status: active
   kems_owner: 家庭
-  kems_review_date: 2026-08-06
+  kems_review_date: 2026-09-17
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@家庭生活/_entities/models/域模型-家庭.md
-  content_hash: sha256:dcab3ebb037e347f053247f6457e22917164a0a3144722008968894792abfd43
+  content_hash: sha256:da49cd2370446fb7e37a53e9746cad2712ee7d9e0c8a63dfb4b0b997ed4da7cf
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

@@ -21,7 +21,7 @@ domain_id: family
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@家庭生活/_entities/models/模型驱动决策视图.md
-content_hash: sha256:6225db68af9d41bba4457f36b92e3bbf257f78c6d0b238e9bd11d0e5a582c317
+content_hash: sha256:5a9ff4f506dd23b0f1238a4c1f327e09083b6ae6101c303f72bc897ba119faf9
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-05
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@家庭生活/_entities/models/模型驱动决策视图.md
-  content_hash: sha256:6225db68af9d41bba4457f36b92e3bbf257f78c6d0b238e9bd11d0e5a582c317
+  content_hash: sha256:5a9ff4f506dd23b0f1238a4c1f327e09083b6ae6101c303f72bc897ba119faf9
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

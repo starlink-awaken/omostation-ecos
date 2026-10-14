@@ -21,7 +21,7 @@ domain_id: work-liyongke
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/域模型-利用科业务.md
-content_hash: sha256:fdcaaf2f3b6408560921b6a7457765d0a278c58b102af17640f86faa1fce729d
+content_hash: sha256:7dfa149da946da29d76ae75d4be36ab63583d1de697846c3b1c74373ee0e9a8a
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-06
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/models/域模型-利用科业务.md
-  content_hash: sha256:fdcaaf2f3b6408560921b6a7457765d0a278c58b102af17640f86faa1fce729d
+  content_hash: sha256:7dfa149da946da29d76ae75d4be36ab63583d1de697846c3b1c74373ee0e9a8a
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

@@ -6,7 +6,7 @@ id: KOBJ-work-liyongke-index
 type: L4KnowledgeObject
 subtype: DomainKnowledgeIndex
 name: work-liyongke 域知识索引 (KEMS)
-description: KEMS 域知识体系投影 — 9 实体类 / 12 实例 / 2 模型. Canonical at /Users/xiamingxing/Documents/@工作文档/规自委/_entities
+description: KEMS 域知识体系投影 — 9 实体类 / 19 实例 / 2 模型. Canonical at /Users/xiamingxing/Documents/@工作文档/规自委/_entities
 status: canonical
 domain: work-liyongke
 created: '2026-09-06'
@@ -21,7 +21,7 @@ domain_id: work-liyongke
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/ontology/classes.yaml
-content_hash: sha256:71e233894a4b1fee0d1e1f81bbc8db62f9039cbce7228165a0575070667e088a
+content_hash: sha256:8c3e3bef334d90af3bb66cc82be3a4f989a63b508b337cf1468120fb4379a3e2
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -35,7 +35,7 @@ properties:
   - id: C1
     code: Policy
     name_cn: 政策法规类
-    instance_count: 0
+    instance_count: 4
   - id: C2
     code: Organization
     name_cn: 组织机构类
@@ -47,7 +47,7 @@ properties:
   - id: C4
     code: System
     name_cn: 应用系统类
-    instance_count: 0
+    instance_count: 3
   - id: C5
     code: DataAsset
     name_cn: 数据资源类
@@ -68,7 +68,7 @@ properties:
     code: Intelligence
     name_cn: 智能化应用类
     instance_count: 0
-  kems_instance_total: 12
+  kems_instance_total: 19
   model_count: 2
   taxonomy:
   - analysis
@@ -82,8 +82,11 @@ evidence_refs:
 - /Users/xiamingxing/Documents/@工作文档/规自委/_entities/ontology
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/规自委/_entities/ontology/classes.yaml
-  content_hash: sha256:71e233894a4b1fee0d1e1f81bbc8db62f9039cbce7228165a0575070667e088a
+  content_hash: sha256:8c3e3bef334d90af3bb66cc82be3a4f989a63b508b337cf1468120fb4379a3e2
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection

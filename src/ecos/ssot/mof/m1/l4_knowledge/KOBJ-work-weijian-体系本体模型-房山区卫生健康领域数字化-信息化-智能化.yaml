@@ -21,7 +21,7 @@ domain_id: work-weijian
 authority: canonical
 lifecycle_state: canonical
 source_ref: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/体系本体模型-数字化信息化智能化.md
-content_hash: sha256:d1a426320839e5dc0e2f1ed1da735cad3b46924a99b622c833a75837b17dab64
+content_hash: sha256:60b6d07b35b5ed250b8b7ea249ce930b71ffce1739394a85b3e4bb364bf56a81
 principal: personal-space-owner
 sensitivity: restricted
 visibility: private
@@ -37,8 +37,11 @@ properties:
   kems_review_date: 2026-08-10
 model_driven_refs:
   source_file: /Users/xiamingxing/Documents/@工作文档/卫健委/_entities/models/体系本体模型-数字化信息化智能化.md
-  content_hash: sha256:d1a426320839e5dc0e2f1ed1da735cad3b46924a99b622c833a75837b17dab64
+  content_hash: sha256:60b6d07b35b5ed250b8b7ea249ce930b71ffce1739394a85b3e4bb364bf56a81
 state_history:
 - state: canonical
   timestamp: '2026-09-06T11:53:01.878240+00:00'
+  reason: kems_bridge_projection
+- state: canonical
+  timestamp: '2026-09-22T02:22:59.318719+00:00'
   reason: kems_bridge_projection
