@@ -250,6 +250,12 @@ def create_audit_debt(uri: str, anomaly_type: str, detail: str) -> str | None:
                 datetime.now().isoformat(),
             ),
         )
+        # 回执链（#20）：裸 INSERT 必须记 card_history，否则裁决链读不到这次写入
+        conn.execute(
+            "INSERT INTO card_history (card_id, old_status, new_status, changed_at, changed_by, note)"
+            " VALUES (?, NULL, 'identified', ?, 'audit-unified', 'auto-created by audit_unified')",
+            (cards_id, datetime.now().isoformat()),
+        )
         conn.commit()
         conn.close()
         return cards_id

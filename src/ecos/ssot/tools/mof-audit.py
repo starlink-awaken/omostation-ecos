@@ -182,6 +182,12 @@ def create_debt_card(drift: dict) -> bool:
                 now,
             ),
         )
+        # 回执链（#20）：裸 INSERT 必须记 card_history，否则裁决链读不到这次写入
+        conn.execute(
+            "INSERT INTO card_history (card_id, old_status, new_status, changed_at, changed_by, note)"
+            " VALUES (?, NULL, 'identified', ?, 'mof-audit', 'auto-created by mof-audit')",
+            (debt_id, now),
+        )
         conn.commit()
         conn.close()
         return True
