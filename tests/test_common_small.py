@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import fcntl
 import json
+import threading
 from unittest.mock import patch
 
 import pytest
 
 from ecos.common.content_integrity import check_integrity
+from ecos.common.governed_fs import append_jsonl_record
 from ecos.common.exceptions import (
     ECOSException,
     ConfigException,
@@ -185,3 +188,58 @@ class TestValidator:
         if v.REAL.exists():
             v.subprocess.call([v.sys.executable, str(v.REAL)])
         mock_call.assert_called_once()
+
+
+# ── governed_fs.append_jsonl_record ──
+
+
+class TestAppendJsonlRecord:
+    """X2 budget integrity standard §3「并发控制」: JSONL 写入必须持 fcntl 排他锁。"""
+
+    def test_takes_exclusive_lock_around_write(self, tmp_path):
+        """锁必须包住写: LOCK_EX 进、LOCK_UN 出, 且顺序不能反。"""
+        target = tmp_path / "ledger.jsonl"
+        calls = []
+        real_flock = fcntl.flock
+
+        def spy(fd, op):
+            calls.append(op)
+            return real_flock(fd, op)
+
+        with patch("fcntl.flock", spy):
+            append_jsonl_record(target, {"k": 1})
+
+        assert calls == [fcntl.LOCK_EX, fcntl.LOCK_UN]
+        assert json.loads(target.read_text(encoding="utf-8").strip()) == {"k": 1}
+
+    def test_lock_is_released_when_write_raises(self, tmp_path):
+        """写失败也要放锁 —— 否则一次异常就把 ledger 永久锁死。"""
+        target = tmp_path / "ledger.jsonl"
+        with patch("fcntl.flock", side_effect=OSError("boom")):
+            with pytest.raises(OSError):
+                append_jsonl_record(target, {"k": 1})
+        # 锁没被获取成功时文件可以被再次打开 (没有被残留锁挡住)
+        append_jsonl_record(target, {"k": 2})
+        assert len(target.read_text(encoding="utf-8").strip().splitlines()) == 1
+
+    def test_concurrent_appends_keep_every_line_intact(self, tmp_path):
+        """并发追加后每行都必须是完整 JSON —— 无锁时写可能交错成半行。"""
+        target = tmp_path / "ledger.jsonl"
+        n_threads, per_thread = 8, 25
+        barrier = threading.Barrier(n_threads)
+
+        def worker(tid):
+            barrier.wait()
+            for i in range(per_thread):
+                append_jsonl_record(target, {"t": tid, "i": i})
+
+        threads = [threading.Thread(target=worker, args=(t,)) for t in range(n_threads)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        lines = target.read_text(encoding="utf-8").splitlines()
+        assert len(lines) == n_threads * per_thread
+        parsed = [json.loads(line) for line in lines]  # 任一行不完整即抛
+        assert len({(r["t"], r["i"]) for r in parsed}) == n_threads * per_thread
