@@ -243,4 +243,6 @@ gates:
   - id: "check-index-drift"
     command: ["bin/ssot/check-index-drift.py"]
     ci_skip: true
+  - id: "scene-v3-guardrail"
+    command: ["bin/ssot/scene-v3-guardrail.py"]
 
