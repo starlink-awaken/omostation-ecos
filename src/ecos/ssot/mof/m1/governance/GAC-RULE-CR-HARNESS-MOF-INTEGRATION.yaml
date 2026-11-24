@@ -1,0 +1,42 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-HARNESS-MOF-INTEGRATION
+type: GacRule
+name: Harness MOF 集成 (S 槽位 + MOF 约束)
+description: harness sfop_slot 必须为 S + controller 为 COMP-WS-omo；编辑 MOF 文件前必须影响分析 +
+  编辑后 schema 校验；合并自 CR-HARNESS-SFOP-SLOT + CR-HARNESS-MOF-CONSTRAINT
+status: active
+domain: meta
+layer: L2
+created: '2026-09-01'
+version: 2
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-HARNESS-MOF-INTEGRATION
+  dimension: X4
+  layer: L2
+  check_type: mof_stage_gate
+  executor:
+  - gac_local_gate
+  - ci_gate
+  - hook_pre_edit
+  lifecycle: active
+  version: 2
+  created_at: '2026-09-01'
+  target: .omo/_truth/registry/harness-policy.yaml
+  adr: ADR-0203
+  source_type: native
+  relates_to:
+  - CR-HARNESS-SFOP-SLOT
+  - CR-HARNESS-MOF-CONSTRAINT
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-09-01T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

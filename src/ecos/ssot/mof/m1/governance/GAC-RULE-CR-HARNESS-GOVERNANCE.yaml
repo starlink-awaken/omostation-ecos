@@ -1,0 +1,42 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-HARNESS-GOVERNANCE
+type: GacRule
+name: Harness 治理 (已知债 + OMO 同步 + 防腐)
+description: known_debt.growth_policy=shrink_only + escape 收口；Harness 状态同步 OMO system.yaml；脚本配额遵守
+  anti-corrosion-budget；合并自 CR-HARNESS-KNOWN-DEBT + CR-HARNESS-OMO-SYNC + CR-HARNESS-ANTI-CORROSION
+status: active
+domain: meta
+layer: L2
+created: '2026-09-01'
+version: 2
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-HARNESS-GOVERNANCE
+  dimension: X1
+  layer: L2
+  check_type: audit_chain
+  executor:
+  - gac_local_gate
+  - omo_audit
+  lifecycle: active
+  version: 2
+  created_at: '2026-09-01'
+  target: .omo/_truth/registry/harness-policy.yaml
+  adr: ADR-0205
+  source_type: native
+  relates_to:
+  - CR-HARNESS-KNOWN-DEBT
+  - CR-HARNESS-OMO-SYNC
+  - CR-HARNESS-ANTI-CORROSION
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-09-01T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

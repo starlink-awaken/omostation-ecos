@@ -28,7 +28,7 @@ properties:
   target: bin/ssot/check-god-module.py --strict (新文件 > 1500L 阻塞, 已有文件仅 warn)
   adr: ADR-0171
   source_type: native
-  source_ref: bin/gac/check-god-module.py
+  source_ref: bin/ssot/check-god-module.py
   enforcement: advisory
 source: .omo/_truth/registry/governance-checks.yaml
 model_driven_refs:

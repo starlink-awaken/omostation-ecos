@@ -1,0 +1,42 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-CHANGE-LANE-RANGE
+type: GacRule
+name: 变更 lane 隔离 (per-commit)
+description: 'ADR-0122 §46「每 commit 单 lane」的 CI 侧判据: 按 PR base..head 逐 commit 判 lane,
+  违规 commit 内含 mechanism 面 (code/governance_code/config) 与治理/文档面混交。默认 advisory ——
+  该规则在 2026-10-30 之前三条执行路径全空转 (CI 的 --staged 读到空集 / PUSH_RANGE 无导出点 / 本地 pre-commit
+  不调它), main 上积累了大量历史欠账, 直接阻断会炸掉约 1/3 PR; --fail-on-violation 可切为阻断。'
+status: active
+domain: meta
+layer: meta
+created: '2026-10-30'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-CHANGE-LANE-RANGE
+  dimension: X4
+  layer: meta
+  check_type: consistency_drift
+  executor:
+  - ci_gate
+  - hook_pre_edit
+  lifecycle: active
+  version: 1.0.0
+  created_at: '2026-10-30'
+  target: PR base..head 逐 commit
+  adr: ADR-0122
+  source_type: native
+  source_ref: bin/gac/check-change-lane-range.py
+  enforcement: advisory
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-10-30T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

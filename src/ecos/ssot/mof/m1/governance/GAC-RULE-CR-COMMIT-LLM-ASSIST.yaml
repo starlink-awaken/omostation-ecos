@@ -35,7 +35,7 @@ properties:
   target: bin/gac/commit-assist.py
   adr: ADR-0161
   source_type: native
-  source_ref: bin/gac/commit-assist.py::query_llm
+  source_ref: bin/commit-assist.py
   enforcement: advisory
 source: .omo/_truth/registry/governance-checks.yaml
 model_driven_refs:

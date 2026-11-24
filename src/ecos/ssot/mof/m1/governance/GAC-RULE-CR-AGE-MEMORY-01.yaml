@@ -1,0 +1,40 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-AGE-MEMORY-01
+type: GacRule
+name: AGE-v2 Cell 记忆管道活性
+description: Cell Memory Pipeline 必须维持 candidate → conflict → consolidate → forget
+  四阶段运转, 禁止跳过 conflict 检测直接写入记忆. 对齐 L0 CR-AGE-MEMORY-01.
+status: declared
+domain: meta
+layer: L2
+created: '2026-08-26'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-AGE-MEMORY-01
+  dimension: X2
+  layer: L2
+  check_type: file_exists
+  executor:
+  - ci_gate
+  - gac_local_gate
+  lifecycle: declared
+  version: 1.0.0
+  created_at: '2026-08-26'
+  target: projects/omo/src/omo/resident/memory_pipeline.py
+  adr: ADR-0401
+  source_type: native
+  source_ref: bin/gac/check-age-memory.py
+  enforcement: advisory
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: declared
+  timestamp: '2026-08-26T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生
