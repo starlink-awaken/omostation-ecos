@@ -2157,6 +2157,7 @@
         "lifecycle": {
           "enum": [
             "draft",
+            "declared",
             "active",
             "deprecated",
             "superseded",
@@ -2187,7 +2188,13 @@
       "x-mof-state-machine": {
         "active": [
           "deprecated",
-          "superseded"
+          "superseded",
+          "declared"
+        ],
+        "declared": [
+          "active",
+          "draft",
+          "removed"
         ],
         "deprecated": [
           "removed",

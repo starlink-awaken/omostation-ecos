@@ -1,0 +1,39 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-EVIDENCE-SHA-FRESHNESS
+type: GacRule
+name: completion_evidence 锚新鲜度
+description: 'evidence sha256 是写入时刻快照; 锚文件此后只增不改。complete 前重算全部 锚 sha; DIGEST_MISMATCH
+  先核实变更合法性再刷新, 禁止无脑重算。 契约: .omo/standards/evidence-anchor-freshness.md'
+status: active
+domain: meta
+layer: L2
+created: '2026-08-30'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-EVIDENCE-SHA-FRESHNESS
+  dimension: X1
+  layer: L2
+  check_type: freshness
+  executor:
+  - gac_local_gate
+  lifecycle: active
+  version: 1.0.0
+  created_at: '2026-08-30'
+  target: docs/plans/3y-bet-ledger.yaml
+  adr: ADR-0431
+  source_type: native
+  source_ref: .omo/standards/evidence-anchor-freshness.md
+  enforcement: required
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-08-30T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

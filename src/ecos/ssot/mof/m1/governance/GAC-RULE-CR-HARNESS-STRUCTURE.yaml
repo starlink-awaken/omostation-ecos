@@ -1,0 +1,42 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-HARNESS-STRUCTURE
+type: GacRule
+name: Harness 结构完整性 (章节 + 维度 + 实现率)
+description: harness-policy.yaml 必须包含 12 必现章节 + 12 维度全量挂载 + entry 指向脚本存在且调用 agent-workflow；合并自
+  CR-HARNESS-SECTION-COMPLETENESS + CR-HARNESS-DIMENSION-COVERAGE + CR-HARNESS-IMPL-RATE
+status: active
+domain: meta
+layer: L2
+created: '2026-09-01'
+version: 2
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-HARNESS-STRUCTURE
+  dimension: X4
+  layer: L2
+  check_type: schema_integrity
+  executor:
+  - gac_local_gate
+  - ci_gate
+  lifecycle: active
+  version: 2
+  created_at: '2026-09-01'
+  target: .omo/_truth/registry/harness-policy.yaml
+  adr: ADR-0202
+  source_type: native
+  relates_to:
+  - CR-HARNESS-SECTION-COMPLETENESS
+  - CR-HARNESS-DIMENSION-COVERAGE
+  - CR-HARNESS-IMPL-RATE
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-09-01T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

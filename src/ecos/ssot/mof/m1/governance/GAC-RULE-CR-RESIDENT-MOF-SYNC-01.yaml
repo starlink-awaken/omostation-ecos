@@ -1,0 +1,41 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-RESIDENT-MOF-SYNC-01
+type: GacRule
+name: resident 角色双份对齐
+description: resident 五类角色 (sediment/decision/execute/monitor/heartbeat) 必须同时注册在 roles.py
+  (SSOT) 与 MOF m1 DigitalAgent (AGENT-RESIDENT-*), 零漂移. 对齐 L0 CR-RESIDENT-MOF-SYNC-01.
+status: active
+domain: meta
+layer: L0
+created: '2026-08-23'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-RESIDENT-MOF-SYNC-01
+  dimension: X4
+  layer: L0
+  check_type: drift_audit
+  executor:
+  - ci_gate
+  - gac_local_gate
+  - mof_validate
+  lifecycle: active
+  version: 1.0.0
+  created_at: '2026-08-23'
+  target: projects/omo/src/omo/resident/roles.py vs projects/ecos/src/ecos/ssot/mof/m1/agent/AGENT-RESIDENT-ROLES.yaml
+  adr: ADR-0396
+  source_type: native
+  source_ref: bin/gac/check-resident-mof-sync.py
+  enforcement: required
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-08-23T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

@@ -1,0 +1,46 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-X2-GATE-DETAIL-CONTRACT
+type: GacRule
+name: A 系门禁 detail 一致性
+description: 'PANORAMA-GATE-DETAIL-UNRELIABLE ③ 的门禁接线, 沿用 ADR-0457 三段式 (2026-11-10
+  principal 授权全面推进: 以 enforcement=advisory 上线, 到 review_before 2026-12-01 仍未收敛由脚本自身退出码转阻断)。判的是
+  Panorama **两平面**里每条 A 系门禁的 detail 本身: 非空、不是纯括号残片 (A1 实测发布面 detail 只剩一个右花括号)、与 verdict
+  同源 (PASS 却带 failure marker)、reason 完整 (提到 cockpit_sources 却无 k=v)、顺序固定。 ② 已定论: 发布链跑
+  2026-09 冻结副本, 同刻两平面 detail 不同是**代码版本偏斜**而不是聚合 截断, 所以跨平面 (已发布面↔修订面) 偏斜永久只 advisory
+  —— 清它要部署面写 (资产恢复到 ~/.local/share/zhixing-dashboard/), 归 principal 授权; 把授权决定做成常红灯是错的。
+  仪器自证: 平面装着却解析不出任何 A 系门禁时报 parse_suspicious, 不交出一个空转的绿。'
+status: active
+domain: meta
+layer: L2
+created: '2026-11-10'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-X2-GATE-DETAIL-CONTRACT
+  dimension: X2
+  layer: L2
+  check_type: consistency_drift
+  executor:
+  - ci_gate
+  - gac_local_gate
+  lifecycle: active
+  version: 1.0.0
+  created_at: '2026-11-10'
+  target: ~/.local/share/zhixing-dashboard/current.json 与 revisions/*/data.json 的
+    gates[].detail
+  adr: ADR-0457
+  source_type: native
+  source_ref: bin/gac/check-gate-detail-contract.py
+  enforcement: advisory
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-11-10T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

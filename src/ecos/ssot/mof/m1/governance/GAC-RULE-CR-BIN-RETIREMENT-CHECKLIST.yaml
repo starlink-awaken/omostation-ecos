@@ -1,0 +1,40 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-BIN-RETIREMENT-CHECKLIST
+type: GacRule
+name: bin 脚本退役六层登记面
+description: 'bin/ 脚本退役必须同步六层登记面: 1) bin/_registry/scripts/ yaml 2) governance-checks
+  script_baseline 3) bin-scripts-convergence-manifest 4) ci-surfaces.yaml 5) INDEX-TOOLS(自动)
+  6) ecos sgf-policy gate 引用。 2026-08-29 bus-usage-report 退役逐层踩齐全部六层。'
+status: active
+domain: meta
+layer: L2
+created: '2026-08-30'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-BIN-RETIREMENT-CHECKLIST
+  dimension: X4
+  layer: L2
+  check_type: registry_integrity
+  executor:
+  - gac_local_gate
+  lifecycle: active
+  version: 1.0.0
+  created_at: '2026-08-30'
+  target: bin/
+  adr: ADR-0431
+  source_type: native
+  source_ref: .omo/standards/submodule-pointer-bump-contract.md
+  enforcement: required
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-08-30T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生

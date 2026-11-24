@@ -1,0 +1,39 @@
+# M1 GacRule instance — DERIVED by gac-m1-sync.py
+# SSOT: .omo/_truth/registry/governance-checks.yaml::gac.rules
+# DO NOT edit manually — re-run: python3 bin/gac/gac-m1-sync.py --sync
+id: GAC-RULE-CR-GITLINK-BUMP-SQUASH-MAIN
+type: GacRule
+name: 子模块指针 bump 必须锚定子仓 origin/main
+description: 'bump gitlink 时 sha 唯一合法来源为子仓 fetch 后的 origin/main 头; 禁止分支头/PR head/手搓
+  sha。2026-08-29 双指针污染事故 (cockpit/agora) 根因即 bump 分支头。契约: .omo/standards/submodule-pointer-bump-contract.md'
+status: active
+domain: meta
+layer: L1
+created: '2026-08-30'
+version: 1.0.0
+properties:
+  m3_parent: GovernanceElement.GacRule
+  id: CR-GITLINK-BUMP-SQUASH-MAIN
+  dimension: X1
+  layer: L1
+  check_type: audit_chain
+  executor:
+  - gac_local_gate
+  lifecycle: active
+  version: 1.0.0
+  created_at: '2026-08-30'
+  target: projects/*
+  adr: ADR-0431
+  source_type: native
+  source_ref: .omo/standards/submodule-pointer-bump-contract.md
+  enforcement: required
+source: .omo/_truth/registry/governance-checks.yaml
+model_driven_refs:
+  source_file: projects/ecos/src/ecos/ssot/mof/m2/gac_rule.yaml
+  m3_type: GacRule
+  registry_ssot: .omo/_truth/registry/governance-checks.yaml::gac.rules
+  derived_by: bin/gac/gac-m1-sync.py
+state_history:
+- state: active
+  timestamp: '2026-08-30T00:00:00Z'
+  reason: M1 实例由 gac-m1-sync.py 从 registry 派生
