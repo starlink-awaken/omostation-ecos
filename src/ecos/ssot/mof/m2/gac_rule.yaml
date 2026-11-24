@@ -45,7 +45,7 @@ GacRule:
       description: 执行通道列表 (至少一个, 防 rule 声明不执行, 机制 3 前提)
     lifecycle:
       type: enum
-      values: [draft, active, deprecated, superseded, removed]
+      values: [draft, declared, active, deprecated, superseded, removed]
       description: 规则生命周期状态 (机制 6)
     version:
       type: semver
@@ -71,9 +71,12 @@ GacRule:
     draft:
       description: 草案 (新规则, 待 radar 验证执行后转 active)
       transitions: [active, removed]
+    declared:
+      description: 声明态 (意图/契约先于执行面声明, 待实现后转 active 或退役转 removed)
+      transitions: [active, draft, removed]
     active:
       description: 活跃 (规则生效, 执行通道检查)
-      transitions: [deprecated, superseded]
+      transitions: [deprecated, superseded, declared]
     deprecated:
       description: 废弃 (不再推荐, gc 28 天后清理 removed)
       transitions: [removed, active]
