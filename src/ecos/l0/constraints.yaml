@@ -606,8 +606,6 @@ domain_registry:
     # 收敛到 bos://capability/ 域 (5 域锁定), 不创建新域
     bos_uri_root: "bos://capability"
     bos_services:
-      - "bos://capability/wps-office-mcp/invoke"
-      - "bos://capability/wps-skills/load"
       - "bos://capability/bos-skill-cli/exec"
       - "bos://capability/headroom/compress"
       - "bos://capability/code-review-graph/analyze"
