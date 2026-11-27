@@ -1,7 +1,7 @@
 ---
 type: ssot
-last_updated: 2026-09-04
-last-reviewed: 2026-08-26
+last_updated: 2026-11-27
+last-reviewed: 2026-11-27
 owner: governance-team
 lifecycle: entry
 status: active
@@ -9,18 +9,18 @@ status: active
 
 # eCOS 运营脚本
 
-> v1.0 | 2026-06-07
-> 本目录是 `~/.ecos/scripts/` 的核心子集 + git 版本管理副本。
+> v1.1 | 2026-11-27
+> 本目录是 eCOS 运营脚本的 git 版本管理面；运行时路径 `~/.ecos/scripts/` 自 2026-06-07 起是指向本目录的 symlink。
 
 ## 与 ~/.ecos/scripts/ 的关系
 
 | | ~/.ecos/scripts/ | ecos/scripts/ |
 |:--|:-----------------|:--------------|
-| **角色** | 运行时路径（所有 33 脚本） | 版本管理副本（14 核心脚本） |
-| **修改** | 直接编辑（无版本管理） | git 管理 |
-| **同步** | 手动复制 `cp ecos/scripts/*.py ~/.ecos/scripts/` |
+| **角色** | 运行时路径（symlink → 本目录，2026-06-07 起） | git 版本管理 |
+| **修改** | 直接编辑本目录即生效 | git 管理 |
+| **同步** | 无需复制 | — |
 
-**原则**: 新开发 → 在 `ecos/scripts/` 改 → 复制到 `~/.ecos/scripts/` 上线。
+**原则**: 在 `ecos/scripts/` 改 → 提交 → 运行时路径即刻生效（同一目录）。
 
 ## 核心脚本清单
 
@@ -35,26 +35,21 @@ status: active
 | `ecos-onboard.py` | 新机器引导 | 一次性 |
 | `ecos-bootstrap.py/sh` | 冷启动安装 | 一次性 |
 
-## 迁移
+## 改一个脚本
 
 ```bash
-# 修改后同步到运行路径
-cp scripts/*.py ~/.ecos/scripts/
-
-# 新增脚本注册
-cp new-script.py ~/.ecos/scripts/
-git add scripts/new-script.py
+vim scripts/ecos-daemon.py
+python3 ~/.ecos/scripts/ecos-daemon.py --once     # symlink 指向本目录, 立即生效
+git add scripts/ && git commit -m "fix daemon paths"
 ```
+
+> 新增脚本同样只需落在本目录并提交；运行路径会自动看到它（symlink）。
+> 脚本规模不在本文档维护 —— 见 `docs/generated/capability-registry.yaml` 或本目录清单。
 
 
 ## 架构变更 2026-06-07
 
-**之前**: ~/.ecos/scripts/ 独立目录 (33 脚本, 无版本管理)
-**之后**: ~/.ecos/scripts/ → symlink → ecos/scripts/ (39 脚本, git 版本管理)
+**之前**: `~/.ecos/scripts/` 是独立目录，与 git 无关，靠手动 `cp` 同步。
+**之后**: `~/.ecos/scripts/` → symlink → `ecos/scripts/`，改动即生效、有版本管理。
 
-修改后直接生效, 无需复制:
-  vim scripts/ecos-daemon.py
-  python3 ~/.ecos/scripts/ecos-daemon.py --once
-  git add scripts/ && git commit -m "fix daemon paths"
-
-回滚: ~/.ecos/scripts.bak/ 是原始备份
+回滚: `~/.ecos/scripts.bak/` 是切换前的备份。

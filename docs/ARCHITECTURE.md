@@ -1,7 +1,7 @@
 ---
 type: ssot
-last_updated: 2026-09-04
-last-reviewed: 2026-08-26
+last_updated: 2026-11-27
+last-reviewed: 2026-11-27
 owner: governance-team
 lifecycle: entry
 status: active
@@ -9,7 +9,7 @@ status: active
 
 # ecos Architecture
 
-> Architecture overview for **ecos**. For the full workspace architecture, see [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md).
+> Architecture overview for **ecos**. For the full workspace architecture, see [`../../../ARCHITECTURE.md`](../../../ARCHITECTURE.md).
 
 ## Responsibilities
 

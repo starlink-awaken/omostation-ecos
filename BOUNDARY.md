@@ -1,7 +1,7 @@
 ---
 type: ssot
-last_updated: 2026-09-04
-last-reviewed: 2026-08-26
+last_updated: 2026-11-27
+last-reviewed: 2026-11-27
 owner: governance-team
 lifecycle: entry
 status: active
@@ -21,11 +21,13 @@ status: active
 - `bos://meta/discover`
 - `bos://memory/vault/search`
 
+> BOS 登记面是 `projects/agora/etc/bos-services.yaml`（投影见 `docs/generated/capability-registry.yaml`）。
+
 ### 入口
 
 - **CLI**: `ecos-dashboard`, `ecos-scheduler`, `ecos-watchdog` (SSB/workflow 入口已收敛至 `cockpit ssb`/`cockpit workflow`)
 - **MCP stdio**: `ecos-mcp` (MOF + L0 tools)
-- **Tools**: 34 MOF 工具 (`mof-validate`, `mof-audit`, `mof-derive`, `mof-bridge-sync`, `mof-state-bridge`, `mof-contract-lint`, `mof-enforce` 等)
+- **Tools**: MOF 工具 (`mof-validate`, `mof-audit`, `mof-derive`, `mof-bridge-sync`, `mof-state-bridge`, `mof-contract-lint`, `mof-enforce` 等；规模与清单见 `docs/generated/capability-registry.yaml`，不在本文档维护计数)
 - **Agents**: `mof-contract-agent` (BOS URI 分析/诊断)
 
 ## 2. 上游依赖
